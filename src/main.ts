@@ -16,7 +16,7 @@ declare const Vue: {
 const app = Vue.createApp({
   data() {
     return {
-      season: 'Сезон 2026',
+      season: 'FGGW2',
       contacts: 'Email / Telegram / Discord (добавьте актуальные контакты)',
       navLinks: [
         { title: 'Скачать приложение', href: '#download' },
