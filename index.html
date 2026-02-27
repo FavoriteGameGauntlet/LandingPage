@@ -1,51 +1,13 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FGG Challenge</title>
-    <link rel="stylesheet" href="./src/styles.css" />
+    <title>fgg-landing-page</title>
   </head>
   <body>
-    <div id="app" class="page-wrapper">
-      <header class="site-header">
-        <a class="logo-slot" href="#" aria-label="FGG Challenge">
-          Логотип FGG
-        </a>
-
-        <nav class="top-nav" aria-label="Основная навигация">
-          <a
-            v-for="item in navLinks"
-            :key="item.title"
-            :href="item.href"
-            class="nav-link"
-          >
-            {{ item.title }}
-          </a>
-        </nav>
-      </header>
-
-      <main class="hero">
-        <p class="season-badge">{{ season }}</p>
-        <h1>FGG Challenge</h1>
-
-        <section class="description-slot">
-          <h2>Описание FGG</h2>
-          <p>
-            Здесь будет размещён ваш текст о том, что такое FGG и зачем он нужен.
-            Блок специально оставлен крупным, чтобы вместить описание на 1–1.5 экрана.
-          </p>
-
-        </section>
-      </main>
-
-      <footer class="footer">
-        <p>Связь с разработчиками:</p>
-        <p class="contacts">{{ contacts }}</p>
-      </footer>
-    </div>
-
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script type="module" src="./dist/main.js"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
