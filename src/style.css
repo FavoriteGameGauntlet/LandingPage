@@ -1,11 +1,26 @@
 :root {
+  --color-accent-purple:  #711c91;
+  --color-accent-magenta: #ea00d9;
+  --color-accent-cyan:    #0abdc6;
+  --color-accent-blue:    #133e7c;
+  --color-bg:             #091833;
+
+  --color-text:           #e0f7ff;
+  --color-text-dark:      #f0eeff;
+  --color-border:         var(--color-accent-blue);
+  --color-link:           var(--color-accent-cyan);
+  --color-nav-bg:         rgb(from var(--color-bg) r g b / 0.55);
+  --color-nav-link:       var(--color-accent-cyan);
+  --color-nav-link-hover: var(--color-accent-magenta);
+  --color-logo-glow:      rgb(from var(--color-accent-cyan) r g b / 0.75);
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: #020605;
-  background-color: #d46f37;
+  color-scheme: dark;
+  color: var(--color-text);
+  background-color: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,6 +32,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 0%, var(--color-accent-purple) 0%, transparent 100%),
+    var(--color-bg);
 }
 
 h1 {
