@@ -11,6 +11,6 @@
 <style scoped>
 .background {
   max-width: 1280px;
-  background-color: #0f777a;
+  background-color: var(--color-nav-bg);
 }
 </style>

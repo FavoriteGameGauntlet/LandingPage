@@ -29,12 +29,12 @@ ul {
 }
 
 a {
-  color: lightgray;
+  color: var(--color-nav-link);
   text-decoration: none;
 }
 
 a:hover {
-  color: white;
+  color: var(--color-nav-link-hover);
 }
 
 li {

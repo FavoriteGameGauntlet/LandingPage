@@ -29,8 +29,14 @@
 
 <style scoped>
 .background {
-  background-color: #0f777a;
+  background-color: var(--color-nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-accent-cyan);
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .menu {
@@ -48,7 +54,7 @@
   display: flex;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em rgba(248, 212, 200, 0.75));
+  filter: drop-shadow(0 0 2em var(--color-logo-glow));
 }
 
 .buttons {
@@ -58,7 +64,7 @@
 }
 
 .button {
-  color: lightgray;
+  color: var(--color-nav-link);
   margin: 0 1em;
   padding: 0.6em 1.2em;
   cursor: pointer;
@@ -71,7 +77,7 @@
 }
 
 button:hover {
-  color: white;
+  color: var(--color-nav-link-hover);
 }
 
 button:focus,
