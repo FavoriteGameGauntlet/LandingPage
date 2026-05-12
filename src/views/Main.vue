@@ -31,8 +31,4 @@
 </template>
 
 <style scoped>
-h1 {
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 0.3rem;
-}
 </style>

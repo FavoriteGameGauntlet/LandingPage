@@ -43,4 +43,32 @@ h1 {
   font-size: 1.8em;
   line-height: 1.1;
   margin-top: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.3rem;
+}
+
+.page-list {
+  text-align: start;
+  font-size: 20px;
+  padding-left: 0;
+}
+
+.page-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.page-list li p {
+  margin: 0;
+  opacity: 0.5;
+}
+
+a {
+  color: var(--color-nav-link);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-nav-link-hover);
 }
