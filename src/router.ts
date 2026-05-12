@@ -29,7 +29,10 @@ const ruleRoutes: RouteRecordRaw[] = Object.entries(mdFiles).map(([path, loader]
 
 const router = createRouter({
     history: createWebHistory(),
-    routes: [...routes, ...ruleRoutes]
+    routes: [...routes, ...ruleRoutes],
+    scrollBehavior(to) {
+        if (!to.hash) return { top: 0 }
+    },
 })
 
 export default router

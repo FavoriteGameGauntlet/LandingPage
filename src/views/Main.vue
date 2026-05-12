@@ -32,15 +32,7 @@
 
 <style scoped>
 h1 {
-  margin-top: 1.5em;
-  padding-top: 1.5em;
-  border-top: 1px solid currentColor;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.3rem;
 }
-
-h1:first-child {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: none;
-}
-
 </style>
