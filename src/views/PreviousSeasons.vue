@@ -4,7 +4,7 @@
 
 <template>
   <h1>Предыдущие сезоны</h1>
-  <ul>
+  <ul class="page-list">
     <li>
       <a href="https://docs.google.com/spreadsheets/d/1PvToVnWcyW4-3M2jDRuTFthg2ypbCfWyzqsp0HjATz4"
          target="_blank">FGG 2</a>
@@ -29,28 +29,4 @@
 </template>
 
 <style scoped>
-ul {
-  text-align: start;
-  font-size: 20px;
-}
-
-a {
-  color: var(--color-nav-link);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--color-nav-link-hover);
-}
-
-li {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-li p {
-  margin: 0;
-  opacity: 0.5;
-}
 </style>
