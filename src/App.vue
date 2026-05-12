@@ -17,7 +17,7 @@ import Footer from "./components/Footer.vue";
 .content {
   max-width: 680px;
   margin: 0 auto;
-  padding-top: 1.5rem;
+  padding: 1.5rem 1rem 0;
   text-align: left;
 }
 </style>
