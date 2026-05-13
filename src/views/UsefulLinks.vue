@@ -6,7 +6,7 @@
   <h1>Полезные ссылки</h1>
   <ul class="page-list">
     <li>
-      <a href="https://www.google.com/search?q=roll+dice" target="_blank">Бросить кубик</a>
+      <router-link to="/dice-roller">Бросить кубик</router-link>
     </li>
     <li>
       <a href="https://www.google.com/search?q=flip+a+coin" target="_blank">Подбросить монетку</a>
