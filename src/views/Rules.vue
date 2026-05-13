@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 
 interface PostMeta {
   path: string
@@ -10,34 +10,27 @@ interface PostMeta {
   tags: string[]
 }
 
-const mdFiles = import.meta.glob<{
-  frontmatter: { title?: string; date?: string; tags?: string[]; published?: boolean }
-}>('../rules/*.md')
+const frontmatters = import.meta.glob<{ title?: string; date?: string; tags?: string[]; published?: boolean }>(
+  '../rules/*.md',
+  { eager: true, import: 'frontmatter' }
+)
 
-const rules = ref<PostMeta[]>([])
-
-onMounted(async () => {
-  const loaded = await Promise.all(
-      Object.entries(mdFiles).map(async ([path, load]) => {
-        const mod = await load()
-        const match = path.match(/\/([^/]+)\.md$/)
-        if (!match) return null
-        if (mod.frontmatter?.published === false) return null
-
-        const slug = match[1] as string
-        return {
-          path: `/rules/${slug}`,
-          slug,
-          title: mod.frontmatter?.title ?? slug.replace(/-/g, ' '),
-          date: mod.frontmatter?.date ?? '',
-          tags: mod.frontmatter?.tags ?? [],
-        } satisfies PostMeta
-      })
-  )
-  rules.value = loaded
-      .filter((p): p is PostMeta => p !== null)
-      .sort((a, b) => b.date.localeCompare(a.date))
-})
+const rules = ref<PostMeta[]>(
+  Object.entries(frontmatters)
+    .flatMap(([path, fm]) => {
+      const match = path.match(/\/([^/]+)\.md$/)
+      if (!match || fm?.published === false) return []
+      const slug = match[1] as string
+      return [{
+        path: `/rules/${slug}`,
+        slug,
+        title: fm?.title ?? slug.replace(/-/g, ' '),
+        date: fm?.date ?? '',
+        tags: fm?.tags ?? [],
+      } satisfies PostMeta]
+    })
+    .sort((a, b) => b.date.localeCompare(a.date))
+)
 </script>
 
 <template>
