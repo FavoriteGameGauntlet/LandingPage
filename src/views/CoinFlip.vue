@@ -6,6 +6,7 @@ type Side = 'heads' | 'tails'
 const rotation = ref(0)
 const flipping = ref(false)
 const result = ref<Side | null>(null)
+const history = ref<Side[]>([])
 
 function flip() {
   if (flipping.value) return
@@ -21,8 +22,15 @@ function flip() {
 
   setTimeout(() => {
     result.value = side
+    history.value.unshift(side)
     flipping.value = false
   }, 1500)
+}
+
+function clear() {
+  if (flipping.value) return
+  result.value = null
+  history.value = []
 }
 </script>
 
@@ -36,17 +44,22 @@ function flip() {
     </div>
   </div>
 
-  <div class="status-row">
-    <span v-if="result" class="status" :class="result">
-      {{ result === 'heads' ? 'Орёл' : 'Решка' }}
-    </span>
-    <span v-else class="status-hint">{{ flipping ? 'Летит...' : ' ' }}</span>
-  </div>
-
   <div class="action-row">
     <button class="flip-btn" :disabled="flipping" @click="flip">
-      {{ flipping ? 'Летит...' : (result ? 'Ещё раз' : 'Бросить') }}
+      {{ flipping ? 'Летит...' : 'Бросить' }}
     </button>
+    <button class="clear-btn" :disabled="flipping || history.length === 0" @click="clear">
+      Сбросить
+    </button>
+  </div>
+
+  <div v-if="history.length > 0" class="history">
+    <span
+      v-for="(side, i) in history"
+      :key="i"
+      class="chip"
+      :class="side"
+    >{{ side === 'heads' ? 'Орёл' : 'Решка' }}</span>
   </div>
 </template>
 
@@ -80,18 +93,12 @@ function flip() {
 
 .face.heads {
   background: var(--color-accent-cyan);
-  box-shadow:
-    0 0 0 6px var(--color-accent-purple),
-    0 0 28px rgb(from var(--color-accent-cyan) r g b / 0.4);
   transform: translateZ(1px);
 }
 
 .face.tails {
   background: var(--color-accent-magenta);
   transform: rotateY(180deg) translateZ(1px);
-  box-shadow:
-    0 0 0 6px var(--color-accent-purple),
-    0 0 28px rgb(from var(--color-accent-magenta) r g b / 0.4);
 }
 
 .face-label {
@@ -101,35 +108,14 @@ function flip() {
   pointer-events: none;
 }
 
-
-.status-row {
-  text-align: center;
-  min-height: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-.status {
-  font-size: 1.3rem;
-  font-weight: 700;
-}
-
-.status.heads {
-  color: var(--color-accent-cyan);
-}
-
-.status.tails {
-  color: var(--color-accent-magenta);
-}
-
-.status-hint {
-  font-size: 1.1rem;
-  opacity: 0.5;
-}
-
 .action-row {
   display: flex;
   gap: 0.75rem;
   margin-bottom: 1.75rem;
+}
+
+.action-row button {
+  flex: 1;
 }
 
 .flip-btn {
@@ -154,5 +140,53 @@ function flip() {
 .flip-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+}
+
+.clear-btn {
+  padding: 0.55em 1.5em;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  border: 2px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  opacity: 0.7;
+}
+
+.clear-btn:hover:not(:disabled) {
+  border-color: var(--color-accent-magenta);
+  color: var(--color-accent-magenta);
+  opacity: 1;
+}
+
+.clear-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.25em 0.65em;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  background: rgb(from var(--color-accent-blue) r g b / 0.2);
+  color: var(--color-text);
+}
+
+.chip.heads {
+  color: var(--color-accent-cyan);
+}
+
+.chip.tails {
+  color: var(--color-accent-magenta);
 }
 </style>

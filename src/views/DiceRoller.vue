@@ -284,6 +284,10 @@ const dieShapes: Record<DieType, { points: string }> = {
   margin-bottom: 1.75rem;
 }
 
+.action-row button {
+  flex: 1;
+}
+
 .roll-btn {
   display: block;
   padding: 0.55em 2.5em;
