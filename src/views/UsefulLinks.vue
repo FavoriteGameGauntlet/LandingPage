@@ -9,7 +9,7 @@
       <router-link to="/dice-roller">Бросить кубик</router-link>
     </li>
     <li>
-      <a href="https://www.google.com/search?q=flip+a+coin" target="_blank">Подбросить монетку</a>
+      <router-link to="/coin-flip">Подбросить монетку</router-link>
     </li>
     <li class="with-note">
       <a href="https://1drv.ms/p/c/a24b107ddb981c5e/IQAz0qPb8CLqRpJ6kRpZrw6UASiukNZcHMgSpAM94v9TrLs?e=j6aUXb"
