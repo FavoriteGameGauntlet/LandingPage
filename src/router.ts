@@ -11,13 +11,14 @@ const mdFiles = import.meta.glob<{
     frontmatter: { title?: string; date?: string; tags?: string[] }
 }>('./rules/*.md')
 
-const ruleChildren: RouteRecordRaw[] = Object.entries(mdFiles).map(([path, loader]) => {
-    const name = path.match(/\/([^/]+)\.md$/)![1]
-    return {
+const ruleChildren: RouteRecordRaw[] = Object.entries(mdFiles).flatMap(([path, loader]) => {
+    const name = path.match(/\/([^/]+)\.md$/)?.[1]
+    if (!name) return []
+    return [{
         path: name,
         component: loader,
         meta: { mdPath: path },
-    } satisfies RouteRecordRaw
+    } as RouteRecordRaw]
 })
 
 const routes: RouteRecordRaw[] = [
