@@ -40,7 +40,7 @@ const seasons: Season[] = [
     videos: [
       { title: 'Финальный выбор', url: '/videos/fggw1-final-choice.mp4' },
       { title: 'Финал: Перепрограммирование', url: '/videos/fggw1-reprogramming-final.mp4', true: true },
-      { title: 'Финал: Самоуничтожение', url: '/videos/fgg1-self-destruction-final.mp4' }
+      { title: 'Финал: Самоуничтожение', url: '/videos/fggw1-self-destruction-final.mp4' }
     ]
   },
   {
