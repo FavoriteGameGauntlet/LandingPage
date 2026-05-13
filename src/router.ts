@@ -27,8 +27,6 @@ const routes: RouteRecordRaw[] = [
         ],
     },
     {path: '/useful-links', name: 'useful-links', component: () => import('./views/UsefulLinks.vue')},
-    {path: '/dice-roller', name: 'dice-roller', component: () => import('./views/DiceRoller.vue')},
-    {path: '/coin-flip', name: 'coin-flip', component: () => import('./views/CoinFlip.vue')},
     {path: '/previous-seasons', name: 'previous-seasons', component: () => import('./views/PreviousSeasons.vue')},
 ]
 
