@@ -1,10 +1,4 @@
 import {createRouter, createWebHistory, type RouteRecordRaw} from 'vue-router'
-import Main from './views/Main.vue'
-import Download from './views/Download.vue'
-import Rules from './views/Rules.vue'
-import RulesLayout from './views/RulesLayout.vue'
-import UsefulLinks from './views/UsefulLinks.vue'
-import PreviousSeasons from './views/PreviousSeasons.vue'
 
 const mdFiles = import.meta.glob<{
     default: object
@@ -22,18 +16,18 @@ const ruleChildren: RouteRecordRaw[] = Object.entries(mdFiles).flatMap(([path, l
 })
 
 const routes: RouteRecordRaw[] = [
-    {path: '/', name: 'main', component: Main},
-    {path: '/download', name: 'download', component: Download},
+    {path: '/', name: 'main', component: () => import('./views/Main.vue')},
+    {path: '/download', name: 'download', component: () => import('./views/Download.vue')},
     {
         path: '/rules',
-        component: RulesLayout,
+        component: () => import('./views/RulesLayout.vue'),
         children: [
-            {path: '', name: 'rules', component: Rules},
+            {path: '', name: 'rules', component: () => import('./views/Rules.vue')},
             ...ruleChildren,
         ],
     },
-    {path: '/useful-links', name: 'useful-links', component: UsefulLinks},
-    {path: '/previous-seasons', name: 'previous-seasons', component: PreviousSeasons},
+    {path: '/useful-links', name: 'useful-links', component: () => import('./views/UsefulLinks.vue')},
+    {path: '/previous-seasons', name: 'previous-seasons', component: () => import('./views/PreviousSeasons.vue')},
 ]
 
 const router = createRouter({
