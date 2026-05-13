@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
 
 interface RuleMeta {
@@ -8,19 +8,25 @@ interface RuleMeta {
   path: string
 }
 
-const mdFrontmatters = import.meta.glob<{ title?: string; published?: boolean }>(
+const frontmatters = import.meta.glob<{ title?: string; date?: string; published?: boolean }>(
   '../rules/*.md',
-  { import: 'frontmatter', eager: true }
+  { eager: true, import: 'frontmatter' }
 )
 
-const rules = Object.entries(mdFrontmatters)
-  .flatMap(([path, fm]) => {
-    const match = path.match(/\/([^/]+)\.md$/)
-    if (!match || fm?.published === false) return []
-    const slug = match[1] as string
-    return [{ slug, title: fm?.title ?? slug.replace(/-/g, ' '), path: `/rules/${slug}` } satisfies RuleMeta]
-  })
-  .sort((a, b) => a.title.localeCompare(b.title, 'ru'))
+const rules = ref<RuleMeta[]>(
+  Object.entries(frontmatters)
+    .flatMap(([path, fm]) => {
+      const match = path.match(/\/([^/]+)\.md$/)
+      if (!match || fm?.published === false) return []
+      const slug = match[1] as string
+      return [{
+        slug,
+        title: fm?.title ?? slug.replace(/-/g, ' '),
+        path: `/rules/${slug}`,
+      } satisfies RuleMeta]
+    })
+    .sort((a, b) => a.title.localeCompare(b.title, 'ru'))
+)
 
 const route = useRoute()
 const isIndividualRule = computed(() => route.path !== '/rules')
