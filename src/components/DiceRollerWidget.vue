@@ -56,8 +56,6 @@ const dieShapes: Record<DieType, { points: string }> = {
 </script>
 
 <template>
-  <h1>Бросок кубиков</h1>
-
   <div class="dice-selector">
     <button
       v-for="type in diceTypes"
@@ -129,12 +127,6 @@ const dieShapes: Record<DieType, { points: string }> = {
 </template>
 
 <style scoped>
-.hint {
-  margin: 0 0 1.25rem;
-  font-size: 0.85rem;
-  opacity: 0.6;
-}
-
 .dice-selector {
   display: flex;
   flex-wrap: wrap;

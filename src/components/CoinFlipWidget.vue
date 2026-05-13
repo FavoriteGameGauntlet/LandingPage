@@ -35,11 +35,9 @@ function clear() {
 </script>
 
 <template>
-  <h1>Подброс монеты</h1>
-
   <div class="coin-scene">
     <div class="coin" :style="{ transform: `rotateY(${rotation}deg)` }" :class="{ flippable: !flipping }" @click="flip">
-      <div class="face heads"><span class="face-label">Орёл</span></div>
+      <div class="face heads"><span class="face-label">Орел</span></div>
       <div class="face tails"><span class="face-label">Решка</span></div>
     </div>
   </div>
@@ -49,7 +47,7 @@ function clear() {
       {{ flipping ? 'Крутится...' : 'Бросить' }}
     </button>
     <button class="clear-btn" :disabled="flipping || history.length === 0" @click="clear">
-      Сбросить
+      Очистить
     </button>
   </div>
 
@@ -59,7 +57,7 @@ function clear() {
       :key="i"
       class="chip"
       :class="side"
-    >{{ side === 'heads' ? 'Орёл' : 'Решка' }}</span>
+    >{{ side === 'heads' ? 'Орел' : 'Решка' }}</span>
   </div>
 </template>
 
