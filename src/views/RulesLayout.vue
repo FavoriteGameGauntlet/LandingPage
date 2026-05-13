@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
 
 interface RuleMeta {
@@ -8,31 +8,19 @@ interface RuleMeta {
   path: string
 }
 
-const mdFiles = import.meta.glob<{
-  frontmatter: { title?: string; date?: string; published?: boolean }
-}>('../rules/*.md')
+const mdFrontmatters = import.meta.glob<{ title?: string; published?: boolean }>(
+  '../rules/*.md',
+  { import: 'frontmatter', eager: true }
+)
 
-const rules = ref<RuleMeta[]>([])
-
-onMounted(async () => {
-  const loaded = await Promise.all(
-    Object.entries(mdFiles).map(async ([path, load]) => {
-      const mod = await load()
-      const match = path.match(/\/([^/]+)\.md$/)
-      if (!match) return null
-      if (mod.frontmatter?.published === false) return null
-      const slug = match[1] as string
-      return {
-        slug,
-        title: mod.frontmatter?.title ?? slug.replace(/-/g, ' '),
-        path: `/rules/${slug}`,
-      } satisfies RuleMeta
-    })
-  )
-  rules.value = loaded
-    .filter((r): r is RuleMeta => r !== null)
-    .sort((a, b) => a.title.localeCompare(b.title, 'ru'))
-})
+const rules = Object.entries(mdFrontmatters)
+  .flatMap(([path, fm]) => {
+    const match = path.match(/\/([^/]+)\.md$/)
+    if (!match || fm?.published === false) return []
+    const slug = match[1] as string
+    return [{ slug, title: fm?.title ?? slug.replace(/-/g, ' '), path: `/rules/${slug}` } satisfies RuleMeta]
+  })
+  .sort((a, b) => a.title.localeCompare(b.title, 'ru'))
 
 const route = useRoute()
 const isIndividualRule = computed(() => route.path !== '/rules')

@@ -14,7 +14,7 @@ router.afterEach(() => {
   <div class="background">
     <div class="menu">
       <router-link to="/" class="logo">
-        <img src="./../assets/logo.png" alt="Logo"/>
+        <img src="./../assets/logo.webp" alt="Logo" fetchpriority="high"/>
       </router-link>
 
       <button class="hamburger" :class="{ open: isOpen }" @click="isOpen = !isOpen" aria-label="Меню">
