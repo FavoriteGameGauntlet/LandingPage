@@ -4,6 +4,7 @@ import { ref } from 'vue'
 interface Video {
   title: string
   url: string
+  true?: boolean
 }
 
 interface Season {
@@ -37,7 +38,19 @@ const seasons: Season[] = [
     name: 'FGGW 1',
     link: 'https://docs.google.com/spreadsheets/d/1n9GQN-BfXG1raE17xQP0ja9vqb52AgSfs3YGxq1od80',
     videos: [
-        { title: 'Финал', url: '/videos/fggw1-final.mp4' }
+      { title: 'Финальный выбор', url: '/videos/fggw1-final-choice.mp4' },
+      { title: 'Финал: Перепрограммирование', url: '/videos/fggw1-reprogramming-final.mp4', true: true },
+      { title: 'Финал: Самоуничтожение', url: '/videos/fgg1-self-destrucion-final.mp4' }
+    ]
+  },
+  {
+    name: 'FGGW 2',
+    link: 'https://docs.google.com/spreadsheets/d/1z-oFb87xGjrXHSoe2FvMNVC5RSMTY3T3Q6PGfu-xD8U',
+    videos: [
+      { title: 'Интро', url: '/videos/fggw2-intro.mp4' },
+      { title: 'Конец первого акта', url: '/videos/fggw2-first-act-ending.mp4' },
+      { title: 'Финал', url: '/videos/fggw2-fake-final.mp4' },
+      { title: 'Финал', url: '/videos/fggw2-final.mp4', true: true }
     ]
   }
 ]
@@ -67,7 +80,10 @@ function toggle(index: number) {
         <a :href="season.link" target="_blank" class="season-link">Таблица сезона</a>
         <div v-if="season.videos.length" class="videos">
           <div v-for="video in season.videos" :key="video.url" class="video-item">
-            <p class="video-caption">{{ video.title }}</p>
+            <p class="video-caption">
+              {{ video.title }}
+              <span v-if="video.true" class="tag-true">Истинный</span>
+            </p>
             <div class="video-wrapper">
               <video controls preload="none" :src="video.url"></video>
             </div>
@@ -149,6 +165,19 @@ function toggle(index: number) {
 .video-caption {
   margin: 0 0 8px;
   font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-true {
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgb(from var(--color-accent-purple) r g b / 0.3);
+  border: 1px solid var(--color-accent-purple);
   color: var(--color-text);
 }
 
