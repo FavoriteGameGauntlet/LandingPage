@@ -23,10 +23,16 @@ export default defineConfig({
     {
       name: 'vite-plugin-markdown',
       transform(_, id) {
-        if (!id.endsWith('.md')) return
+        const [filePath, query] = id.split('?')
+        if (!filePath.endsWith('.md')) return
 
-        const raw = fs.readFileSync(id, 'utf-8')
+        const raw = fs.readFileSync(filePath, 'utf-8')
         const { data: frontmatter, content } = matter(raw)
+
+        if (query === 'frontmatter') {
+          return { code: `export default ${JSON.stringify(frontmatter)}` }
+        }
+
         const html = md.render(content)
 
         return {

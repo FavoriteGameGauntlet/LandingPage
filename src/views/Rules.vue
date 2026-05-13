@@ -12,7 +12,7 @@ interface PostMeta {
 
 const frontmatters = import.meta.glob<{ title?: string; date?: string; tags?: string[]; published?: boolean }>(
   '../rules/*.md',
-  { eager: true, import: 'frontmatter' }
+  { eager: true, query: '?frontmatter', import: 'default' }
 )
 
 const rules = ref<PostMeta[]>(
