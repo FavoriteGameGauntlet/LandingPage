@@ -96,15 +96,18 @@ function clear() {
 .face.heads {
   background: var(--color-accent-cyan);
   transform: translateZ(1px);
+  box-shadow: 0 0 1.5em var(--color-accent-cyan), 0 0 3em rgb(from var(--color-accent-cyan) r g b / 0.4);
 }
 
 .coin.virgin .face.heads {
   background: var(--color-border);
+  box-shadow: none;
 }
 
 .face.tails {
   background: var(--color-accent-magenta);
   transform: rotateY(180deg) translateZ(1px);
+  box-shadow: 0 0 1.5em var(--color-accent-magenta), 0 0 3em rgb(from var(--color-accent-magenta) r g b / 0.4);
 }
 
 .face-label {
@@ -181,18 +184,26 @@ function clear() {
 
 .chip {
   padding: 0.25em 0.65em;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgb(from var(--color-accent-blue) r g b / 0.4);
   border-radius: 4px;
   font-size: 0.95rem;
-  background: rgb(from var(--color-accent-blue) r g b / 0.2);
+  background: transparent;
   color: var(--color-text);
 }
 
 .chip.heads {
   color: var(--color-accent-cyan);
+  border-color: rgb(from var(--color-accent-cyan) r g b / 0.5);
+  background: rgb(from var(--color-accent-cyan) r g b / 0.07);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent-cyan) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent-cyan);
 }
 
 .chip.tails {
   color: var(--color-accent-magenta);
+  border-color: rgb(from var(--color-accent-magenta) r g b / 0.5);
+  background: rgb(from var(--color-accent-magenta) r g b / 0.07);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent-magenta) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent-magenta);
 }
 </style>
