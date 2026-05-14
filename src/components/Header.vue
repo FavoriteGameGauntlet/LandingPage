@@ -30,8 +30,8 @@ router.afterEach(() => {
         <router-link to="/rules">
           <button type="button" class="button">Правила</button>
         </router-link>
-        <router-link to="/useful-links">
-          <button type="button" class="button">Полезные ссылки</button>
+        <router-link to="/tools">
+          <button type="button" class="button">Инструменты</button>
         </router-link>
         <router-link to="/previous-seasons">
           <button type="button" class="button">Предыдущие сезоны</button>

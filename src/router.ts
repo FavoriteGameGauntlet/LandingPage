@@ -26,7 +26,7 @@ const routes: RouteRecordRaw[] = [
             ...ruleChildren,
         ],
     },
-    {path: '/useful-links', name: 'useful-links', component: () => import('./views/UsefulLinks.vue')},
+    {path: '/tools', name: 'tools', component: () => import('./views/Tools.vue')},
     {path: '/previous-seasons', name: 'previous-seasons', component: () => import('./views/PreviousSeasons.vue')},
 ]
 
