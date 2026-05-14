@@ -7,7 +7,11 @@ import Footer from "./components/Footer.vue";
   <Header/>
 
   <div class="content">
-    <router-view/>
+    <router-view v-slot="{ Component }">
+      <KeepAlive include="Tools">
+        <component :is="Component" />
+      </KeepAlive>
+    </router-view>
   </div>
 
   <Footer/>
