@@ -114,6 +114,9 @@ function toggle(key: string) {
 .item-header.open {
   border-bottom-color: transparent;
   background: rgb(from var(--color-accent-purple) r g b / 0.4);
+  border-left-color: var(--color-accent-cyan);
+  border-left-width: 3px;
+  padding-left: calc(16px - 2px);
 }
 
 .chevron {

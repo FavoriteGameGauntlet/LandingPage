@@ -37,13 +37,33 @@ export default defineConfig({
 
         return {
           code: `
-            import { defineComponent, h, onMounted, nextTick } from 'vue'
+            import { defineComponent, h, onMounted, nextTick, ref } from 'vue'
             export const frontmatter = ${JSON.stringify(frontmatter)}
             export default defineComponent({
               name: 'MarkdownPost',
               setup() {
+                const root = ref(null)
                 onMounted(async () => {
                   await nextTick()
+                  root.value?.querySelectorAll(':is(h1,h2,h3,h4,h5,h6)[id]').forEach(heading => {
+                    const btn = document.createElement('button')
+                    btn.className = 'anchor-copy-btn'
+                    btn.textContent = '#'
+                    btn.setAttribute('aria-label', 'Скопировать ссылку на раздел')
+                    btn.addEventListener('click', (e) => {
+                      e.preventDefault()
+                      const url = location.origin + location.pathname + '#' + heading.id
+                      navigator.clipboard.writeText(url).then(() => {
+                        btn.textContent = '✓'
+                        btn.classList.add('copied')
+                        setTimeout(() => {
+                          btn.textContent = '#'
+                          btn.classList.remove('copied')
+                        }, 1500)
+                      })
+                    })
+                    heading.appendChild(btn)
+                  })
                   const hash = decodeURIComponent(window.location.hash)
                   if (hash) {
                     const el = document.querySelector(hash)
@@ -52,6 +72,7 @@ export default defineConfig({
                 })
                 return () => h('div', {
                   class: 'post-content',
+                  ref: root,
                   innerHTML: ${JSON.stringify(html)}
                 })
               }
