@@ -36,8 +36,8 @@ function clear() {
 
 <template>
   <div class="coin-scene">
-    <div class="coin" :style="{ transform: `rotateY(${rotation}deg)` }" :class="{ flippable: !flipping }" @click="flip">
-      <div class="face heads"><span class="face-label">Орел</span></div>
+    <div class="coin" :style="{ transform: `rotateY(${rotation}deg)` }" :class="{ flippable: !flipping, virgin: history.length === 0 }" @click="flip">
+      <div class="face heads"><span class="face-label">{{ history.length === 0 ? '?' : 'Орел' }}</span></div>
       <div class="face tails"><span class="face-label">Решка</span></div>
     </div>
   </div>
@@ -96,6 +96,10 @@ function clear() {
 .face.heads {
   background: var(--color-accent-cyan);
   transform: translateZ(1px);
+}
+
+.coin.virgin .face.heads {
+  background: var(--color-border);
 }
 
 .face.tails {

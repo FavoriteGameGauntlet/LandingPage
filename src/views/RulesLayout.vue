@@ -107,5 +107,7 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
 .rules-sidebar a.active {
   color: var(--color-text);
   background: rgb(from var(--color-accent-blue) r g b / 0.3);
+  border-left: 2px solid var(--color-accent-cyan);
+  padding-left: calc(0.4rem - 2px);
 }
 </style>

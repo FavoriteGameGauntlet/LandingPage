@@ -24,6 +24,33 @@
     scroll-margin-top: 5rem;
 }
 
+/* Якорные заголовки — кнопка # при наведении */
+.anchor-copy-btn {
+    display: inline;
+    margin-left: 0.4em;
+    font-size: 0.75em;
+    font-weight: 400;
+    color: var(--color-accent-cyan);
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    vertical-align: middle;
+    font-family: inherit;
+    line-height: 1;
+}
+
+.post-content :is(h1, h2, h3, h4, h5, h6):hover .anchor-copy-btn,
+.anchor-copy-btn:focus-visible {
+    opacity: 0.6;
+}
+
+.anchor-copy-btn.copied {
+    opacity: 1 !important;
+}
+
 /* Параграфы и ссылки */
 .post-content p {
     margin: 1rem 0;
