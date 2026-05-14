@@ -16,16 +16,6 @@ interface LinkGroup {
 
 const linkGroups: LinkGroup[] = [
   {
-    title: 'Квесты онлайн',
-    links: [
-      {
-        label: 'Открыть',
-        href: 'https://1drv.ms/p/c/a24b107ddb981c5e/IQAz0qPb8CLqRpJ6kRpZrw6UASiukNZcHMgSpAM94v9TrLs?e=j6aUXb',
-        note: 'Переход по квестам может работать медленно, необходимо просто подождать'
-      }
-    ]
-  },
-  {
     title: 'Материалы',
     links: [
       { label: 'Материалы за все сезоны', href: 'https://disk.yandex.ru/d/vw1yjwiCdIUsRg' },
