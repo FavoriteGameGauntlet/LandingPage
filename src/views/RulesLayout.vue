@@ -31,6 +31,7 @@ const rules = ref<RuleMeta[]>(
 const route = useRoute()
 const isIndividualRule = computed(() => route.path !== '/rules')
 const currentSlug = computed(() => route.path.split('/').pop() ?? '')
+const currentTitle = computed(() => frontmatters[`../rules/${currentSlug.value}.md`]?.title ?? '')
 </script>
 
 <template>
@@ -46,6 +47,7 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
       </nav>
     </aside>
     <div class="rules-content">
+      <h1 v-if="isIndividualRule && currentTitle">{{ currentTitle }}</h1>
       <RouterView />
     </div>
   </div>
@@ -53,17 +55,23 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
 
 <style scoped>
 .rules-layout {
-  display: contents;
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
 }
 
-/* Fixed sidebar on wide viewports — doesn't affect content layout at all */
+.rules-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Sticky sidebar on wide viewports */
 @media (min-width: 1100px) {
   .rules-sidebar {
-    position: fixed;
-    top: 5rem;
-    /* Right edge of sidebar = left edge of centered 680px content - gap */
-    right: calc(50vw + 340px + 1.5rem);
+    flex-shrink: 0;
     width: 200px;
+    position: sticky;
+    top: 5rem;
   }
 
   .rules-sidebar nav {
@@ -77,7 +85,12 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
 
 /* Horizontal nav bar above content on narrow viewports */
 @media (max-width: 1099px) {
+  .rules-layout {
+    flex-direction: column;
+  }
+
   .rules-sidebar {
+    width: 100%;
     margin-bottom: 1.25rem;
   }
 
@@ -91,23 +104,17 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
 }
 
 .rules-sidebar a {
-  color: var(--color-nav-link);
-  text-decoration: none;
   font-size: 0.9em;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
-  transition: color 0.15s;
   white-space: nowrap;
 }
 
-.rules-sidebar a:hover {
-  color: var(--color-nav-link-hover);
-}
 
 .rules-sidebar a.active {
   color: var(--color-text);
-  background: rgb(from var(--color-accent-blue) r g b / 0.3);
-  border-left: 2px solid var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-gray) r g b / 0.3);
+  border-left: 2px solid var(--color-accent-red);
   padding-left: calc(0.4rem - 2px);
 }
 </style>

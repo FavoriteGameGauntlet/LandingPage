@@ -24,18 +24,10 @@ router.afterEach(() => {
       </button>
 
       <div class="buttons" :class="{ open: isOpen }">
-        <router-link to="/download">
-          <button type="button" class="button">Скачать</button>
-        </router-link>
-        <router-link to="/rules">
-          <button type="button" class="button">Правила</button>
-        </router-link>
-        <router-link to="/tools">
-          <button type="button" class="button">Инструменты</button>
-        </router-link>
-        <router-link to="/previous-seasons">
-          <button type="button" class="button">Предыдущие сезоны</button>
-        </router-link>
+        <router-link to="/download" class="button">Скачать</router-link>
+        <router-link to="/rules" class="button">Правила</router-link>
+        <router-link to="/tools" class="button">Инструменты</router-link>
+        <router-link to="/previous-seasons" class="button">Предыдущие сезоны</router-link>
       </div>
     </div>
   </div>
@@ -46,7 +38,7 @@ router.afterEach(() => {
   background-color: var(--color-nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-accent-cyan);
+  border-bottom: 1px solid var(--color-accent-red);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -69,7 +61,7 @@ router.afterEach(() => {
   flex-shrink: 0;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em var(--color-logo-glow));
+  filter: drop-shadow(0 0 2em var(--color-accent-red));
 }
 
 .buttons {
@@ -79,20 +71,10 @@ router.afterEach(() => {
 }
 
 .button {
-  color: var(--color-nav-link);
   margin: 0 1em;
   padding: 0.6em 1.2em;
-  cursor: pointer;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
-  background: transparent;
-  border: transparent;
-  transition: color 0.25s;
-}
-
-button:hover {
-  color: var(--color-nav-link-hover);
 }
 
 button:focus {
@@ -116,7 +98,7 @@ button:focus {
   display: block;
   width: 100%;
   height: 2px;
-  background-color: var(--color-accent-cyan);
+  background-color: var(--color-accent-red);
   border-radius: 2px;
   transition: transform 0.25s, opacity 0.25s;
 }
@@ -145,7 +127,7 @@ button:focus {
     flex-direction: column;
     height: auto;
     background-color: var(--color-bg);
-    border-bottom: 1px solid var(--color-accent-cyan);
+    border-bottom: 1px solid var(--color-accent-red);
     padding: 0.5rem 0;
   }
 

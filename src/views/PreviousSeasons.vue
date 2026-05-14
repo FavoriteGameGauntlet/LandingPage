@@ -320,7 +320,7 @@ function toggle(index: number) {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgb(from var(--color-accent-blue) r g b / 0.3);
+  background: rgb(from var(--color-accent-gray) r g b / 0.3);
   border: 1px solid var(--color-border);
   color: var(--color-text);
   font-size: 1.1em;
@@ -331,13 +331,13 @@ function toggle(index: number) {
 }
 
 .season-header:hover {
-  background: rgb(from var(--color-accent-blue) r g b / 0.5);
+  background: rgb(from var(--color-accent-gray) r g b / 0.5);
 }
 
 .season-header.open {
   border-bottom-color: transparent;
-  background: rgb(from var(--color-accent-purple) r g b / 0.4);
-  border-left-color: var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-red) r g b / 0.4);
+  border-left-color: var(--color-accent-red);
   border-left-width: 3px;
   padding-left: calc(16px - 2px);
 }
@@ -373,15 +373,15 @@ function toggle(index: number) {
   padding: 8px 16px;
   font-size: 0.9em;
   font-weight: 600;
-  border: 1px solid var(--color-accent-cyan);
-  color: var(--color-accent-cyan);
-  background: rgb(from var(--color-accent-cyan) r g b / 0.08);
+  border: 1px solid var(--color-accent-red);
+  color: var(--color-accent-red);
+  background: rgb(from var(--color-accent-red) r g b / 0.08);
   transition: background 0.2s, color 0.2s;
 }
 
 .season-link:hover {
-  background: rgb(from var(--color-accent-cyan) r g b / 0.2);
-  color: var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-red) r g b / 0.2);
+  color: var(--color-accent-red);
 }
 
 .content {
@@ -415,14 +415,19 @@ function toggle(index: number) {
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgb(from var(--color-accent-purple) r g b / 0.3);
-  border: 1px solid var(--color-accent-purple);
+  background: rgb(from var(--color-accent-red) r g b / 0.3);
+  border: 1px solid var(--color-accent-red);
   color: var(--color-text);
+}
+
+.video-wrapper {
+  aspect-ratio: 16 / 9;
 }
 
 .video-wrapper video {
   width: 100%;
-  max-height: 480px;
+  height: 100%;
   display: block;
+
 }
 </style>

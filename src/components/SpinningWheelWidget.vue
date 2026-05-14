@@ -94,7 +94,7 @@ const labelSize = computed(() => {
   return 9
 })
 
-// Cycling neon sector styles (3 colours)
+// Cycling neon sector styles (3 colors)
 const FILLS   = ['#0d3a50', '#2d1045', '#0d2238']
 const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 </script>
@@ -246,7 +246,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .empty-label {
-  fill: rgb(from var(--color-accent-blue) r g b / 0.7);
+  fill: rgb(from var(--color-accent-gray) r g b / 0.7);
   font-size: 18px;
   font-family: inherit;
 }
@@ -260,18 +260,18 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .pointer {
-  fill: var(--color-accent-cyan);
-  filter: drop-shadow(0 0 4px var(--color-accent-cyan));
+  fill: var(--color-accent-red);
+  filter: drop-shadow(0 0 4px var(--color-accent-red));
 }
 
 /* ── Result strip ── */
 
 .result-label {
-  fill: var(--color-accent-cyan);
+  fill: var(--color-accent-red);
   font-size: 22px;
   font-family: inherit;
   font-weight: 700;
-  filter: drop-shadow(0 0 6px var(--color-accent-cyan));
+  filter: drop-shadow(0 0 6px var(--color-accent-red));
 }
 
 /* ── Wheel action buttons ── */
@@ -293,16 +293,16 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   font-weight: 600;
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-accent-cyan);
-  color: var(--color-accent-cyan);
+  border: 2px solid var(--color-accent-red);
+  color: var(--color-accent-red);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .spin-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-cyan) r g b / 0.12);
-  border-color: var(--color-accent-magenta);
-  color: var(--color-accent-magenta);
+  background: rgb(from var(--color-accent-red) r g b / 0.12);
+  border-color: var(--color-accent-white);
+  color: var(--color-accent-white);
 }
 
 .spin-btn:disabled {
@@ -325,8 +325,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent-magenta);
-  color: var(--color-accent-magenta);
+  border-color: var(--color-accent-white);
+  color: var(--color-accent-white);
   opacity: 1;
 }
 
@@ -344,13 +344,13 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 
 .chip {
   padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.5);
+  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.5);
   border-radius: 4px;
   font-size: 0.95rem;
-  background: rgb(from var(--color-accent-cyan) r g b / 0.07);
-  color: var(--color-accent-cyan);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-cyan) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-red) r g b / 0.07);
+  color: var(--color-accent-red);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent-red) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent-red);
 }
 
 /* ── Items panel ── */
@@ -373,8 +373,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 .panel-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-accent-cyan);
-  text-shadow: 0 0 0.4em var(--color-accent-cyan);
+  color: var(--color-accent-red);
+  text-shadow: 0 0 0.4em var(--color-accent-red);
 }
 
 .item-count {
@@ -383,7 +383,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .item-count.full {
-  color: var(--color-accent-magenta);
+  color: var(--color-accent-white);
   opacity: 1;
 }
 
@@ -397,7 +397,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   min-width: 0;
   padding: 0.4em 0.7em;
   background: transparent;
-  border: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.35);
+  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.35);
   border-radius: 4px;
   color: var(--color-text);
   font-size: 0.95rem;
@@ -407,8 +407,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 
 .item-input:focus {
   outline: none;
-  border-color: var(--color-accent-cyan);
-  box-shadow: 0 0 0.5em rgb(from var(--color-accent-cyan) r g b / 0.35);
+  border-color: var(--color-accent-red);
+  box-shadow: 0 0 0.5em rgb(from var(--color-accent-red) r g b / 0.35);
 }
 
 .item-input:disabled {
@@ -427,15 +427,15 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   line-height: 1;
   cursor: pointer;
   background: transparent;
-  border: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.5);
+  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.5);
   border-radius: 4px;
-  color: var(--color-accent-cyan);
+  color: var(--color-accent-red);
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .add-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-cyan) r g b / 0.12);
-  border-color: var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-red) r g b / 0.12);
+  border-color: var(--color-accent-red);
 }
 
 .add-btn:disabled {
@@ -460,7 +460,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .items-list::-webkit-scrollbar-thumb {
-  background: rgb(from var(--color-accent-blue) r g b / 0.6);
+  background: rgb(from var(--color-accent-gray) r g b / 0.6);
   border-radius: 2px;
 }
 
@@ -469,14 +469,14 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   align-items: center;
   gap: 0.5rem;
   padding: 0.35em 0.6em;
-  border: 1px solid rgb(from var(--color-accent-blue) r g b / 0.35);
+  border: 1px solid rgb(from var(--color-accent-gray) r g b / 0.35);
   border-radius: 4px;
-  background: rgb(from var(--color-accent-blue) r g b / 0.08);
+  background: rgb(from var(--color-accent-gray) r g b / 0.08);
   transition: border-color 0.15s;
 }
 
 .item-row:hover {
-  border-color: rgb(from var(--color-accent-cyan) r g b / 0.4);
+  border-color: rgb(from var(--color-accent-red) r g b / 0.4);
 }
 
 .item-text {
@@ -501,7 +501,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .remove-btn:hover:not(:disabled) {
-  color: var(--color-accent-magenta);
+  color: var(--color-accent-white);
 }
 
 .remove-btn:disabled {

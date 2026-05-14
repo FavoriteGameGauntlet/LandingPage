@@ -145,36 +145,36 @@ const dieShapes: Record<DieType, { points: string }> = {
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
-  color: var(--color-accent-cyan);
+  color: var(--color-accent-red);
   transition: color 0.2s;
   user-select: none;
   -webkit-user-select: none;
 }
 
 .die-btn:hover {
-  color: var(--color-accent-magenta);
+  color: var(--color-accent-white);
 }
 
 .die-btn:hover .die-svg {
-  filter: drop-shadow(0 0 0.35em var(--color-accent-magenta));
+  filter: drop-shadow(0 0 0.35em var(--color-accent-white));
 }
 
 .die-btn.active .die-svg polygon {
-  fill: rgb(from var(--color-accent-cyan) r g b / 0.12);
-  stroke: var(--color-accent-cyan);
+  fill: rgb(from var(--color-accent-red) r g b / 0.12);
+  stroke: var(--color-accent-red);
 }
 
 .die-btn.active .die-svg {
-  filter: drop-shadow(0 0 0.35em var(--color-accent-cyan));
+  filter: drop-shadow(0 0 0.35em var(--color-accent-red));
 }
 
 .die-btn.active:hover .die-svg polygon {
-  stroke: var(--color-accent-magenta);
-  fill: rgb(from var(--color-accent-magenta) r g b / 0.1);
+  stroke: var(--color-accent-white);
+  fill: rgb(from var(--color-accent-white) r g b / 0.1);
 }
 
 .die-btn.active:hover .die-svg {
-  filter: drop-shadow(0 0 0.35em var(--color-accent-magenta));
+  filter: drop-shadow(0 0 0.35em var(--color-accent-white));
 }
 
 .die-btn.rolling {
@@ -204,7 +204,7 @@ const dieShapes: Record<DieType, { points: string }> = {
 
 .die-count {
   font-size: 20px;
-  color: var(--color-accent-magenta);
+  color: var(--color-accent-white);
   font-weight: 600;
   min-height: 1.2em;
 }
@@ -228,21 +228,21 @@ const dieShapes: Record<DieType, { points: string }> = {
 .modifier-control {
   display: flex;
   align-items: center;
-  border: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.3);
+  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.3);
   border-radius: 4px;
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .modifier-control:focus-within {
-  border-color: var(--color-accent-cyan);
-  box-shadow: 0 0 0.5em rgb(from var(--color-accent-cyan) r g b / 0.4);
+  border-color: var(--color-accent-red);
+  box-shadow: 0 0 0.5em rgb(from var(--color-accent-red) r g b / 0.4);
 }
 
 .modifier-btn {
   background: transparent;
   border: none;
-  color: var(--color-accent-cyan);
+  color: var(--color-accent-red);
   font-size: 1.1rem;
   padding: 0.25em 0.6em;
   cursor: pointer;
@@ -252,8 +252,8 @@ const dieShapes: Record<DieType, { points: string }> = {
 }
 
 .modifier-btn:hover {
-  color: var(--color-accent-magenta);
-  background: rgb(from var(--color-accent-cyan) r g b / 0.08);
+  color: var(--color-accent-white);
+  background: rgb(from var(--color-accent-red) r g b / 0.08);
 }
 
 .modifier-input {
@@ -261,8 +261,8 @@ const dieShapes: Record<DieType, { points: string }> = {
   padding: 0.3em 0;
   background: transparent;
   border: none;
-  border-left: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.3);
-  border-right: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.3);
+  border-left: 1px solid rgb(from var(--color-accent-red) r g b / 0.3);
+  border-right: 1px solid rgb(from var(--color-accent-red) r g b / 0.3);
   color: var(--color-text);
   font-size: 1rem;
   font-family: inherit;
@@ -301,16 +301,16 @@ const dieShapes: Record<DieType, { points: string }> = {
   font-weight: 600;
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-accent-cyan);
-  color: var(--color-accent-cyan);
+  border: 2px solid var(--color-accent-red);
+  color: var(--color-accent-red);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .roll-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-cyan) r g b / 0.12);
-  border-color: var(--color-accent-magenta);
-  color: var(--color-accent-magenta);
+  background: rgb(from var(--color-accent-red) r g b / 0.12);
+  border-color: var(--color-accent-white);
+  color: var(--color-accent-white);
 }
 
 .roll-btn:disabled {
@@ -333,8 +333,8 @@ const dieShapes: Record<DieType, { points: string }> = {
 }
 
 .clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent-magenta);
-  color: var(--color-accent-magenta);
+  border-color: var(--color-accent-white);
+  color: var(--color-accent-white);
   opacity: 1;
 }
 
@@ -357,20 +357,20 @@ const dieShapes: Record<DieType, { points: string }> = {
 
 .chip {
   padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-accent-cyan) r g b / 0.5);
+  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.5);
   border-radius: 4px;
   font-size: 0.95rem;
-  background: rgb(from var(--color-accent-cyan) r g b / 0.07);
-  color: var(--color-accent-cyan);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-cyan) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-red) r g b / 0.07);
+  color: var(--color-accent-red);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent-red) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent-red);
 }
 
 .total {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--color-accent-cyan);
-  text-shadow: 0 0 0.5em var(--color-accent-cyan);
+  color: var(--color-accent-red);
+  text-shadow: 0 0 0.5em var(--color-accent-red);
 }
 
 @keyframes die-shake {
