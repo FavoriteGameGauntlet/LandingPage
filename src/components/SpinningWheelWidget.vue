@@ -52,8 +52,9 @@ function spin() {
   const actualWinIndex = Math.floor(topAngle / sectorAngle) % n
 
   setTimeout(() => {
-    result.value = items.value[actualWinIndex]
-    history.value.unshift(items.value[actualWinIndex])
+    const winner = items.value[actualWinIndex] ?? null
+    result.value = winner
+    if (winner) history.value.unshift(winner)
     spinning.value = false
   }, SPIN_MS)
 }
@@ -127,7 +128,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
             <template v-else>
               <g class="wheel-group" :style="{ transform: `rotate(${rotation}deg)` }">
                 <path
-                  v-for="(item, i) in items"
+                  v-for="(_, i) in items"
                   :key="'s' + i"
                   :d="sectorPath(i)"
                   :fill="FILLS[i % FILLS.length]"
