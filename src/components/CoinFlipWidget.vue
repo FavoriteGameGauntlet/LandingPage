@@ -94,9 +94,9 @@ function clear() {
 }
 
 .face.heads {
-  background: var(--color-accent-cyan);
+  background: var(--color-accent-red);
   transform: translateZ(1px);
-  box-shadow: 0 0 1.5em var(--color-accent-cyan), 0 0 3em rgb(from var(--color-accent-cyan) r g b / 0.4);
+  box-shadow: 0 0 1.5em var(--color-accent-red), 0 0 3em rgb(from var(--color-accent-red) r g b / 0.4);
 }
 
 .coin.virgin .face.heads {
@@ -105,9 +105,9 @@ function clear() {
 }
 
 .face.tails {
-  background: var(--color-accent-magenta);
+  background: var(--color-accent-white);
   transform: rotateY(180deg) translateZ(1px);
-  box-shadow: 0 0 1.5em var(--color-accent-magenta), 0 0 3em rgb(from var(--color-accent-magenta) r g b / 0.4);
+  box-shadow: 0 0 1.5em var(--color-accent-white), 0 0 3em rgb(from var(--color-accent-white) r g b / 0.4);
 }
 
 .face-label {
@@ -134,16 +134,16 @@ function clear() {
   font-weight: 600;
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-accent-cyan);
-  color: var(--color-accent-cyan);
+  border: 2px solid var(--color-accent-red);
+  color: var(--color-accent-red);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .flip-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-cyan) r g b / 0.12);
-  border-color: var(--color-accent-magenta);
-  color: var(--color-accent-magenta);
+  background: rgb(from var(--color-accent-red) r g b / 0.12);
+  border-color: var(--color-accent-white);
+  color: var(--color-accent-white);
 }
 
 .flip-btn:disabled {
@@ -166,8 +166,8 @@ function clear() {
 }
 
 .clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent-magenta);
-  color: var(--color-accent-magenta);
+  border-color: var(--color-accent-white);
+  color: var(--color-accent-white);
   opacity: 1;
 }
 
@@ -184,7 +184,7 @@ function clear() {
 
 .chip {
   padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-accent-blue) r g b / 0.4);
+  border: 1px solid rgb(from var(--color-accent-gray) r g b / 0.4);
   border-radius: 4px;
   font-size: 0.95rem;
   background: transparent;
@@ -192,18 +192,18 @@ function clear() {
 }
 
 .chip.heads {
-  color: var(--color-accent-cyan);
-  border-color: rgb(from var(--color-accent-cyan) r g b / 0.5);
-  background: rgb(from var(--color-accent-cyan) r g b / 0.07);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-cyan) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-cyan);
+  color: var(--color-accent-red);
+  border-color: rgb(from var(--color-accent-red) r g b / 0.5);
+  background: rgb(from var(--color-accent-red) r g b / 0.07);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent-red) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent-red);
 }
 
 .chip.tails {
-  color: var(--color-accent-magenta);
-  border-color: rgb(from var(--color-accent-magenta) r g b / 0.5);
-  background: rgb(from var(--color-accent-magenta) r g b / 0.07);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-magenta) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-magenta);
+  color: var(--color-accent-white);
+  border-color: rgb(from var(--color-accent-white) r g b / 0.5);
+  background: rgb(from var(--color-accent-white) r g b / 0.07);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent-white) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent-white);
 }
 </style>

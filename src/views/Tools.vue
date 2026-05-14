@@ -55,7 +55,7 @@ const active = ref('dice')
 .tab {
   flex: 1;
   padding: 10px 22px;
-  background: rgb(from var(--color-accent-blue) r g b / 0.18);
+  background: rgb(from var(--color-accent-gray) r g b / 0.18);
   border: none;
   color: var(--color-text);
   font-size: 1em;
@@ -74,16 +74,16 @@ const active = ref('dice')
 }
 
 .tab:hover {
-  background: rgb(from var(--color-accent-blue) r g b / 0.35);
+  background: rgb(from var(--color-accent-gray) r g b / 0.35);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgb(0 0 0 / 0.4);
 }
 
 .tab.active {
-  background: rgb(from var(--color-accent-purple) r g b / 0.45);
-  color: var(--color-accent-cyan);
+  background: rgb(from var(--color-accent-red) r g b / 0.45);
+  color: var(--color-accent-red);
   font-weight: 600;
-  box-shadow: 0 4px 16px rgb(from var(--color-accent-cyan) r g b / 0.25);
+  box-shadow: 0 4px 16px rgb(from var(--color-accent-red) r g b / 0.25);
 }
 
 .panel {
