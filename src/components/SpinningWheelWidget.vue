@@ -95,9 +95,7 @@ const labelSize = computed(() => {
   return 9
 })
 
-// Cycling neon sector styles (3 colors)
-const FILLS   = ['#0d3a50', '#2d1045', '#0d2238']
-const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
+const NUM_COLORS = 3
 </script>
 
 <template>
@@ -108,17 +106,17 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
         <svg viewBox="0 0 400 400" class="wheel-svg">
           <defs>
             <linearGradient id="wheel-result-bg" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%"   stop-color="#091833" stop-opacity="0"/>
-              <stop offset="25%"  stop-color="#091833" stop-opacity="0.88"/>
-              <stop offset="75%"  stop-color="#091833" stop-opacity="0.88"/>
-              <stop offset="100%" stop-color="#091833" stop-opacity="0"/>
+              <stop offset="0%"   stop-color="var(--color-wheel-bg)" stop-opacity="0"/>
+              <stop offset="25%"  stop-color="var(--color-wheel-bg)" stop-opacity="0.88"/>
+              <stop offset="75%"  stop-color="var(--color-wheel-bg)" stop-opacity="0.88"/>
+              <stop offset="100%" stop-color="var(--color-wheel-bg)" stop-opacity="0"/>
             </linearGradient>
           </defs>
 
           <g transform="translate(200,200)">
             <!-- Empty state -->
             <template v-if="items.length === 0">
-              <circle :r="R" fill="#0a1828" stroke="#133e7c" stroke-width="1.5"/>
+              <circle :r="R" fill="var(--color-wheel-empty-fill)" stroke="var(--color-wheel-empty-stroke)" stroke-width="1.5"/>
               <text text-anchor="middle" dominant-baseline="middle" class="empty-label">
                 Добавьте пункты
               </text>
@@ -131,8 +129,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
                   v-for="(_, i) in items"
                   :key="'s' + i"
                   :d="sectorPath(i)"
-                  :fill="FILLS[i % FILLS.length]"
-                  :stroke="STROKES[i % STROKES.length]"
+                  :fill="`var(--color-wheel-fill-${i % NUM_COLORS})`"
+                  :stroke="`var(--color-wheel-stroke-${i % NUM_COLORS})`"
                   stroke-width="1"
                 />
                 <text
@@ -145,7 +143,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
                   class="sector-label"
                 >{{ truncate(item) }}</text>
                 <!-- Center cap -->
-                <circle r="18" fill="#091833" stroke="#0abdc6" stroke-width="2"/>
+                <circle r="18" fill="var(--color-wheel-bg)" stroke="var(--color-wheel-stroke-0)" stroke-width="2"/>
               </g>
 
               <!-- Fixed pointer -->
@@ -253,7 +251,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .sector-label {
-  fill: var(--color-text-red);
+  fill: var(--color-text);
   font-family: inherit;
   font-weight: 500;
   pointer-events: none;
@@ -272,7 +270,6 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   font-size: 22px;
   font-family: inherit;
   font-weight: 700;
-  filter: drop-shadow(0 0 6px var(--color-primary));
 }
 
 /* ── Wheel action buttons ── */
@@ -316,9 +313,10 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   font-size: 1rem;
   font-family: inherit;
   font-weight: 600;
+  color: var(--color-text);
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-bg-secondary);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   opacity: 0.7;
@@ -414,7 +412,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .item-input::placeholder {
-  color: rgb(from var(--color-text-red) r g b / 0.35);
+  color: rgb(from var(--color-text) r g b / 0.35);
 }
 
 .add-btn {
@@ -425,7 +423,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   line-height: 1;
   cursor: pointer;
   background: transparent;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.5);
+  border: 2px solid var(--color-primary);
   border-radius: 4px;
   color: var(--color-primary);
   transition: background 0.2s, color 0.2s, border-color 0.2s;
@@ -433,7 +431,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 
 .add-btn:hover:not(:disabled) {
   background: rgb(from var(--color-primary) r g b / 0.12);
-  border-color: var(--color-primary);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .add-btn:disabled {
@@ -490,7 +489,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   flex-shrink: 0;
   background: transparent;
   border: none;
-  color: rgb(from var(--color-text-red) r g b / 0.4);
+  color: rgb(from var(--color-text) r g b / 0.4);
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -516,7 +515,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 
 /* ── Responsive ── */
 
-@media (max-width: 680px) {
+@media (max-width: 860px) {
   .wheel-tool {
     flex-direction: column;
     align-items: stretch;

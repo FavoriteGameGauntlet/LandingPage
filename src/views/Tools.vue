@@ -9,8 +9,8 @@ import DiceRollerWidget from '../components/DiceRollerWidget.vue'
 import SpinningWheelWidget from '../components/SpinningWheelWidget.vue'
 
 const tools = [
-  { id: 'dice', label: 'Бросить кубик' },
-  { id: 'coin', label: 'Подбросить монетку' },
+  { id: 'dice', label: 'Кубики' },
+  { id: 'coin', label: 'Монетка' },
   { id: 'wheel', label: 'Колесо' },
   { id: 'links', label: 'Материалы' },
 ]
@@ -19,7 +19,6 @@ const active = ref('dice')
 </script>
 
 <template>
-  <h1>Инструменты</h1>
   <div class="tabs">
     <button
       v-for="tool in tools"
@@ -57,7 +56,7 @@ const active = ref('dice')
   padding: 10px 22px;
   background: var(--color-control-bg);
   border: none;
-  color: var(--color-link);
+  color: var(--color-primary);
   font-size: 1em;
   font-family: inherit;
   cursor: pointer;
@@ -67,7 +66,7 @@ const active = ref('dice')
   transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 860px) {
   .tab {
     flex: 1 1 100%;
   }
@@ -79,13 +78,7 @@ const active = ref('dice')
 }
 
 .tab.active {
-  background: rgb(from var(--color-primary) r g b / 0.45);
-  color: var(--color-link);
-  box-shadow: 0 4px 16px rgb(from var(--color-primary) r g b / 0.25);
-}
-
-.tab.active:hover {
-  text-shadow: none;
+  color: var(--color-accent);
 }
 
 .panel {
@@ -102,5 +95,6 @@ const active = ref('dice')
 .item-link {
   font-size: 1em;
   display: inline-block;
+  color: var(--color-primary);
 }
 </style>

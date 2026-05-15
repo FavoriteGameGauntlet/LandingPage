@@ -269,7 +269,6 @@ function toggle(index: number) {
 </script>
 
 <template>
-  <h1>Предыдущие сезоны</h1>
   <div class="seasons">
     <div v-for="(season, index) in seasons" :key="season.name" class="season">
       <button class="season-header" :class="{ open: openSet.has(index) }" @click="toggle(index)">
@@ -321,7 +320,7 @@ function toggle(index: number) {
   align-items: center;
   padding: 12px 16px;
   background: var(--color-control-bg);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-bg-secondary);
   color: var(--color-link);
   font-size: 1.1em;
   font-weight: 600;
@@ -357,7 +356,7 @@ function toggle(index: number) {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s ease;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-bg-secondary);
   border-top: none;
 }
 
@@ -381,7 +380,7 @@ function toggle(index: number) {
 
 .season-link:hover {
   background: rgb(from var(--color-primary) r g b / 0.2);
-  color: var(--color-link-hover);
+  color: var(--color-accent);
 }
 
 .content {
@@ -414,8 +413,8 @@ function toggle(index: number) {
   padding: 2px 8px;
   border-radius: 4px;
   background: var(--color-control-bg-hover);
-  border: 1px solid var(--color-link-hover);
-  color: var(--color-link-hover);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
 }
 
 .video-wrapper {

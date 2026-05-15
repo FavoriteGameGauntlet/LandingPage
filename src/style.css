@@ -1,23 +1,28 @@
 ﻿:root {
     --color-primary: #fd433d;
     --color-accent: #5cf5fd;
+    --color-bg-primary: #1f1414;
+    --color-bg-secondary: #310f10;
 
-    --color-bg-white: #535353;
-    --color-bg-red: #311f1f;
-    --color-bg-black: #1f1414;
-
-    --color-text-white: var(--color-accent);
-    --color-text-red: var(--color-primary);
+    --color-text: var(--color-primary);
 
     --color-link: var(--color-accent);
-    --color-rule-link: var(--color-primary);
-    --color-link-hover: var(--color-accent);
     --color-heading: var(--color-primary);
 
-    --color-control-bg: var(--color-bg-red);
-    --color-control-bg-hover: var(--color-bg-white);
+    --color-control-bg: var(--color-bg-secondary);
+    --color-control-bg-hover: #643f3f;
 
-    --color-border: var(--color-control-bg);
+    --color-wheel-fill-0: #0d3a50;
+    --color-wheel-fill-1: #2d1045;
+    --color-wheel-fill-2: #0d2238;
+    --color-wheel-stroke-0: #0abdc6;
+    --color-wheel-stroke-1: #711c91;
+    --color-wheel-stroke-2: #ea00d9;
+    --color-wheel-bg: #091833;
+    --color-wheel-empty-fill: #0a1828;
+    --color-wheel-empty-stroke: #133e7c;
+
+    /* narrow breakpoint: 860px — менять во всех @media сразу */
 
     --font-body: "Tektur";
     --font-heading: "Tektur";
@@ -27,8 +32,8 @@
     font-weight: 400;
 
     color-scheme: dark;
-    color: var(--color-text-red);
-    background-color: var(--color-bg-black);
+    color: var(--color-text);
+    background: linear-gradient(to bottom, #310f10, #000000) fixed;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -41,6 +46,20 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background-color: var(--color-bg-primary);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-control-bg-hover);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -70,6 +89,5 @@ a {
 }
 
 a:hover, button:not(:disabled):hover {
-    color: var(--color-link-hover);
     text-shadow: 0 0 0.5em currentColor;
 }

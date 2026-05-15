@@ -36,7 +36,7 @@
 
 .post-content :is(h1, h2, h3, h4, h5, h6):hover .anchor-copy-btn,
 .anchor-copy-btn:focus-visible {
-    opacity: 0.6;
+    opacity: 1;
 }
 
 .post-content ul,
@@ -51,13 +51,13 @@
 .post-content code {
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     font-size: 0.875rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-bg-secondary);
     border-radius: 3px;
     padding: 0.1em 0.4em;
 }
 
 .post-content pre {
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-bg-secondary);
     border-radius: 4px;
     padding: 1rem 1.5rem;
     overflow-x: auto;

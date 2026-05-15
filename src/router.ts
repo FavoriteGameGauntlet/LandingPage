@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
     {path: '/download', name: 'download', component: () => import('./views/Download.vue')},
     {
         path: '/rules',
-        component: () => import('./views/RulesLayout.vue'),
+        component: () => import('./views/Rules.vue'),
         children: [
             {path: '', redirect: '/rules/Introduction'},
             ...ruleChildren,

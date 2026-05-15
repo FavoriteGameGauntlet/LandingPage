@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import d4Raw  from '../assets/icons/d4.svg?raw'
+import d6Raw  from '../assets/icons/d6.svg?raw'
+import d8Raw  from '../assets/icons/d8.svg?raw'
+import d10Raw from '../assets/icons/d10.svg?raw'
+import d12Raw from '../assets/icons/d12.svg?raw'
+import d20Raw from '../assets/icons/d20.svg?raw'
+
+function extractPathD(raw: string): string {
+  return raw.match(/\bd="([^"]+)"/)?.[1] ?? ''
+}
 
 const diceTypes = [4, 6, 8, 10, 12, 20] as const
 type DieType = typeof diceTypes[number]
@@ -45,17 +55,18 @@ function roll() {
   }, 500)
 }
 
-const dieShapes: Record<DieType, { points: string }> = {
-  4:  { points: '50,8 92,92 8,92' },
-  6:  { points: '8,8 92,8 92,92 8,92' },
-  8:  { points: '50,8 80,20 92,50 80,80 50,92 20,80 8,50 20,20' },
-  10: { points: '50,8 88,42 70,92 30,92 12,42' },
-  12: { points: '50,8 92,38 76,92 24,92 8,38' },
-  20: { points: '50,8 89,26 89,74 50,92 11,74 11,26' },
+const dieShapes: Record<DieType, string> = {
+  4:  extractPathD(d4Raw),
+  6:  extractPathD(d6Raw),
+  8:  extractPathD(d8Raw),
+  10: extractPathD(d10Raw),
+  12: extractPathD(d12Raw),
+  20: extractPathD(d20Raw),
 }
 </script>
 
 <template>
+  <div class="widget">
   <div class="dice-selector">
     <button
       v-for="type in diceTypes"
@@ -65,20 +76,8 @@ const dieShapes: Record<DieType, { points: string }> = {
       @click="addDie(type)"
       @contextmenu="removeDie($event, type)"
     >
-      <svg viewBox="0 0 100 100" class="die-svg" overflow="visible">
-        <defs>
-          <linearGradient :id="`lbg-${type}`" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stop-opacity="0"/>
-            <stop offset="30%"  stop-opacity="0.75"/>
-            <stop offset="70%"  stop-opacity="0.75"/>
-            <stop offset="100%" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <polygon :points="dieShapes[type].points" />
-        <rect x="-20" y="43" width="140" height="26" :fill="`url(#lbg-${type})`"/>
-        <text x="50" y="56" text-anchor="middle" dominant-baseline="middle" class="die-label">
-          d{{ type }}
-        </text>
+      <svg viewBox="18 18 64 64" class="die-svg">
+        <path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd" />
       </svg>
       <span class="die-count" v-if="counts[type] > 0">×{{ counts[type] }}</span>
       <span class="die-count placeholder" v-else>&nbsp;</span>
@@ -124,13 +123,19 @@ const dieShapes: Record<DieType, { points: string }> = {
       Итого: {{ total }}
     </div>
   </div>
+  </div>
 </template>
 
 <style scoped>
+.widget {
+  max-width: 450px;
+  margin: 0 auto;
+}
+
 .dice-selector {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 4.5rem;
   margin-bottom: 1.5rem;
 }
 
@@ -152,28 +157,28 @@ const dieShapes: Record<DieType, { points: string }> = {
 }
 
 .die-btn:hover {
+  color: var(--color-text);
+}
+
+.die-btn:hover .die-svg path {
+  filter: drop-shadow(0 0 0.35em var(--color-text));
+}
+
+.die-btn.active {
   color: var(--color-accent);
 }
 
-.die-btn:hover .die-svg {
-  filter: drop-shadow(0 0 0.35em var(--color-accent));
-}
-
-.die-btn.active .die-svg polygon {
-  fill: rgb(from var(--color-primary) r g b / 0.12);
-  stroke: var(--color-primary);
-}
-
-.die-btn.active .die-svg {
-  filter: drop-shadow(0 0 0.35em var(--color-primary));
-}
-
-.die-btn.active:hover .die-svg polygon {
+.die-btn.active .die-svg path {
+  fill: rgb(from var(--color-accent) r g b / 0.12);
   stroke: var(--color-accent);
-  fill: rgb(from var(--color-accent) r g b / 0.1);
 }
 
-.die-btn.active:hover .die-svg {
+.die-btn.active:hover .die-svg path {
+  stroke: var(--color-accent);
+  fill: rgb(from var(--color-accent) r g b / 0.12);
+}
+
+.die-btn.active:hover .die-svg path {
   filter: drop-shadow(0 0 0.35em var(--color-accent));
 }
 
@@ -182,25 +187,18 @@ const dieShapes: Record<DieType, { points: string }> = {
 }
 
 .die-svg {
-  width: 60px;
-  height: 60px;
+  width: 72px;
+  height: 72px;
 }
 
-.die-svg polygon {
+.die-svg path {
   fill: transparent;
   stroke: currentColor;
-  stroke-width: 3;
+  stroke-width: 1.5;
   stroke-linejoin: round;
   transition: fill 0.2s, stroke 0.2s;
 }
 
-.die-label {
-  fill: currentColor;
-  font-size: 32px;
-  font-family: inherit;
-  font-weight: 600;
-  pointer-events: none;
-}
 
 .die-count {
   font-size: 20px;
@@ -256,9 +254,11 @@ const dieShapes: Record<DieType, { points: string }> = {
   background: rgb(from var(--color-primary) r g b / 0.08);
 }
 
+
 .modifier-input {
   width: 52px;
   padding: 0.3em 0;
+  color: var(--color-text);
   background: transparent;
   border: none;
   border-left: 1px solid rgb(from var(--color-primary) r g b / 0.3);
@@ -293,7 +293,6 @@ const dieShapes: Record<DieType, { points: string }> = {
 }
 
 .roll-btn {
-  display: block;
   padding: 0.55em 2.5em;
   font-size: 1rem;
   font-family: inherit;
@@ -322,9 +321,10 @@ const dieShapes: Record<DieType, { points: string }> = {
   font-size: 1rem;
   font-family: inherit;
   font-weight: 600;
+  color: var(--color-text);
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-bg-secondary);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   opacity: 0.7;
@@ -360,8 +360,6 @@ const dieShapes: Record<DieType, { points: string }> = {
   font-size: 0.95rem;
   background: rgb(from var(--color-primary) r g b / 0.07);
   color: var(--color-primary);
-  box-shadow: 0 0 0.4em rgb(from var(--color-primary) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-primary);
 }
 
 .total {

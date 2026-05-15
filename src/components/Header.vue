@@ -38,7 +38,7 @@ router.afterEach(() => {
   background-color: var(--color-control-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-link);
+  border-bottom: 1px solid var(--color-primary);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -61,7 +61,7 @@ router.afterEach(() => {
   flex-shrink: 0;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em var(--color-link-hover));
+  filter: drop-shadow(0 0 2em var(--color-primary));
 }
 
 .buttons {
@@ -78,11 +78,11 @@ router.afterEach(() => {
   color: var(--color-primary);
 }
 
-.button.router-link-exact-active {
+.button.router-link-active {
   color: var(--color-accent);
 }
 
-.button.router-link-exact-active:hover {
+.button.router-link-active:hover {
   text-shadow: 0 0 0.5em var(--color-accent);
 }
 
@@ -122,7 +122,7 @@ button:focus {
   transform: translateY(-9px) rotate(-45deg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .hamburger {
     display: flex;
   }
@@ -135,7 +135,11 @@ button:focus {
     right: 0;
     flex-direction: column;
     height: auto;
-    border-bottom: 1px solid var(--color-link);
+    background-color: var(--color-control-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--color-primary);
+    border-bottom: 1px solid var(--color-primary);
     padding: 0.5rem 0;
   }
 

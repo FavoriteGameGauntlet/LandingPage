@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import headsRaw from '../assets/icons/heads.svg?raw'
+import tailsRaw from '../assets/icons/tails.svg?raw'
+
+function prepareCoinSvg(raw: string): string {
+  return raw.replace(/<path /, '<path fill="currentColor" ')
+}
+
+const headsSvg = prepareCoinSvg(headsRaw)
+const tailsSvg = prepareCoinSvg(tailsRaw)
 
 type Side = 'heads' | 'tails'
 
@@ -35,10 +44,15 @@ function clear() {
 </script>
 
 <template>
+  <div class="widget">
   <div class="coin-scene">
     <div class="coin" :style="{ transform: `rotateY(${rotation}deg)` }" :class="{ flippable: !flipping, virgin: history.length === 0 }" @click="flip">
-      <div class="face heads"><span class="face-label">{{ history.length === 0 ? '?' : 'Орел' }}</span></div>
-      <div class="face tails"><span class="face-label">Решка</span></div>
+      <div class="face heads">
+        <span v-if="history.length > 0" class="coin-icon" v-html="headsSvg"/>
+      </div>
+      <div class="face tails">
+        <span v-if="history.length > 0" class="coin-icon" v-html="tailsSvg"/>
+      </div>
     </div>
   </div>
 
@@ -59,9 +73,15 @@ function clear() {
       :class="side"
     >{{ side === 'heads' ? 'Орел' : 'Решка' }}</span>
   </div>
+  </div>
 </template>
 
 <style scoped>
+.widget {
+  max-width: 450px;
+  margin: 0 auto;
+}
+
 .coin-scene {
   perspective: 600px;
   display: flex;
@@ -91,29 +111,30 @@ function clear() {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-bg-secondary);
+  border: 3px solid var(--color-primary);
 }
 
 .face.heads {
-  background: var(--color-primary);
   transform: translateZ(1px);
-  box-shadow: 0 0 1.5em var(--color-primary), 0 0 3em rgb(from var(--color-primary) r g b / 0.4);
-}
-
-.coin.virgin .face.heads {
-  background: var(--color-border);
-  box-shadow: none;
+  color: var(--color-primary);
 }
 
 .face.tails {
-  background: var(--color-accent);
   transform: rotateY(180deg) translateZ(1px);
-  box-shadow: 0 0 1.5em var(--color-accent), 0 0 3em rgb(from var(--color-accent) r g b / 0.4);
+  color: var(--color-accent);
 }
 
-.face-label {
-  font-size: 1.3em;
-  font-weight: 700;
-  pointer-events: none;
+.coin-icon {
+  width: 55%;
+  height: 55%;
+  display: flex;
+}
+
+.coin-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
 }
 
 .action-row {
@@ -155,9 +176,10 @@ function clear() {
   font-size: 1rem;
   font-family: inherit;
   font-weight: 600;
+  color: var(--color-text);
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-bg-secondary);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   opacity: 0.7;
@@ -192,15 +214,11 @@ function clear() {
   color: var(--color-primary);
   border-color: rgb(from var(--color-primary) r g b / 0.5);
   background: rgb(from var(--color-primary) r g b / 0.07);
-  box-shadow: 0 0 0.4em rgb(from var(--color-primary) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-primary);
 }
 
 .chip.tails {
   color: var(--color-accent);
   border-color: rgb(from var(--color-accent) r g b / 0.5);
   background: rgb(from var(--color-accent) r g b / 0.07);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent);
 }
 </style>
