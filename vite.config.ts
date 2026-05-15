@@ -50,17 +50,9 @@ export default defineConfig({
                     btn.className = 'anchor-copy-btn'
                     btn.textContent = '#'
                     btn.setAttribute('aria-label', 'Скопировать ссылку на раздел')
-                    btn.addEventListener('click', (e) => {
-                      e.preventDefault()
-                      const url = location.origin + location.pathname + '#' + heading.id
-                      navigator.clipboard.writeText(url).then(() => {
-                        btn.textContent = '✓'
-                        btn.classList.add('copied')
-                        setTimeout(() => {
-                          btn.textContent = '#'
-                          btn.classList.remove('copied')
-                        }, 1500)
-                      })
+                    btn.addEventListener('click', () => {
+                      history.pushState(null, '', '#' + heading.id)
+                      heading.scrollIntoView({ behavior: 'smooth' })
                     })
                     heading.appendChild(btn)
                   })

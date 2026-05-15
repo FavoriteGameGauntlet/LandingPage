@@ -1,28 +1,34 @@
-:root {
-    --color-accent-white: #ffffff;
-    --color-accent-red: #f1433d;
-    --color-accent-gray: #535353;
-    --color-bg: #1a1a1a;
-    --color-text: #c2464c;
+﻿:root {
+    --color-primary: #fd433d;
+    --color-accent: #5cf5fd;
 
-    --color-border: var(--color-accent-gray);
-    --color-link: var(--color-accent-red);
-    --color-nav-bg: rgb(from var(--color-bg) r g b / 0.55);
-    --color-nav-link-hover: var(--color-accent-white);
+    --color-bg-white: #535353;
+    --color-bg-red: #311f1f;
+    --color-bg-black: #1f1414;
 
-    --font-body: "Tektur", sans-serif;
-    --font-heading: "Tektur", sans-serif;
+    --color-text-white: var(--color-accent);
+    --color-text-red: var(--color-primary);
+
+    --color-link: var(--color-accent);
+    --color-rule-link: var(--color-primary);
+    --color-link-hover: var(--color-accent);
+    --color-heading: var(--color-primary);
+
+    --color-control-bg: var(--color-bg-red);
+    --color-control-bg-hover: var(--color-bg-white);
+
+    --color-border: var(--color-control-bg);
+
+    --font-body: "Tektur";
+    --font-heading: "Tektur";
 
     font-size: 18px;
-    font-family: var(--font-body);
-    font-optical-sizing: auto;
-    font-variation-settings: "wdth" 100;
-    line-height: 1.4;
+    font-family: var(--font-body), sans-serif;
     font-weight: 400;
 
     color-scheme: dark;
-    color: var(--color-text);
-    background-color: var(--color-bg);
+    color: var(--color-text-red);
+    background-color: var(--color-bg-black);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -35,25 +41,18 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background: var(--color-bg);
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
+    font-family: var(--font-heading), sans-serif;
     font-weight: 700;
-    font-optical-sizing: auto;
-    font-variation-settings: "wdth" 100;
     margin-top: 2.5rem;
     margin-bottom: 0;
+    color: var(--color-heading);
 }
 
 :is(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6) {
     margin-top: 0;
-}
-
-h1 {
-    font-size: 1.8em;
-    line-height: 1.1;
 }
 
 p {
@@ -64,31 +63,13 @@ ul, ol {
     margin: 0;
 }
 
-.page-list {
-    text-align: start;
-    font-size: 20px;
-    padding-left: 0;
-}
-
-.page-list li {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-}
-
-.page-list li p {
-    margin: 0;
-    opacity: 0.5;
-}
-
 a {
     color: var(--color-link);
     text-decoration: none;
     transition: color 0.15s, text-shadow 0.15s;
 }
 
-a:hover,
-button:not(:disabled):hover {
-    color: var(--color-accent-white);
-    text-shadow: 0 0 0.5em var(--color-accent-white);
+a:hover, button:not(:disabled):hover {
+    color: var(--color-link-hover);
+    text-shadow: 0 0 0.5em currentColor;
 }

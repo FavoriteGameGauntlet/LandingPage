@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
         path: '/rules',
         component: () => import('./views/RulesLayout.vue'),
         children: [
-            {path: '', name: 'rules', component: () => import('./views/Rules.vue')},
+            {path: '', redirect: '/rules/Introduction'},
             ...ruleChildren,
         ],
     },
