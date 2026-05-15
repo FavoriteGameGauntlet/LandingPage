@@ -94,9 +94,9 @@ function clear() {
 }
 
 .face.heads {
-  background: var(--color-accent-red);
+  background: var(--color-primary);
   transform: translateZ(1px);
-  box-shadow: 0 0 1.5em var(--color-accent-red), 0 0 3em rgb(from var(--color-accent-red) r g b / 0.4);
+  box-shadow: 0 0 1.5em var(--color-primary), 0 0 3em rgb(from var(--color-primary) r g b / 0.4);
 }
 
 .coin.virgin .face.heads {
@@ -105,13 +105,12 @@ function clear() {
 }
 
 .face.tails {
-  background: var(--color-accent-white);
+  background: var(--color-accent);
   transform: rotateY(180deg) translateZ(1px);
-  box-shadow: 0 0 1.5em var(--color-accent-white), 0 0 3em rgb(from var(--color-accent-white) r g b / 0.4);
+  box-shadow: 0 0 1.5em var(--color-accent), 0 0 3em rgb(from var(--color-accent) r g b / 0.4);
 }
 
 .face-label {
-  color: var(--color-bg);
   font-size: 1.3em;
   font-weight: 700;
   pointer-events: none;
@@ -134,16 +133,16 @@ function clear() {
   font-weight: 600;
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-accent-red);
-  color: var(--color-accent-red);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .flip-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-red) r g b / 0.12);
-  border-color: var(--color-accent-white);
-  color: var(--color-accent-white);
+  background: rgb(from var(--color-primary) r g b / 0.12);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .flip-btn:disabled {
@@ -159,15 +158,14 @@ function clear() {
   cursor: pointer;
   background: transparent;
   border: 2px solid var(--color-border);
-  color: var(--color-text);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   opacity: 0.7;
 }
 
 .clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent-white);
-  color: var(--color-accent-white);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   opacity: 1;
 }
 
@@ -184,26 +182,25 @@ function clear() {
 
 .chip {
   padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-accent-gray) r g b / 0.4);
+  border: 1px solid rgb(from var(--color-control-bg) r g b / 0.4);
   border-radius: 4px;
   font-size: 0.95rem;
   background: transparent;
-  color: var(--color-text);
 }
 
 .chip.heads {
-  color: var(--color-accent-red);
-  border-color: rgb(from var(--color-accent-red) r g b / 0.5);
-  background: rgb(from var(--color-accent-red) r g b / 0.07);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-red) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-red);
+  color: var(--color-primary);
+  border-color: rgb(from var(--color-primary) r g b / 0.5);
+  background: rgb(from var(--color-primary) r g b / 0.07);
+  box-shadow: 0 0 0.4em rgb(from var(--color-primary) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-primary);
 }
 
 .chip.tails {
-  color: var(--color-accent-white);
-  border-color: rgb(from var(--color-accent-white) r g b / 0.5);
-  background: rgb(from var(--color-accent-white) r g b / 0.07);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-white) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-white);
+  color: var(--color-accent);
+  border-color: rgb(from var(--color-accent) r g b / 0.5);
+  background: rgb(from var(--color-accent) r g b / 0.07);
+  box-shadow: 0 0 0.4em rgb(from var(--color-accent) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-accent);
 }
 </style>

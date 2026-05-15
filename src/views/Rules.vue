@@ -11,32 +11,32 @@ interface PostMeta {
 }
 
 const frontmatters = import.meta.glob<{ title?: string; date?: string; tags?: string[]; published?: boolean }>(
-  '../rules/*.md',
-  { eager: true, query: '?frontmatter', import: 'default' }
+    '../rules/*.md',
+    {eager: true, query: '?frontmatter', import: 'default'}
 )
 
 const rules = ref<PostMeta[]>(
-  Object.entries(frontmatters)
-    .flatMap(([path, fm]) => {
-      const match = path.match(/\/([^/]+)\.md$/)
-      if (!match || fm?.published === false) return []
-      const slug = match[1] as string
-      return [{
-        path: `/rules/${slug}`,
-        slug,
-        title: fm?.title ?? slug.replace(/-/g, ' '),
-        date: fm?.date ?? '',
-        tags: fm?.tags ?? [],
-      } satisfies PostMeta]
-    })
-    .sort((a, b) => b.date.localeCompare(a.date))
+    Object.entries(frontmatters)
+        .flatMap(([path, fm]) => {
+          const match = path.match(/\/([^/]+)\.md$/)
+          if (!match || fm?.published === false) return []
+          const slug = match[1] as string
+          return [{
+            path: `/rules/${slug}`,
+            slug,
+            title: fm?.title ?? slug.replace(/-/g, ' '),
+            date: fm?.date ?? '',
+            tags: fm?.tags ?? [],
+          } satisfies PostMeta]
+        })
+        .sort((a, b) => b.date.localeCompare(a.date))
 )
 </script>
 
 <template>
   <div class="wrapper">
     <h1>Страницы с правилами</h1>
-    <ul class="page-list">
+    <ul>
       <li v-for="rule in rules" :key="rule.slug">
         <RouterLink :to="rule.path">{{ rule.title }}</RouterLink>
         <span v-if="rule.date" class="date"> — {{ rule.date }}</span>

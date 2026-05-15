@@ -320,9 +320,9 @@ function toggle(index: number) {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgb(from var(--color-accent-gray) r g b / 0.3);
+  background: var(--color-control-bg);
   border: 1px solid var(--color-border);
-  color: var(--color-text);
+  color: var(--color-link);
   font-size: 1.1em;
   font-weight: 600;
   cursor: pointer;
@@ -331,13 +331,13 @@ function toggle(index: number) {
 }
 
 .season-header:hover {
-  background: rgb(from var(--color-accent-gray) r g b / 0.5);
+  background: var(--color-control-bg-hover);
 }
 
 .season-header.open {
   border-bottom-color: transparent;
-  background: rgb(from var(--color-accent-red) r g b / 0.4);
-  border-left-color: var(--color-accent-red);
+  background: rgb(from var(--color-primary) r g b / 0.4);
+  border-left-color: var(--color-primary);
   border-left-width: 3px;
   padding-left: calc(16px - 2px);
 }
@@ -373,15 +373,15 @@ function toggle(index: number) {
   padding: 8px 16px;
   font-size: 0.9em;
   font-weight: 600;
-  border: 1px solid var(--color-accent-red);
-  color: var(--color-accent-red);
-  background: rgb(from var(--color-accent-red) r g b / 0.08);
+  border: 1px solid var(--color-primary);
+  color: var(--color-link);
+  background: var(--color-control-bg);
   transition: background 0.2s, color 0.2s;
 }
 
 .season-link:hover {
-  background: rgb(from var(--color-accent-red) r g b / 0.2);
-  color: var(--color-accent-red);
+  background: rgb(from var(--color-primary) r g b / 0.2);
+  color: var(--color-link-hover);
 }
 
 .content {
@@ -394,7 +394,6 @@ function toggle(index: number) {
 .text-block p {
   margin: 0 0 12px;
   line-height: 1.7;
-  color: var(--color-text);
 }
 
 .text-block p:last-child {
@@ -404,7 +403,6 @@ function toggle(index: number) {
 .video-caption {
   margin: 0 0 8px;
   font-weight: 600;
-  color: var(--color-text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -415,9 +413,9 @@ function toggle(index: number) {
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgb(from var(--color-accent-red) r g b / 0.3);
-  border: 1px solid var(--color-accent-red);
-  color: var(--color-text);
+  background: var(--color-control-bg-hover);
+  border: 1px solid var(--color-link-hover);
+  color: var(--color-link-hover);
 }
 
 .video-wrapper {

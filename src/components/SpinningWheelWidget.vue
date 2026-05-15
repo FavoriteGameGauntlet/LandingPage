@@ -247,13 +247,13 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .empty-label {
-  fill: rgb(from var(--color-accent-gray) r g b / 0.7);
+  fill: rgb(from var(--color-control-bg) r g b / 0.7);
   font-size: 18px;
   font-family: inherit;
 }
 
 .sector-label {
-  fill: var(--color-text);
+  fill: var(--color-text-red);
   font-family: inherit;
   font-weight: 500;
   pointer-events: none;
@@ -261,18 +261,18 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .pointer {
-  fill: var(--color-accent-red);
-  filter: drop-shadow(0 0 4px var(--color-accent-red));
+  fill: var(--color-primary);
+  filter: drop-shadow(0 0 4px var(--color-primary));
 }
 
 /* ── Result strip ── */
 
 .result-label {
-  fill: var(--color-accent-red);
+  fill: var(--color-primary);
   font-size: 22px;
   font-family: inherit;
   font-weight: 700;
-  filter: drop-shadow(0 0 6px var(--color-accent-red));
+  filter: drop-shadow(0 0 6px var(--color-primary));
 }
 
 /* ── Wheel action buttons ── */
@@ -294,16 +294,16 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   font-weight: 600;
   cursor: pointer;
   background: transparent;
-  border: 2px solid var(--color-accent-red);
-  color: var(--color-accent-red);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .spin-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-red) r g b / 0.12);
-  border-color: var(--color-accent-white);
-  color: var(--color-accent-white);
+  background: rgb(from var(--color-primary) r g b / 0.12);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .spin-btn:disabled {
@@ -319,15 +319,14 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   cursor: pointer;
   background: transparent;
   border: 2px solid var(--color-border);
-  color: var(--color-text);
   border-radius: 4px;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   opacity: 0.7;
 }
 
 .clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent-white);
-  color: var(--color-accent-white);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   opacity: 1;
 }
 
@@ -345,13 +344,13 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 
 .chip {
   padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.5);
+  border: 1px solid rgb(from var(--color-primary) r g b / 0.5);
   border-radius: 4px;
   font-size: 0.95rem;
-  background: rgb(from var(--color-accent-red) r g b / 0.07);
-  color: var(--color-accent-red);
-  box-shadow: 0 0 0.4em rgb(from var(--color-accent-red) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-accent-red);
+  background: rgb(from var(--color-primary) r g b / 0.07);
+  color: var(--color-primary);
+  box-shadow: 0 0 0.4em rgb(from var(--color-primary) r g b / 0.25);
+  text-shadow: 0 0 0.5em var(--color-primary);
 }
 
 /* ── Items panel ── */
@@ -374,8 +373,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 .panel-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-accent-red);
-  text-shadow: 0 0 0.4em var(--color-accent-red);
+  color: var(--color-heading);
 }
 
 .item-count {
@@ -384,7 +382,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .item-count.full {
-  color: var(--color-accent-white);
+  color: var(--color-accent);
   opacity: 1;
 }
 
@@ -398,9 +396,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   min-width: 0;
   padding: 0.4em 0.7em;
   background: transparent;
-  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.35);
+  border: 1px solid rgb(from var(--color-primary) r g b / 0.35);
   border-radius: 4px;
-  color: var(--color-text);
   font-size: 0.95rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -408,8 +405,8 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 
 .item-input:focus {
   outline: none;
-  border-color: var(--color-accent-red);
-  box-shadow: 0 0 0.5em rgb(from var(--color-accent-red) r g b / 0.35);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.35);
 }
 
 .item-input:disabled {
@@ -417,7 +414,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .item-input::placeholder {
-  color: rgb(from var(--color-text) r g b / 0.35);
+  color: rgb(from var(--color-text-red) r g b / 0.35);
 }
 
 .add-btn {
@@ -428,15 +425,15 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   line-height: 1;
   cursor: pointer;
   background: transparent;
-  border: 1px solid rgb(from var(--color-accent-red) r g b / 0.5);
+  border: 1px solid rgb(from var(--color-primary) r g b / 0.5);
   border-radius: 4px;
-  color: var(--color-accent-red);
+  color: var(--color-primary);
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .add-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-accent-red) r g b / 0.12);
-  border-color: var(--color-accent-red);
+  background: rgb(from var(--color-primary) r g b / 0.12);
+  border-color: var(--color-primary);
 }
 
 .add-btn:disabled {
@@ -461,7 +458,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .items-list::-webkit-scrollbar-thumb {
-  background: rgb(from var(--color-accent-gray) r g b / 0.6);
+  background: rgb(from var(--color-control-bg) r g b / 0.6);
   border-radius: 2px;
 }
 
@@ -470,14 +467,14 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   align-items: center;
   gap: 0.5rem;
   padding: 0.35em 0.6em;
-  border: 1px solid rgb(from var(--color-accent-gray) r g b / 0.35);
+  border: 1px solid rgb(from var(--color-control-bg) r g b / 0.35);
   border-radius: 4px;
-  background: rgb(from var(--color-accent-gray) r g b / 0.08);
+  background: rgb(from var(--color-control-bg) r g b / 0.08);
   transition: border-color 0.15s;
 }
 
 .item-row:hover {
-  border-color: rgb(from var(--color-accent-red) r g b / 0.4);
+  border-color: rgb(from var(--color-primary) r g b / 0.4);
 }
 
 .item-text {
@@ -493,7 +490,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
   flex-shrink: 0;
   background: transparent;
   border: none;
-  color: rgb(from var(--color-text) r g b / 0.4);
+  color: rgb(from var(--color-text-red) r g b / 0.4);
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -502,7 +499,7 @@ const STROKES = ['#0abdc6', '#711c91', '#ea00d9']
 }
 
 .remove-btn:hover:not(:disabled) {
-  color: var(--color-accent-white);
+  color: var(--color-accent);
 }
 
 .remove-btn:disabled {

@@ -31,7 +31,6 @@ const rules = ref<RuleMeta[]>(
 const route = useRoute()
 const isIndividualRule = computed(() => route.path !== '/rules')
 const currentSlug = computed(() => route.path.split('/').pop() ?? '')
-const currentTitle = computed(() => frontmatters[`../rules/${currentSlug.value}.md`]?.title ?? '')
 </script>
 
 <template>
@@ -47,8 +46,7 @@ const currentTitle = computed(() => frontmatters[`../rules/${currentSlug.value}.
       </nav>
     </aside>
     <div class="rules-content">
-      <h1 v-if="isIndividualRule && currentTitle">{{ currentTitle }}</h1>
-      <RouterView />
+<RouterView />
     </div>
   </div>
 </template>
@@ -64,6 +62,11 @@ const currentTitle = computed(() => frontmatters[`../rules/${currentSlug.value}.
   flex: 1;
   min-width: 0;
 }
+
+.rules-content :deep(:is(h1, h2, h3, h4, h5, h6)) {
+  color: inherit;
+}
+
 
 /* Sticky sidebar on wide viewports */
 @media (min-width: 1100px) {
@@ -112,9 +115,8 @@ const currentTitle = computed(() => frontmatters[`../rules/${currentSlug.value}.
 
 
 .rules-sidebar a.active {
-  color: var(--color-text);
-  background: rgb(from var(--color-accent-gray) r g b / 0.3);
-  border-left: 2px solid var(--color-accent-red);
+  background: rgb(from var(--color-control-bg) r g b / 0.3);
+  border-left: 2px solid var(--color-primary);
   padding-left: calc(0.4rem - 2px);
 }
 </style>

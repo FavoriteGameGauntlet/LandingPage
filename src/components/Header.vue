@@ -35,10 +35,10 @@ router.afterEach(() => {
 
 <style scoped>
 .background {
-  background-color: var(--color-nav-bg);
+  background-color: var(--color-control-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-accent-red);
+  border-bottom: 1px solid var(--color-link);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -61,7 +61,7 @@ router.afterEach(() => {
   flex-shrink: 0;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em var(--color-accent-red));
+  filter: drop-shadow(0 0 2em var(--color-link-hover));
 }
 
 .buttons {
@@ -75,6 +75,15 @@ router.afterEach(() => {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
+  color: var(--color-primary);
+}
+
+.button.router-link-exact-active {
+  color: var(--color-accent);
+}
+
+.button.router-link-exact-active:hover {
+  text-shadow: 0 0 0.5em var(--color-accent);
 }
 
 button:focus {
@@ -98,7 +107,7 @@ button:focus {
   display: block;
   width: 100%;
   height: 2px;
-  background-color: var(--color-accent-red);
+  background-color: var(--color-link);
   border-radius: 2px;
   transition: transform 0.25s, opacity 0.25s;
 }
@@ -126,8 +135,7 @@ button:focus {
     right: 0;
     flex-direction: column;
     height: auto;
-    background-color: var(--color-bg);
-    border-bottom: 1px solid var(--color-accent-red);
+    border-bottom: 1px solid var(--color-link);
     padding: 0.5rem 0;
   }
 
