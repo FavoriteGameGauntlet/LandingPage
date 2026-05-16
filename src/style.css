@@ -2,6 +2,18 @@
 
 :root {
     --color-primary: #fd433d;
+
+    --color-grad-1: #d62c2c;
+    --color-grad-2: #b6191f;
+    --color-grad-3: #da3d8c;
+    --color-grad-4: #6d39af;
+    --color-grad-5: #5740ce;
+    --color-grad-6: #1e3bb3;
+    --color-grad-7: #1c74d6;
+
+    --color-card-fg: #e3283c;
+    --color-card-bg: #0f050a;
+    --color-card-bg-hover: #1a080e;
     --color-accent: #5cf5fd;
     --color-bg-primary: #1f1414;
     --color-bg-secondary: #310f10;
@@ -52,6 +64,7 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+    overflow-x: clip;
 }
 
 /* ── Scrollbar ── */

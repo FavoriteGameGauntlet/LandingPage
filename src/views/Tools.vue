@@ -7,12 +7,9 @@ import { ref } from 'vue'
 import CardTabs from '../components/CardTabs.vue'
 import CoinFlipWidget from '../components/CoinFlipWidget.vue'
 import DiceRollerWidget from '../components/DiceRollerWidget.vue'
-import SpinningWheelWidget from '../components/SpinningWheelWidget.vue'
-
 const tools = [
   { id: 'dice', label: 'Кубики' },
   { id: 'coin', label: 'Монетка' },
-  { id: 'wheel', label: 'Колесо' },
   { id: 'links', label: 'Материалы' },
 ]
 
@@ -24,8 +21,7 @@ const active = ref('')
   <div class="panel">
     <div v-show="active === 'dice'"><DiceRollerWidget /></div>
     <div v-show="active === 'coin'"><CoinFlipWidget /></div>
-    <div v-show="active === 'wheel'"><SpinningWheelWidget /></div>
-    <div v-show="active === 'links'" class="link-wrap">
+<div v-show="active === 'links'" class="link-wrap">
       <div class="link-entry">
         <a href="https://disk.yandex.ru/d/vw1yjwiCdIUsRg" target="_blank" class="item-link">Материалы за все сезоны</a>
       </div>
