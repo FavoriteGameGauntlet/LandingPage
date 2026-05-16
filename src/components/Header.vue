@@ -4,9 +4,13 @@ import { useRouter } from 'vue-router'
 
 const isOpen = ref(false)
 const router = useRouter()
+const lastRulesPath = ref('/rules/Introduction')
 
-router.afterEach(() => {
+router.afterEach((to) => {
   isOpen.value = false
+  if (to.path.startsWith('/rules/')) {
+    lastRulesPath.value = to.path
+  }
 })
 </script>
 
@@ -25,7 +29,7 @@ router.afterEach(() => {
 
       <div class="buttons" :class="{ open: isOpen }">
         <router-link to="/app" class="button">Приложение</router-link>
-        <router-link to="/rules" class="button">Правила</router-link>
+        <router-link :to="lastRulesPath" class="button">Правила</router-link>
         <router-link to="/tools" class="button">Инструменты</router-link>
         <router-link to="/seasons" class="button">Сезоны</router-link>
       </div>

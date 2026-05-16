@@ -7,7 +7,7 @@ import Header from "./components/Header.vue";
 
   <div class="content">
     <router-view v-slot="{ Component }">
-      <KeepAlive include="Tools">
+      <KeepAlive include="Tools,Rules">
         <component :is="Component" />
       </KeepAlive>
     </router-view>

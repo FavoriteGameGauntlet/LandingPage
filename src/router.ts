@@ -30,12 +30,22 @@ const routes: RouteRecordRaw[] = [
     {path: '/seasons', name: 'seasons', component: () => import('./views/Seasons.vue')},
 ]
 
+const scrollPositions = new Map<string, number>()
+
 const router = createRouter({
     history: createWebHistory(),
     routes,
-    scrollBehavior(to) {
-        if (!to.hash) return { top: 0 }
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) return savedPosition
+        if (to.hash) return { el: to.hash, behavior: 'smooth' }
+        if (to.path.startsWith('/rules/') && from.path.startsWith('/rules/')) return { top: 0 }
+        const saved = scrollPositions.get(to.path)
+        return { top: saved ?? 0 }
     },
+})
+
+router.beforeEach((_, from) => {
+    scrollPositions.set(from.path, window.scrollY)
 })
 
 export default router
