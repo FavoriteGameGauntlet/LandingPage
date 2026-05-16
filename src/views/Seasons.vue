@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue'
+import externalLinkIcon from '../assets/icons/external-link.svg?raw'
 import CardTabs from '../components/CardTabs.vue'
+import Chip from '../components/Chip.vue'
 
 type TextBlock = { type: 'text'; paragraphs: string[] }
 type VideoBlock = { type: 'video'; title: string; url: string; true?: boolean }
 type ContentBlock = TextBlock | VideoBlock
 
+interface RosterMember {
+  player: string
+  character: string
+  clan?: string
+}
+
 interface Season {
   name: string
   link: string
+  roster?: RosterMember[]
   content: ContentBlock[]
 }
 
@@ -36,15 +45,20 @@ const seasons: Season[] = [
   {
     name: 'FGGW 1',
     link: 'https://docs.google.com/spreadsheets/d/1n9GQN-BfXG1raE17xQP0ja9vqb52AgSfs3YGxq1od80',
+    roster: [
+      {player: 'Стас', character: 'Билли', clan: 'Flex Machine'},
+      {player: 'Дима', character: 'Пик', clan: 'Ханна-Монтана'},
+      {player: 'Терентий', character: 'Вуди', clan: 'Розовый негатив'},
+      {player: 'Даня', character: 'Кабан', clan: 'Шаманские Веды'},
+      {player: 'Паша', character: 'Ле\'нтакле Няшмяш', clan: 'Жертвы удачи'},
+      {player: 'Влодес', character: 'Гигачмонстрик', clan: 'Уберчуханы'},
+      {player: 'Егор', character: 'Диксмоук', clan: 'Карабасские Гиперборейцы'},
+      {player: 'Вова', character: 'Боба Фурриеб', clan: 'Пушистые ублюдки'},
+    ],
     content: [
       {
         type: 'text',
         paragraphs: [
-          'Состав: Стас (Билли, клан «Flex Machine»), Дима (Пик, клан «Ханна-Монтана»), ' +
-          'Терентий (Вуди, клан «Розовый негатив»), Даня (Кабан, клан «Шаманские Веды»), ' +
-          'Паша (Ле\'нтакле Няшмяш, клан «Жертвы удачи»), Влодес (Гигачмонстрик, клан «Уберчуханы»), ' +
-          'Егор (Диксмоук, клан «Карабасские Гиперборейцы»), Вова (Боба Фурриеб, клан «Пушистые ублюдки»)',
-
           'События первого сезона берут свое начало в разгар клановых войн. ' +
           'Кланы «Flex Machine», «Ханна-Монтана», «Розовый негатив», «Шаманские Веды», ' +
           '«Жертвы удачи», «Уберчуханы», «Карабасские Гиперборейцы» и их лидеры борются друг с другом, ' +
@@ -119,14 +133,18 @@ const seasons: Season[] = [
   {
     name: 'FGGW 2',
     link: 'https://docs.google.com/spreadsheets/d/1z-oFb87xGjrXHSoe2FvMNVC5RSMTY3T3Q6PGfu-xD8U',
+    roster: [
+      {player: 'Стас', character: 'Королева Роджер'},
+      {player: 'Дима', character: 'Мягкий знак Ранвог'},
+      {player: 'Терентий', character: 'Сержант Шляпа'},
+      {player: 'Даня', character: 'Дикий Чел'},
+      {player: 'Паша', character: 'Фоки Маунтин'},
+      {player: 'Егор', character: 'Людоед Бабба'},
+    ],
     content: [
       {
         type: 'text',
         paragraphs: [
-          'Состав: Стас (Королева Роджер), Дима (Мягкий знак Ранвог), ' +
-          'Терентий (Сержант Шляпа), Даня (Дикий Чел), ' +
-          'Паша (Фоки Маунтин), Егор (Людоед Бабба)',
-
           'Действия второго сезона переносят нас в постапокалиптическую пустошь, ' +
           'где власть держит жестокий религиозный правитель Лорд, ' +
           'держащий в подчинении всех ее жителей.',
@@ -263,35 +281,39 @@ function posterUrl(videoUrl: string): string {
   <CardTabs :items="seasonTabs" v-model="selectedName" :toggleable="true" />
 
   <div v-if="selectedSeason" class="season-detail">
-    <a
-      v-if="selectedSeason.link"
-      :href="selectedSeason.link"
-      target="_blank"
-      class="season-link"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
-        <polyline points="15 3 21 3 21 9"/>
-        <line x1="10" y1="14" x2="21" y2="3"/>
-      </svg>
+    <h2 v-if="selectedSeason.link" class="table-heading">
       Таблица сезона
-    </a>
+      <a :href="selectedSeason.link" target="_blank" class="season-link" aria-label="Открыть таблицу сезона" v-html="externalLinkIcon"></a>
+    </h2>
 
-    <div v-if="selectedSeason.content.length === 0" class="no-content">
-      Описание сезона появится позже.
+    <div v-if="selectedSeason.roster?.length" class="roster">
+      <h2>Состав</h2>
+      <div class="roster-chips">
+        <Chip
+          v-for="member in selectedSeason.roster"
+          :key="member.player"
+          :player="member.player"
+          :character="member.character"
+          :clan="member.clan"
+        />
+      </div>
     </div>
 
-    <div class="content">
+    <div v-if="selectedSeason.content.length === 0" class="no-content">
+      Описание сезона отсутствует.
+    </div>
+
+    <div v-if="selectedSeason.content.length > 0" class="content">
+      <h2>Сюжет</h2>
       <template v-for="(block, bi) in selectedSeason.content" :key="bi">
         <div v-if="block.type === 'text'" class="text-block">
           <p v-for="(para, pi) in block.paragraphs" :key="pi">{{ para }}</p>
         </div>
         <div v-else class="video-item">
-          <p class="video-caption">
+          <h3>
             {{ block.title }}
             <span v-if="block.true" class="tag-true">Канон</span>
-          </p>
+          </h3>
           <div class="video-wrapper">
             <video controls preload="none" :src="block.url" :poster="posterUrl(block.url)"></video>
           </div>
@@ -309,23 +331,42 @@ function posterUrl(videoUrl: string): string {
   padding: 20px;
 }
 
-.season-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  padding: 8px 16px;
-  font-size: 0.9em;
-  font-weight: 600;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-  background: var(--color-control-bg);
-  transition: background 0.2s, color 0.2s;
+.table-heading {
+  margin-bottom: 28px;
 }
 
-.season-link:hover {
-  background: rgb(from var(--color-primary) r g b / 0.2);
-  color: var(--color-accent);
+.season-link {
+  display: inline;
+  margin-left: 0.4em;
+  color: var(--color-link);
+  vertical-align: middle;
+  transition: filter 0.2s;
+}
+
+.season-link :deep(svg) {
+  width: 0.9em;
+  height: 0.9em;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  vertical-align: middle;
+}
+
+.season-link:hover,
+.season-link:focus-visible {
+  filter: drop-shadow(0 0 6px var(--color-link));
+}
+
+.roster {
+  margin-bottom: 0;
+}
+
+
+.roster-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.5rem;
 }
 
 .no-content {
@@ -349,13 +390,7 @@ function posterUrl(videoUrl: string): string {
   margin-bottom: 0;
 }
 
-.video-caption {
-  margin: 0 0 8px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+
 
 .tag-true {
   font-size: 0.75em;
@@ -365,6 +400,10 @@ function posterUrl(videoUrl: string): string {
   background: var(--color-control-bg);
   border: 1px solid var(--color-accent);
   color: var(--color-accent);
+}
+
+.video-item h3 {
+  margin-bottom: 16px;
 }
 
 .video-wrapper {
