@@ -12,7 +12,7 @@ interface RuleMeta {
   path: string
 }
 
-const frontmatters = import.meta.glob<{ title?: string; date?: string; published?: boolean }>(
+const frontmatters = import.meta.glob<{ title?: string; published?: boolean }>(
   '../rules/*.md',
   { eager: true, query: '?frontmatter', import: 'default' }
 )
@@ -66,11 +66,6 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
   flex: 1;
   min-width: 0;
 }
-
-.rules-content :deep(:is(h1, h2, h3, h4, h5, h6)) {
-  color: inherit;
-}
-
 
 /* Sticky sidebar on wide viewports */
 @media (min-width: 861px) {
@@ -132,5 +127,91 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
   color: var(--color-accent);
   border-left: 2px solid var(--color-accent);
   padding-left: calc(0.4rem - 2px);
+}
+</style>
+
+<style>
+.post-content {
+  margin: 2rem 0;
+  padding: 0;
+  text-align: start;
+  font-size: 1rem;
+}
+
+.post-content h1, .post-content h2, .post-content h3,
+.post-content h4, .post-content h5, .post-content h6 {
+  scroll-margin-top: 5rem;
+}
+
+.highlight-target {
+  animation: highlight-fade 5s ease-out forwards;
+  border-radius: 4px;
+}
+
+@keyframes highlight-fade {
+  0%   { background-color: var(--color-control-bg-hover); }
+  100% { background-color: transparent; }
+}
+
+.post-content :is(h1, h2, h3, h4, h5, h6) > a,
+.post-content :is(h1, h2, h3, h4, h5, h6) > a:hover {
+  color: inherit;
+  text-shadow: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+.anchor-copy-btn {
+  display: inline;
+  margin-left: 0.4em;
+  font-size: 0.75em;
+  font-weight: 400;
+  color: var(--color-link);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  vertical-align: middle;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.post-content :is(h1, h2, h3, h4, h5, h6):hover .anchor-copy-btn,
+.anchor-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.post-content ul,
+.post-content ol {
+  padding-left: 2rem;
+}
+
+.post-content li {
+  margin: 0.3rem 0;
+}
+
+.post-content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: 3px;
+  padding: 0.1em 0.4em;
+}
+
+.post-content pre {
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.post-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
 }
 </style>

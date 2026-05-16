@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import HistoryChips from './HistoryChips.vue'
 import d4Raw  from '../assets/icons/d4.svg?raw'
 import d6Raw  from '../assets/icons/d6.svg?raw'
 import d8Raw  from '../assets/icons/d8.svg?raw'
@@ -32,6 +33,7 @@ const modifier = ref(0)
 const totalDice = computed(() => diceTypes.reduce((sum, t) => sum + counts.value[t], 0))
 const diceSum = computed(() => results.value.reduce((sum, r) => sum + r.value, 0))
 const total = computed(() => diceSum.value + modifier.value)
+const resultItems = computed(() => results.value.map(r => ({ label: `d${r.type}: ${r.value}` })))
 
 function clear() {
   diceTypes.forEach(t => counts.value[t] = 0)
@@ -101,24 +103,16 @@ const dieShapes: Record<DieType, string> = {
   </div>
 
   <div class="action-row">
-    <button class="roll-btn" :disabled="totalDice === 0 || rolling" @click="roll">
+    <button class="btn-primary" :disabled="totalDice === 0 || rolling" @click="roll">
       {{ rolling ? 'Бросаем...' : 'Бросить' }}
     </button>
-    <button class="clear-btn" :disabled="totalDice === 0 && results.length === 0 && modifier === 0" @click="clear">
+    <button class="btn-secondary" :disabled="totalDice === 0 && results.length === 0 && modifier === 0" @click="clear">
       Очистить
     </button>
   </div>
 
   <div v-if="results.length > 0" class="results">
-    <div class="result-chips">
-      <span
-        v-for="(r, i) in results"
-        :key="i"
-        class="chip"
-      >
-        d{{ r.type }}: {{ r.value }}
-      </span>
-    </div>
+    <HistoryChips :items="resultItems" />
     <div class="total" v-if="results.length > 1 || modifier !== 0">
       Итого: {{ total }}
     </div>
@@ -127,11 +121,6 @@ const dieShapes: Record<DieType, string> = {
 </template>
 
 <style scoped>
-.widget {
-  max-width: 450px;
-  margin: 0 auto;
-}
-
 .dice-selector {
   display: flex;
   flex-wrap: wrap;
@@ -283,83 +272,13 @@ const dieShapes: Record<DieType, string> = {
 }
 
 .action-row {
-  display: flex;
-  gap: 0.75rem;
   margin-bottom: 1.75rem;
-}
-
-.action-row button {
-  flex: 1;
-}
-
-.roll-btn {
-  padding: 0.55em 2.5em;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.roll-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-primary) r g b / 0.12);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.roll-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.clear-btn {
-  padding: 0.55em 1.5em;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  color: var(--color-text);
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-bg-secondary);
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  opacity: 0.7;
-}
-
-.clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  opacity: 1;
-}
-
-.clear-btn:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
 }
 
 .results {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.result-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.chip {
-  padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.5);
-  border-radius: 4px;
-  font-size: 0.95rem;
-  background: rgb(from var(--color-primary) r g b / 0.07);
-  color: var(--color-primary);
 }
 
 .total {

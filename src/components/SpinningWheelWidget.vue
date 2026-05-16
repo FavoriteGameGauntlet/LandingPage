@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import HistoryChips from './HistoryChips.vue'
 
 const MAX_ITEMS = 20
 const R = 185
@@ -96,6 +97,8 @@ const labelSize = computed(() => {
 })
 
 const NUM_COLORS = 3
+
+const historyItems = computed(() => history.value.map(h => ({ label: h })))
 </script>
 
 <template>
@@ -161,17 +164,17 @@ const NUM_COLORS = 3
         </svg>
       </div>
 
-      <div class="wheel-actions">
-        <button class="spin-btn" :disabled="!canSpin" @click="spin">
+      <div class="action-row">
+        <button class="btn-primary" :disabled="!canSpin" @click="spin">
           {{ spinning ? 'Крутится...' : 'Крутить' }}
         </button>
-        <button class="clear-btn" :disabled="spinning || (history.length === 0 && items.length === 0)" @click="history = []; result = null; items = []">
+        <button class="btn-secondary" :disabled="spinning || (history.length === 0 && items.length === 0)" @click="history = []; result = null; items = []">
           Очистить
         </button>
       </div>
 
-      <div v-if="history.length > 0" class="history">
-        <span v-for="(h, i) in history" :key="i" class="chip">{{ h }}</span>
+      <div v-if="history.length > 0" class="history-wrap">
+        <HistoryChips :items="historyItems" />
       </div>
     </div>
 
@@ -194,7 +197,7 @@ const NUM_COLORS = 3
         />
         <button
           type="submit"
-          class="add-btn"
+          class="btn-primary"
           :disabled="!newItemText.trim() || items.length >= MAX_ITEMS || spinning"
         >+</button>
       </form>
@@ -274,81 +277,13 @@ const NUM_COLORS = 3
 
 /* ── Wheel action buttons ── */
 
-.wheel-actions {
-  display: flex;
-  gap: 0.75rem;
+.action-row {
   width: 100%;
 }
 
-.wheel-actions button {
-  flex: 1;
-}
-
-.spin-btn {
-  padding: 0.55em 2.5em;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.spin-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-primary) r g b / 0.12);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.spin-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.clear-btn {
-  padding: 0.55em 1.5em;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  color: var(--color-text);
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-bg-secondary);
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  opacity: 0.7;
-}
-
-.clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  opacity: 1;
-}
-
-.clear-btn:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-}
-
-.history {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+.history-wrap {
+  width: 100%;
   max-width: min(360px, calc(100vw - 4rem));
-}
-
-.chip {
-  padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.5);
-  border-radius: 4px;
-  font-size: 0.95rem;
-  background: rgb(from var(--color-primary) r g b / 0.07);
-  color: var(--color-primary);
-  box-shadow: 0 0 0.4em rgb(from var(--color-primary) r g b / 0.25);
-  text-shadow: 0 0 0.5em var(--color-primary);
 }
 
 /* ── Items panel ── */
@@ -413,31 +348,6 @@ const NUM_COLORS = 3
 
 .item-input::placeholder {
   color: rgb(from var(--color-text) r g b / 0.35);
-}
-
-.add-btn {
-  padding: 0.4em 0.9em;
-  font-size: 1.2rem;
-  font-family: inherit;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-primary);
-  border-radius: 4px;
-  color: var(--color-primary);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.add-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-primary) r g b / 0.12);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.add-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
 }
 
 .items-list {
