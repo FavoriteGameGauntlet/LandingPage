@@ -9,6 +9,16 @@
     scroll-margin-top: 5rem;
 }
 
+.highlight-target {
+    animation: highlight-fade 5s ease-out forwards;
+    border-radius: 4px;
+}
+
+@keyframes highlight-fade {
+    0%   { background-color: var(--color-control-bg-hover); }
+    100% { background-color: transparent; }
+}
+
 .post-content :is(h1, h2, h3, h4, h5, h6) > a,
 .post-content :is(h1, h2, h3, h4, h5, h6) > a:hover {
     color: inherit;

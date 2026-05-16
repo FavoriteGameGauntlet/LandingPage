@@ -1,3 +1,7 @@
+<script lang="ts">
+export default { name: 'Rules' }
+</script>
+
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
