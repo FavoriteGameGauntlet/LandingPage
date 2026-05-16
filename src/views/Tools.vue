@@ -4,6 +4,7 @@ export default { name: 'Tools' }
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import CardTabs from '../components/CardTabs.vue'
 import CoinFlipWidget from '../components/CoinFlipWidget.vue'
 import DiceRollerWidget from '../components/DiceRollerWidget.vue'
 import SpinningWheelWidget from '../components/SpinningWheelWidget.vue'
@@ -15,19 +16,11 @@ const tools = [
   { id: 'links', label: 'Материалы' },
 ]
 
-const active = ref('dice')
+const active = ref('')
 </script>
 
 <template>
-  <div class="tabs">
-    <button
-      v-for="tool in tools"
-      :key="tool.id"
-      class="tab"
-      :class="{ active: active === tool.id }"
-      @click="active = tool.id"
-    >{{ tool.label }}</button>
-  </div>
+  <CardTabs :items="tools" v-model="active" :toggleable="true" />
   <div class="panel">
     <div v-show="active === 'dice'"><DiceRollerWidget /></div>
     <div v-show="active === 'coin'"><CoinFlipWidget /></div>
@@ -44,43 +37,6 @@ const active = ref('dice')
 </template>
 
 <style scoped>
-.tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.tab {
-  flex: 1;
-  padding: 10px 22px;
-  background: var(--color-control-bg);
-  border: none;
-  color: var(--color-primary);
-  font-size: 1em;
-  font-family: inherit;
-  cursor: pointer;
-  border-radius: 4px;
-  white-space: nowrap;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
-}
-
-@media (max-width: 860px) {
-  .tab {
-    flex: 1 1 100%;
-  }
-}
-
-.tab:hover {
-  background: var(--color-control-bg-hover);
-  box-shadow: 0 6px 18px rgb(0 0 0 / 0.4);
-}
-
-.tab.active {
-  color: var(--color-accent);
-}
-
 .panel {
   padding: 8px 0;
   min-height: 200px;

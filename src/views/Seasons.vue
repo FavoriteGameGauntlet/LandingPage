@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, computed} from 'vue'
+import CardTabs from '../components/CardTabs.vue'
 
 type TextBlock = { type: 'text'; paragraphs: string[] }
 type VideoBlock = { type: 'video'; title: string; url: string; true?: boolean }
@@ -252,128 +253,75 @@ const seasons: Season[] = [
   }
 ]
 
-const openSet = ref(new Set<number>())
+const selectedName = ref('')
+const seasonTabs = computed(() => seasons.map(s => ({ id: s.name, label: s.name })))
+const selectedSeason = computed(() => seasons.find(s => s.name === selectedName.value) ?? null)
 
 function posterUrl(videoUrl: string): string {
   return videoUrl.replace('/videos/', '/videos/posters/').replace('.mp4', '.jpg')
 }
-
-function toggle(index: number) {
-  if (openSet.value.has(index)) {
-    openSet.value.delete(index)
-  } else {
-    openSet.value.add(index)
-  }
-  openSet.value = new Set(openSet.value)
-}
 </script>
 
 <template>
-  <div class="seasons">
-    <div v-for="(season, index) in seasons" :key="season.name" class="season">
-      <button class="season-header" :class="{ open: openSet.has(index) }" @click="toggle(index)">
-        <span>{{ season.name }}</span>
-        <span class="chevron">▾</span>
-      </button>
-      <div class="season-body" :class="{ open: openSet.has(index) }">
-        <a v-if="season.link" :href="season.link" target="_blank" class="season-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-          Таблица сезона
-        </a>
-        <div class="content">
-          <template v-for="(block, bi) in season.content" :key="bi">
-            <div v-if="block.type === 'text'" class="text-block">
-              <p v-for="(para, pi) in block.paragraphs" :key="pi">{{ para }}</p>
-            </div>
-            <div v-else class="video-item">
-              <p class="video-caption">
-                {{ block.title }}
-                <span v-if="block.true" class="tag-true">Канон</span>
-              </p>
-              <div class="video-wrapper">
-                <video controls preload="none" :src="block.url" :poster="posterUrl(block.url)"></video>
-              </div>
-            </div>
-          </template>
+  <CardTabs :items="seasonTabs" v-model="selectedName" :toggleable="true" />
+
+  <div v-if="selectedSeason" class="season-detail">
+    <a
+      v-if="selectedSeason.link"
+      :href="selectedSeason.link"
+      target="_blank"
+      class="season-link"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+      Таблица сезона
+    </a>
+
+    <div v-if="selectedSeason.content.length === 0" class="no-content">
+      Описание сезона появится позже.
+    </div>
+
+    <div class="content">
+      <template v-for="(block, bi) in selectedSeason.content" :key="bi">
+        <div v-if="block.type === 'text'" class="text-block">
+          <p v-for="(para, pi) in block.paragraphs" :key="pi">{{ para }}</p>
         </div>
-      </div>
+        <div v-else class="video-item">
+          <p class="video-caption">
+            {{ block.title }}
+            <span v-if="block.true" class="tag-true">Канон</span>
+          </p>
+          <div class="video-wrapper">
+            <video controls preload="none" :src="block.url" :poster="posterUrl(block.url)"></video>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <style scoped>
-.seasons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 
-.season-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--color-control-bg);
+.season-detail {
   border: 1px solid var(--color-bg-secondary);
-  color: var(--color-link);
-  font-size: 1.1em;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.2s;
-}
-
-.season-header:hover {
-  background: var(--color-control-bg-hover);
-}
-
-.season-header.open {
-  border-bottom-color: transparent;
-  background: rgb(from var(--color-primary) r g b / 0.4);
-  border-left-color: var(--color-primary);
-  border-left-width: 3px;
-  padding-left: calc(16px - 2px);
-}
-
-.chevron {
-  display: inline-block;
-  transition: transform 0.25s ease;
-  font-size: 1.2em;
-  line-height: 1;
-}
-
-.season-header.open .chevron {
-  transform: rotate(-180deg);
-}
-
-.season-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease;
-  border: 1px solid var(--color-bg-secondary);
-  border-top: none;
-}
-
-.season-body.open {
-  max-height: 10000px;
+  border-radius: 4px;
+  padding: 20px;
 }
 
 .season-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 16px;
+  margin-bottom: 20px;
   padding: 8px 16px;
   font-size: 0.9em;
   font-weight: 600;
   border: 1px solid var(--color-primary);
-  color: var(--color-link);
+  color: var(--color-primary);
   background: var(--color-control-bg);
   transition: background 0.2s, color 0.2s;
 }
@@ -383,11 +331,16 @@ function toggle(index: number) {
   color: var(--color-accent);
 }
 
+.no-content {
+  color: var(--color-primary);
+  opacity: 0.5;
+  font-style: italic;
+}
+
 .content {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 0 16px 16px;
 }
 
 .text-block p {
@@ -412,7 +365,7 @@ function toggle(index: number) {
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 4px;
-  background: var(--color-control-bg-hover);
+  background: var(--color-control-bg);
   border: 1px solid var(--color-accent);
   color: var(--color-accent);
 }
@@ -425,6 +378,5 @@ function toggle(index: number) {
   width: 100%;
   height: 100%;
   display: block;
-
 }
 </style>

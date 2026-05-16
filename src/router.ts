@@ -17,7 +17,7 @@ const ruleChildren: RouteRecordRaw[] = Object.entries(mdFiles).flatMap(([path, l
 
 const routes: RouteRecordRaw[] = [
     {path: '/', name: 'main', component: () => import('./views/Main.vue')},
-    {path: '/download', name: 'download', component: () => import('./views/Download.vue')},
+    {path: '/app', name: 'app', component: () => import('./views/Application.vue')},
     {
         path: '/rules',
         component: () => import('./views/Rules.vue'),
@@ -27,7 +27,7 @@ const routes: RouteRecordRaw[] = [
         ],
     },
     {path: '/tools', name: 'tools', component: () => import('./views/Tools.vue')},
-    {path: '/previous-seasons', name: 'previous-seasons', component: () => import('./views/PreviousSeasons.vue')},
+    {path: '/seasons', name: 'seasons', component: () => import('./views/Seasons.vue')},
 ]
 
 const router = createRouter({
