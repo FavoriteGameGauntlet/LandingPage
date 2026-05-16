@@ -86,10 +86,6 @@ router.afterEach((to) => {
   color: var(--color-accent);
 }
 
-.button.router-link-active:hover {
-  text-shadow: 0 0 0.5em var(--color-accent);
-}
-
 button:focus {
   outline: none;
 }

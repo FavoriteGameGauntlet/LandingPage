@@ -39,7 +39,6 @@ export default defineConfig({
           code: `
             import { defineComponent, h, onMounted, nextTick, ref, watch } from 'vue'
             import { useRouter, useRoute } from 'vue-router'
-            export const frontmatter = ${JSON.stringify(frontmatter)}
             export default defineComponent({
               name: 'MarkdownPost',
               setup() {

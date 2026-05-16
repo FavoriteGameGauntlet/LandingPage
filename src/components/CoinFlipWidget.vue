@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import headsRaw from '../assets/icons/heads.svg?raw'
 import tailsRaw from '../assets/icons/tails.svg?raw'
+import HistoryChips from './HistoryChips.vue'
 
 function prepareCoinSvg(raw: string): string {
   return raw.replace(/<path /, '<path fill="currentColor" ')
@@ -41,6 +42,13 @@ function clear() {
   result.value = null
   history.value = []
 }
+
+const historyItems = computed(() =>
+  history.value.map(side => ({
+    label: side === 'heads' ? 'Орел' : 'Решка',
+    variant: (side === 'heads' ? 'primary' : 'accent') as 'primary' | 'accent',
+  }))
+)
 </script>
 
 <template>
@@ -57,31 +65,19 @@ function clear() {
   </div>
 
   <div class="action-row">
-    <button class="flip-btn" :disabled="flipping" @click="flip">
+    <button class="btn-primary" :disabled="flipping" @click="flip">
       {{ flipping ? 'Крутится...' : 'Бросить' }}
     </button>
-    <button class="clear-btn" :disabled="flipping || history.length === 0" @click="clear">
+    <button class="btn-secondary" :disabled="flipping || history.length === 0" @click="clear">
       Очистить
     </button>
   </div>
 
-  <div v-if="history.length > 0" class="history">
-    <span
-      v-for="(side, i) in history"
-      :key="i"
-      class="chip"
-      :class="side"
-    >{{ side === 'heads' ? 'Орел' : 'Решка' }}</span>
-  </div>
+  <HistoryChips :items="historyItems" />
   </div>
 </template>
 
 <style scoped>
-.widget {
-  max-width: 450px;
-  margin: 0 auto;
-}
-
 .coin-scene {
   perspective: 600px;
   display: flex;
@@ -138,87 +134,6 @@ function clear() {
 }
 
 .action-row {
-  display: flex;
-  gap: 0.75rem;
   margin-bottom: 1.75rem;
-}
-
-.action-row button {
-  flex: 1;
-}
-
-.flip-btn {
-  padding: 0.55em 2.5em;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.flip-btn:hover:not(:disabled) {
-  background: rgb(from var(--color-primary) r g b / 0.12);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.flip-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.clear-btn {
-  padding: 0.55em 1.5em;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  color: var(--color-text);
-  cursor: pointer;
-  background: transparent;
-  border: 2px solid var(--color-bg-secondary);
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  opacity: 0.7;
-}
-
-.clear-btn:hover:not(:disabled) {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-  opacity: 1;
-}
-
-.clear-btn:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-}
-
-.history {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.chip {
-  padding: 0.25em 0.65em;
-  border: 1px solid rgb(from var(--color-control-bg) r g b / 0.4);
-  border-radius: 4px;
-  font-size: 0.95rem;
-  background: transparent;
-}
-
-.chip.heads {
-  color: var(--color-primary);
-  border-color: rgb(from var(--color-primary) r g b / 0.5);
-  background: rgb(from var(--color-primary) r g b / 0.07);
-}
-
-.chip.tails {
-  color: var(--color-accent);
-  border-color: rgb(from var(--color-accent) r g b / 0.5);
-  background: rgb(from var(--color-accent) r g b / 0.07);
 }
 </style>

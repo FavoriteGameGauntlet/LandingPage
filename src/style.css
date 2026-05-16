@@ -1,17 +1,19 @@
-﻿:root {
+/* ── Design tokens ── */
+
+:root {
     --color-primary: #fd433d;
     --color-accent: #5cf5fd;
     --color-bg-primary: #1f1414;
     --color-bg-secondary: #310f10;
 
     --color-text: var(--color-primary);
-
     --color-link: var(--color-accent);
     --color-heading: var(--color-primary);
 
     --color-control-bg: var(--color-bg-secondary);
     --color-control-bg-hover: #643f3f;
 
+    /* Spinning wheel palette */
     --color-wheel-fill-0: #0d3a50;
     --color-wheel-fill-1: #2d1045;
     --color-wheel-fill-2: #0d2238;
@@ -22,11 +24,15 @@
     --color-wheel-empty-fill: #0a1828;
     --color-wheel-empty-stroke: #133e7c;
 
-    /* narrow breakpoint: 860px — менять во всех @media сразу */
-
     --font-body: "Tektur";
     --font-heading: "Tektur";
 
+    /* Narrow breakpoint: 860px — update all @media queries together */
+}
+
+/* ── Base ── */
+
+:root {
     font-size: 18px;
     font-family: var(--font-body), sans-serif;
     font-weight: 400;
@@ -48,19 +54,26 @@ body {
     min-height: 100vh;
 }
 
+/* ── Scrollbar ── */
+
 ::-webkit-scrollbar {
     width: 5px;
 }
+
 ::-webkit-scrollbar-track {
     background-color: var(--color-bg-primary);
 }
+
 ::-webkit-scrollbar-thumb {
     background: var(--color-primary);
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-control-bg-hover);
 }
+
+/* ── Typography ── */
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading), sans-serif;
@@ -82,6 +95,8 @@ ul, ol {
     margin: 0;
 }
 
+/* ── Links & interactions ── */
+
 a {
     color: var(--color-link);
     text-decoration: none;
@@ -90,4 +105,71 @@ a {
 
 a:hover, button:not(:disabled):hover {
     text-shadow: 0 0 0.5em currentColor;
+}
+
+/* ── Buttons ── */
+
+.btn-primary {
+    padding: 0.55em 2.5em;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: rgb(from var(--color-primary) r g b / 0.12);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.btn-primary:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    padding: 0.55em 1.5em;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--color-text);
+    cursor: pointer;
+    background: transparent;
+    border: 2px solid var(--color-bg-secondary);
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    opacity: 0.7;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    opacity: 1;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* ── Utilities ── */
+
+.widget {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.action-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-row button {
+    flex: 1;
 }
