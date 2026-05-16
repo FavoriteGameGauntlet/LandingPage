@@ -86,7 +86,12 @@ export default defineConfig({
                     }
                   })
                   if (window.location.hash) {
-                    highlightHash(window.location.hash)
+                    const hash = window.location.hash
+                    setTimeout(() => {
+                      const id = decodeURIComponent(hash.slice(1))
+                      document.getElementById(id)?.scrollIntoView({ behavior: 'instant', block: 'start' })
+                    }, 0)
+                    highlightHash(hash)
                   } else if (window.__fromInternalLink) {
                     const first = root.value?.querySelector(':is(h1,h2,h3,h4,h5,h6)[id]')
                     if (first) highlightHash('#' + first.id)
