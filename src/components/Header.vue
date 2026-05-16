@@ -24,10 +24,10 @@ router.afterEach(() => {
       </button>
 
       <div class="buttons" :class="{ open: isOpen }">
-        <router-link to="/download" class="button">Скачать</router-link>
+        <router-link to="/app" class="button">Приложение</router-link>
         <router-link to="/rules" class="button">Правила</router-link>
         <router-link to="/tools" class="button">Инструменты</router-link>
-        <router-link to="/previous-seasons" class="button">Предыдущие сезоны</router-link>
+        <router-link to="/seasons" class="button">Сезоны</router-link>
       </div>
     </div>
   </div>
