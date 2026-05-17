@@ -35,7 +35,6 @@ function removeDie(event: MouseEvent, type: DieType) {
 const modifier = ref(0)
 
 const totalDice = computed(() => diceTypes.reduce((sum, t) => sum + counts.value[t], 0))
-const diceSum = computed(() => results.value.reduce((sum, r) => sum + r.value, 0))
 const historyItems = computed(() => rollHistory.value.map(r => {
   const parts = r.breakdown.map(d => `d${d.type}: ${d.value}`).join('\n')
   const mod = r.modifier !== 0 ? `\nмод: ${r.modifier > 0 ? '+' : ''}${r.modifier}` : ''
