@@ -18,6 +18,10 @@ type DieType = typeof diceTypes[number]
 const counts = ref<Record<DieType, number>>({ 4: 0, 6: 0, 8: 0, 10: 0, 12: 0, 20: 0 })
 const results = ref<{ type: DieType; value: number }[]>([])
 const rolling = ref(false)
+interface RollRecord { total: number; breakdown: { type: DieType; value: number }[]; modifier: number }
+const rollHistory = ref<RollRecord[]>([])
+const showResult = ref(false)
+let resultTimer: ReturnType<typeof setTimeout> | null = null
 
 function addDie(type: DieType) {
   if (counts.value[type] < 10) counts.value[type]++
@@ -33,11 +37,16 @@ const modifier = ref(0)
 const totalDice = computed(() => diceTypes.reduce((sum, t) => sum + counts.value[t], 0))
 const diceSum = computed(() => results.value.reduce((sum, r) => sum + r.value, 0))
 const total = computed(() => diceSum.value + modifier.value)
-const resultItems = computed(() => results.value.map(r => ({ label: `d${r.type}: ${r.value}` })))
+const historyItems = computed(() => rollHistory.value.map(r => {
+  const parts = r.breakdown.map(d => `d${d.type}: ${d.value}`).join('\n')
+  const mod = r.modifier !== 0 ? `\nмод: ${r.modifier > 0 ? '+' : ''}${r.modifier}` : ''
+  return { label: String(r.total), title: parts + mod }
+}))
 
 function clear() {
   diceTypes.forEach(t => counts.value[t] = 0)
   results.value = []
+  rollHistory.value = []
   modifier.value = 0
 }
 
@@ -53,7 +62,12 @@ function roll() {
       }
     }
     results.value = newResults
+    const rollTotal = newResults.reduce((s, r) => s + r.value, 0) + modifier.value
+    rollHistory.value.unshift({ total: rollTotal, breakdown: newResults, modifier: modifier.value })
     rolling.value = false
+    showResult.value = true
+    if (resultTimer) clearTimeout(resultTimer)
+    resultTimer = setTimeout(() => { showResult.value = false }, 3000)
   }, 500)
 }
 
@@ -69,21 +83,28 @@ const dieShapes: Record<DieType, string> = {
 
 <template>
   <div class="widget">
-  <div class="dice-selector">
-    <button
-      v-for="type in diceTypes"
-      :key="type"
-      class="die-btn"
-      :class="{ active: counts[type] > 0, rolling }"
-      @click="addDie(type)"
-      @contextmenu="removeDie($event, type)"
-    >
-      <svg viewBox="18 18 64 64" class="die-svg">
-        <path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd" />
-      </svg>
-      <span class="die-count" v-if="counts[type] > 0">×{{ counts[type] }}</span>
-      <span class="die-count placeholder" v-else>&nbsp;</span>
-    </button>
+  <div class="dice-area">
+    <div class="dice-selector">
+      <div v-for="type in [4, 6, 8]" :key="type" class="die-wrap">
+        <h3 class="die-label">d{{ type }}</h3>
+        <button class="die-btn" :class="{ active: counts[type] > 0, rolling }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
+          <svg viewBox="18 18 64 64" class="die-svg"><path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+        </button>
+        <span class="die-count" v-if="counts[type] > 0">×{{ counts[type] }}</span>
+        <span class="die-count zero" v-else>×0</span>
+      </div>
+    </div>
+    <div class="result-strip" :class="{ visible: showResult }">{{ rollHistory[0]?.total }}</div>
+    <div class="dice-selector">
+      <div v-for="type in [10, 12, 20]" :key="type" class="die-wrap">
+        <h3 class="die-label">d{{ type }}</h3>
+        <button class="die-btn" :class="{ active: counts[type] > 0, rolling }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
+          <svg viewBox="18 18 64 64" class="die-svg"><path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+        </button>
+        <span class="die-count" v-if="counts[type] > 0">×{{ counts[type] }}</span>
+        <span class="die-count zero" v-else>×0</span>
+      </div>
+    </div>
   </div>
 
   <div class="modifier-row">
@@ -111,21 +132,55 @@ const dieShapes: Record<DieType, string> = {
     </button>
   </div>
 
-  <div v-if="results.length > 0" class="results">
-    <HistoryChips :items="resultItems" />
-    <div class="total" v-if="results.length > 1 || modifier !== 0">
-      Итого: {{ total }}
-    </div>
+  <div v-if="rollHistory.length > 0" class="results">
+    <HistoryChips :items="historyItems" />
   </div>
   </div>
 </template>
 
 <style scoped>
+.dice-area {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
 .dice-selector {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4.5rem;
-  margin-bottom: 1.5rem;
+  justify-content: center;
+  column-gap: 4.5rem;
+}
+
+.result-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  min-height: calc(1.5rem * 1.2 + 0.6em);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(from var(--color-bg-secondary) r g b / 0.88) 17%,
+    rgb(from var(--color-bg-secondary) r g b / 0.88) 83%,
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+.result-strip.visible {
+  opacity: 1;
+  transition: opacity 0.1s;
+}
+
+.die-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .die-btn {
@@ -138,7 +193,6 @@ const dieShapes: Record<DieType, string> = {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
   color: var(--color-primary);
   transition: color 0.2s;
   user-select: none;
@@ -152,6 +206,7 @@ const dieShapes: Record<DieType, string> = {
 .die-btn:hover .die-svg path {
   filter: drop-shadow(0 0 0.35em var(--color-text));
 }
+
 
 .die-btn.active {
   color: var(--color-accent);
@@ -180,6 +235,11 @@ const dieShapes: Record<DieType, string> = {
   height: 72px;
 }
 
+.die-label {
+  color: var(--color-primary);
+  margin: 0;
+}
+
 .die-svg path {
   fill: transparent;
   stroke: currentColor;
@@ -196,8 +256,8 @@ const dieShapes: Record<DieType, string> = {
   min-height: 1.2em;
 }
 
-.die-count.placeholder {
-  visibility: hidden;
+.die-count.zero {
+  color: var(--color-primary) !important;
 }
 
 .modifier-row {
@@ -239,8 +299,8 @@ const dieShapes: Record<DieType, string> = {
 }
 
 .modifier-btn:hover {
-  color: var(--color-accent);
-  background: rgb(from var(--color-primary) r g b / 0.08);
+  color: var(--color-primary);
+  background: var(--color-control-bg-hover);
 }
 
 
@@ -281,10 +341,19 @@ const dieShapes: Record<DieType, string> = {
   gap: 0.75rem;
 }
 
-.total {
-  font-size: 1.3rem;
+.result-strip {
+  text-align: center;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
+  padding: 0.5em 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(from var(--color-bg-secondary) r g b / 0.88) 17%,
+    rgb(from var(--color-bg-secondary) r g b / 0.88) 83%,
+    transparent
+  );
 }
 
 @keyframes die-shake {
