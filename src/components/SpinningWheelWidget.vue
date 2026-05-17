@@ -13,6 +13,8 @@ const spinning = ref(false)
 const result = ref<string | null>(null)
 const rotation = ref(0)
 const spinHistory = ref<string[]>([])
+const showResult = ref(false)
+let resultTimer: ReturnType<typeof setTimeout> | null = null
 
 const canSpin = computed(() => items.value.length >= 2 && !spinning.value)
 
@@ -23,6 +25,7 @@ function addItem() {
   newItemText.value = ''
   result.value = null
   spinHistory.value = []
+  showResult.value = false
 }
 
 function removeItem(index: number) {
@@ -30,12 +33,14 @@ function removeItem(index: number) {
   items.value.splice(index, 1)
   result.value = null
   spinHistory.value = []
+  showResult.value = false
 }
 
 function clear() {
   items.value = []
   result.value = null
   spinHistory.value = []
+  showResult.value = false
 }
 
 
@@ -66,6 +71,9 @@ function spin() {
     result.value = winner
     if (winner) spinHistory.value.unshift(winner)
     spinning.value = false
+    showResult.value = true
+    if (resultTimer) clearTimeout(resultTimer)
+    resultTimer = setTimeout(() => { showResult.value = false }, 3000)
   }, SPIN_MS)
 }
 
@@ -177,12 +185,12 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
               <polygon points="0,-188 -7,-205 7,-205" class="pointer"/>
 
               <!-- Result strip (same pattern as DiceRoller) -->
-              <template v-if="result && !spinning">
+              <g class="result-group" :class="{ visible: showResult }">
                 <rect x="-222" y="-34" width="444" height="68" fill="url(#wheel-result-bg)"/>
                 <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" class="result-label">
                   {{ result }}
                 </text>
-              </template>
+              </g>
             </template>
           </g>
         </svg>
@@ -294,6 +302,17 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
 
 /* ── Result strip ── */
 
+.result-group {
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.result-group.visible {
+  opacity: 1;
+  transition: opacity 0.1s;
+}
+
 .result-label {
   fill: var(--color-primary);
   font-size: 22px;
@@ -347,6 +366,12 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
 .add-form {
   display: flex;
   gap: 0.5rem;
+}
+
+.add-form .btn-primary:hover:not(:disabled) {
+  background: var(--color-control-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .item-input {
@@ -434,7 +459,7 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
 }
 
 .remove-btn:hover:not(:disabled) {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .remove-btn:disabled {

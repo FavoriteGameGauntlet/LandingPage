@@ -17,6 +17,8 @@ const rotation = ref(0)
 const flipping = ref(false)
 const result = ref<Side | null>(null)
 const history = ref<Side[]>([])
+const showResult = ref(false)
+let resultTimer: ReturnType<typeof setTimeout> | null = null
 
 function flip() {
   if (flipping.value) return
@@ -34,6 +36,9 @@ function flip() {
     result.value = side
     history.value.unshift(side)
     flipping.value = false
+    showResult.value = true
+    if (resultTimer) clearTimeout(resultTimer)
+    resultTimer = setTimeout(() => { showResult.value = false }, 3000)
   }, 1500)
 }
 
@@ -61,6 +66,9 @@ const historyItems = computed(() =>
       <div class="face tails">
         <span v-if="history.length > 0" class="coin-icon" v-html="tailsSvg"/>
       </div>
+    </div>
+    <div class="result-strip" :class="{ visible: showResult }">
+      {{ result === 'heads' ? 'Орел' : 'Решка' }}
     </div>
   </div>
 
@@ -119,6 +127,8 @@ const historyItems = computed(() =>
 .face.tails {
   transform: rotateY(180deg) translateZ(1px);
   color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: rgb(from var(--color-accent) r g b / 0.08);
 }
 
 .coin-icon {
@@ -131,6 +141,38 @@ const historyItems = computed(() =>
   width: 100%;
   height: 100%;
   fill: currentColor;
+}
+
+.coin-scene {
+  position: relative;
+}
+
+.result-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  padding: 0.5em 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(from var(--color-bg-secondary) r g b / 0.88) 17%,
+    rgb(from var(--color-bg-secondary) r g b / 0.88) 83%,
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+.result-strip.visible {
+  opacity: 1;
+  transition: opacity 0.1s;
 }
 
 .action-row {
