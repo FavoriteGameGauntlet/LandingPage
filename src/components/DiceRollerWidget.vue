@@ -36,7 +36,6 @@ const modifier = ref(0)
 
 const totalDice = computed(() => diceTypes.reduce((sum, t) => sum + counts.value[t], 0))
 const diceSum = computed(() => results.value.reduce((sum, r) => sum + r.value, 0))
-const total = computed(() => diceSum.value + modifier.value)
 const historyItems = computed(() => rollHistory.value.map(r => {
   const parts = r.breakdown.map(d => `d${d.type}: ${d.value}`).join('\n')
   const mod = r.modifier !== 0 ? `\nмод: ${r.modifier > 0 ? '+' : ''}${r.modifier}` : ''
@@ -85,7 +84,7 @@ const dieShapes: Record<DieType, string> = {
   <div class="widget">
   <div class="dice-area">
     <div class="dice-selector">
-      <div v-for="type in [4, 6, 8]" :key="type" class="die-wrap">
+      <div v-for="type in ([4, 6, 8] as DieType[])" :key="type" class="die-wrap">
         <h3 class="die-label">d{{ type }}</h3>
         <button class="die-btn" :class="{ active: counts[type] > 0, rolling }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
           <svg viewBox="18 18 64 64" class="die-svg"><path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd"/></svg>
@@ -96,7 +95,7 @@ const dieShapes: Record<DieType, string> = {
     </div>
     <div class="result-strip" :class="{ visible: showResult }">{{ rollHistory[0]?.total }}</div>
     <div class="dice-selector">
-      <div v-for="type in [10, 12, 20]" :key="type" class="die-wrap">
+      <div v-for="type in ([10, 12, 20] as DieType[])" :key="type" class="die-wrap">
         <h3 class="die-label">d{{ type }}</h3>
         <button class="die-btn" :class="{ active: counts[type] > 0, rolling }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
           <svg viewBox="18 18 64 64" class="die-svg"><path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd"/></svg>
