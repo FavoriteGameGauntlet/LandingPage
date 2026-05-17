@@ -98,6 +98,21 @@ const labelSize = computed(() => {
 
 const NUM_COLORS = 3
 
+const sectorColors = computed(() => {
+  const n = items.value.length
+  if (n === 0) return []
+  const colors: number[] = new Array(n)
+  colors[0] = 0
+  for (let i = 1; i < n; i++) {
+    const forbidden = new Set([colors[i - 1]])
+    if (i === n - 1) forbidden.add(colors[0])
+    for (let c = 0; c < NUM_COLORS; c++) {
+      if (!forbidden.has(c)) { colors[i] = c; break }
+    }
+  }
+  return colors
+})
+
 const historyItems = computed(() => history.value.map(h => ({ label: h })))
 </script>
 
@@ -119,7 +134,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
           <g transform="translate(200,200)">
             <!-- Empty state -->
             <template v-if="items.length === 0">
-              <circle :r="R" fill="var(--color-wheel-empty-fill)" stroke="var(--color-wheel-empty-stroke)" stroke-width="1.5"/>
+              <circle :r="R" fill="var(--color-bg-secondary)" stroke="var(--color-primary)" stroke-width="3"/>
               <text text-anchor="middle" dominant-baseline="middle" class="empty-label">
                 Добавьте пункты
               </text>
@@ -132,8 +147,8 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
                   v-for="(_, i) in items"
                   :key="'s' + i"
                   :d="sectorPath(i)"
-                  :fill="`var(--color-wheel-fill-${i % NUM_COLORS})`"
-                  :stroke="`var(--color-wheel-stroke-${i % NUM_COLORS})`"
+                  :fill="`var(--color-wheel-fill-${sectorColors[i]})`"
+                  stroke="var(--color-primary)"
                   stroke-width="1"
                 />
                 <text
@@ -146,7 +161,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
                   class="sector-label"
                 >{{ truncate(item) }}</text>
                 <!-- Center cap -->
-                <circle r="18" fill="var(--color-wheel-bg)" stroke="var(--color-wheel-stroke-0)" stroke-width="2"/>
+                <circle r="18" fill="var(--color-bg-secondary)" stroke="var(--color-primary)" stroke-width="2"/>
               </g>
 
               <!-- Fixed pointer -->
@@ -228,12 +243,13 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .wheel-container {
   position: relative;
-  width: min(360px, calc(100vw - 4rem));
+  width: 100%;
   aspect-ratio: 1;
 }
 
@@ -262,8 +278,8 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
 }
 
 .pointer {
-  fill: var(--color-primary);
-  filter: drop-shadow(0 0 4px var(--color-primary));
+  fill: var(--color-accent);
+  filter: drop-shadow(0 0 4px var(--color-accent));
 }
 
 /* ── Result strip ── */
@@ -283,7 +299,6 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
 
 .history-wrap {
   width: 100%;
-  max-width: min(360px, calc(100vw - 4rem));
 }
 
 /* ── Items panel ── */
@@ -376,7 +391,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
   align-items: center;
   gap: 0.5rem;
   padding: 0.35em 0.6em;
-  border: 1px solid rgb(from var(--color-control-bg) r g b / 0.35);
+  border: 1px solid rgb(from var(--color-primary) r g b / 0.35);
   border-radius: 4px;
   background: rgb(from var(--color-control-bg) r g b / 0.08);
   transition: border-color 0.15s;
@@ -436,7 +451,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
   }
 
   .wheel-container {
-    width: min(320px, calc(100vw - 2rem));
+    width: 100%;
   }
 
   .items-list {
