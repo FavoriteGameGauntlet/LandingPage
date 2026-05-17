@@ -12,7 +12,7 @@ const newItemText = ref('')
 const spinning = ref(false)
 const result = ref<string | null>(null)
 const rotation = ref(0)
-const history = ref<string[]>([])
+const spinHistory = ref<string[]>([])
 
 const canSpin = computed(() => items.value.length >= 2 && !spinning.value)
 
@@ -22,13 +22,22 @@ function addItem() {
   items.value.push(text)
   newItemText.value = ''
   result.value = null
+  spinHistory.value = []
 }
 
 function removeItem(index: number) {
   if (spinning.value) return
   items.value.splice(index, 1)
   result.value = null
+  spinHistory.value = []
 }
+
+function clear() {
+  items.value = []
+  result.value = null
+  spinHistory.value = []
+}
+
 
 function spin() {
   if (!canSpin.value) return
@@ -55,7 +64,7 @@ function spin() {
   setTimeout(() => {
     const winner = items.value[actualWinIndex] ?? null
     result.value = winner
-    if (winner) history.value.unshift(winner)
+    if (winner) spinHistory.value.unshift(winner)
     spinning.value = false
   }, SPIN_MS)
 }
@@ -113,7 +122,7 @@ const sectorColors = computed(() => {
   return colors
 })
 
-const historyItems = computed(() => history.value.map(h => ({ label: h })))
+const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h })))
 </script>
 
 <template>
@@ -124,10 +133,10 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
         <svg viewBox="0 0 400 400" class="wheel-svg">
           <defs>
             <linearGradient id="wheel-result-bg" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%"   stop-color="var(--color-wheel-bg)" stop-opacity="0"/>
-              <stop offset="25%"  stop-color="var(--color-wheel-bg)" stop-opacity="0.88"/>
-              <stop offset="75%"  stop-color="var(--color-wheel-bg)" stop-opacity="0.88"/>
-              <stop offset="100%" stop-color="var(--color-wheel-bg)" stop-opacity="0"/>
+              <stop offset="0%"   stop-color="var(--color-bg-secondary)" stop-opacity="0"/>
+              <stop offset="17%"  stop-color="var(--color-bg-secondary)" stop-opacity="0.88"/>
+              <stop offset="83%"  stop-color="var(--color-bg-secondary)" stop-opacity="0.88"/>
+              <stop offset="100%" stop-color="var(--color-bg-secondary)" stop-opacity="0"/>
             </linearGradient>
           </defs>
 
@@ -169,7 +178,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
 
               <!-- Result strip (same pattern as DiceRoller) -->
               <template v-if="result && !spinning">
-                <rect x="-185" y="-34" width="370" height="68" fill="url(#wheel-result-bg)"/>
+                <rect x="-222" y="-34" width="444" height="68" fill="url(#wheel-result-bg)"/>
                 <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" class="result-label">
                   {{ result }}
                 </text>
@@ -183,13 +192,13 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
         <button class="btn-primary" :disabled="!canSpin" @click="spin">
           {{ spinning ? 'Крутится...' : 'Крутить' }}
         </button>
-        <button class="btn-secondary" :disabled="spinning || (history.length === 0 && items.length === 0)" @click="history = []; result = null; items = []">
+        <button class="btn-secondary" :disabled="spinning || (spinHistory.length === 0 && items.length === 0)" @click="clear">
           Очистить
         </button>
       </div>
 
-      <div v-if="history.length > 0" class="history-wrap">
-        <HistoryChips :items="historyItems" />
+      <div v-if="spinHistory.length > 0" class="spinHistory-wrap">
+        <HistoryChips :items="spinHistoryItems" />
       </div>
     </div>
 
@@ -257,6 +266,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
   width: 100%;
   height: 100%;
   display: block;
+  overflow: visible;
 }
 
 .wheel-group {
@@ -297,7 +307,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
   width: 100%;
 }
 
-.history-wrap {
+.spinHistory-wrap {
   width: 100%;
 }
 
@@ -348,6 +358,7 @@ const historyItems = computed(() => history.value.map(h => ({ label: h })))
   border-radius: 4px;
   font-size: 0.95rem;
   font-family: inherit;
+  color: var(--color-text);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
