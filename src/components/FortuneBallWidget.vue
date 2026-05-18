@@ -56,8 +56,9 @@ function ask() {
   showAnswer.value = false
 
   setTimeout(() => {
-    result.value = answers[Math.floor(Math.random() * answers.length)]
-    history.value.unshift(result.value)
+    const answer = answers[Math.floor(Math.random() * answers.length)] as Answer
+    result.value = answer
+    history.value.unshift(answer)
     revealing.value = false
     showAnswer.value = true
     if (revealTimer) clearTimeout(revealTimer)
