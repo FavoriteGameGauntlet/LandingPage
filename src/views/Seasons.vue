@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue'
+
+const s3 = import.meta.env.VITE_S3_BASE_URL
 import externalLinkIcon from '../assets/icons/external-link.svg?raw'
 import CardTabs from '../components/CardTabs.vue'
 import Chip from '../components/Chip.vue'
@@ -102,7 +104,7 @@ const seasons: Season[] = [
           'им о своих намерениях уничтожить себя и город.',
         ]
       },
-      {type: 'video', title: 'Финальный выбор', url: '/videos/fggw1-final-choice.mp4', true: true},
+      {type: 'video', title: 'Финальный выбор', url: `${s3}/videos/fggw1-final-choice.mp4`, true: true},
       {
         type: 'text',
         paragraphs: [
@@ -126,8 +128,8 @@ const seasons: Season[] = [
           'Боба больше в город не возвращался, а Гот Товардд наконец выпускает свою самую успешную игру.',
         ]
       },
-      {type: 'video', title: 'Финал: Перепрограммирование', url: '/videos/fggw1-reprogramming-final.mp4', true: true},
-      {type: 'video', title: 'Финал: Самоуничтожение', url: '/videos/fggw1-self-destruction-final.mp4'}
+      {type: 'video', title: 'Финал: Перепрограммирование', url: `${s3}/videos/fggw1-reprogramming-final.mp4`, true: true},
+      {type: 'video', title: 'Финал: Самоуничтожение', url: `${s3}/videos/fggw1-self-destruction-final.mp4`}
     ]
   },
   {
@@ -163,7 +165,7 @@ const seasons: Season[] = [
           'чтобы в конце один из них, самый слабый, был убит на Жертвенном Гейзере.',
         ]
       },
-      {type: 'video', title: 'Интро', url: '/videos/fggw2-intro.mp4', true: true},
+      {type: 'video', title: 'Интро', url: `${s3}/videos/fggw2-intro.mp4`, true: true},
       {
         type: 'text',
         paragraphs: [
@@ -216,7 +218,7 @@ const seasons: Season[] = [
           'где их уже ждет Лорд.'
         ]
       },
-      {type: 'video', title: 'Конец первого акта', url: '/videos/fggw2-first-act-ending.mp4', true: true},
+      {type: 'video', title: 'Конец первого акта', url: `${s3}/videos/fggw2-first-act-ending.mp4`, true: true},
       {
         type: 'text',
         paragraphs: [
@@ -226,7 +228,7 @@ const seasons: Season[] = [
           'и в ожесточенной схватке одерживают над ним победу.',
         ]
       },
-      {type: 'video', title: 'Финал', url: '/videos/fggw2-fake-final.mp4'},
+      {type: 'video', title: 'Финал', url: `${s3}/videos/fggw2-fake-final.mp4`},
       {
         type: 'text',
         paragraphs: [
@@ -249,7 +251,7 @@ const seasons: Season[] = [
           'старый друг — настоящий Гот Товардд.',
         ]
       },
-      {type: 'video', title: 'Финал', url: '/videos/fggw2-final.mp4', true: true}
+      {type: 'video', title: 'Финал', url: `${s3}/videos/fggw2-final.mp4`, true: true}
     ]
   },
   {
@@ -273,7 +275,7 @@ const seasonTabs = computed(() => seasons.map(s => ({ id: s.name, label: s.name 
 const selectedSeason = computed(() => seasons.find(s => s.name === selectedName.value) ?? null)
 
 function posterUrl(videoUrl: string): string {
-  return videoUrl.replace('/videos/', '/videos/posters/').replace('.mp4', '.jpg')
+  return videoUrl.replace('/videos/', '/videos/posters/').replace(/\.mp4$/, '.jpg')
 }
 </script>
 
