@@ -55,7 +55,7 @@ async function fetchRandomMovie() {
 
   const idx = Math.floor(Math.random() * buffer.value.length)
   const picked = buffer.value.splice(idx, 1)[0]
-  history.value.unshift(toMovie(picked))
+  if (picked) history.value.unshift(toMovie(picked))
 }
 </script>
 
