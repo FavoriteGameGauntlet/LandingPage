@@ -26,6 +26,7 @@ defineProps<{
 
 .chip-wrap {
   position: relative;
+  display: inline-flex;
 }
 
 .chip-tooltip {

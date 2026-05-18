@@ -14,7 +14,14 @@ const result = ref<string | null>(null)
 const rotation = ref(0)
 const spinHistory = ref<string[]>([])
 const showResult = ref(false)
+const slowHide = ref(false)
 let resultTimer: ReturnType<typeof setTimeout> | null = null
+
+function hideInstant() {
+  if (resultTimer) { clearTimeout(resultTimer); resultTimer = null }
+  slowHide.value = false
+  showResult.value = false
+}
 
 const canSpin = computed(() => items.value.length >= 2 && !spinning.value)
 
@@ -25,7 +32,7 @@ function addItem() {
   newItemText.value = ''
   result.value = null
   spinHistory.value = []
-  showResult.value = false
+  hideInstant()
 }
 
 function removeItem(index: number) {
@@ -33,14 +40,14 @@ function removeItem(index: number) {
   items.value.splice(index, 1)
   result.value = null
   spinHistory.value = []
-  showResult.value = false
+  hideInstant()
 }
 
 function clear() {
   items.value = []
   result.value = null
   spinHistory.value = []
-  showResult.value = false
+  hideInstant()
 }
 
 
@@ -48,6 +55,7 @@ function spin() {
   if (!canSpin.value) return
   spinning.value = true
   result.value = null
+  hideInstant()
 
   const n = items.value.length
   const winIndex = Math.floor(Math.random() * n)
@@ -73,7 +81,11 @@ function spin() {
     spinning.value = false
     showResult.value = true
     if (resultTimer) clearTimeout(resultTimer)
-    resultTimer = setTimeout(() => { showResult.value = false }, 3000)
+    resultTimer = setTimeout(() => {
+      slowHide.value = true
+      showResult.value = false
+      setTimeout(() => { slowHide.value = false }, 400)
+    }, 3000)
   }, SPIN_MS)
 }
 
@@ -185,7 +197,7 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
               <polygon points="0,-188 -7,-205 7,-205" class="pointer"/>
 
               <!-- Result strip (same pattern as DiceRoller) -->
-              <g class="result-group" :class="{ visible: showResult }">
+              <g class="result-group" :class="{ visible: showResult, 'slow-hide': slowHide }">
                 <rect x="-222" y="-34" width="444" height="68" fill="url(#wheel-result-bg)"/>
                 <text x="0" y="0" text-anchor="middle" dominant-baseline="middle" class="result-label">
                   {{ result }}
@@ -304,8 +316,11 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
 
 .result-group {
   opacity: 0;
-  transition: opacity 0.4s;
   pointer-events: none;
+}
+
+.result-group.slow-hide {
+  transition: opacity 0.4s;
 }
 
 .result-group.visible {

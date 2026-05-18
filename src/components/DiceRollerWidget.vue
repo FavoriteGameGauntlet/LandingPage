@@ -21,7 +21,14 @@ const rolling = ref(false)
 interface RollRecord { total: number; breakdown: { type: DieType; value: number }[]; modifier: number }
 const rollHistory = ref<RollRecord[]>([])
 const showResult = ref(false)
+const slowHide = ref(false)
 let resultTimer: ReturnType<typeof setTimeout> | null = null
+
+function hideInstant() {
+  if (resultTimer) { clearTimeout(resultTimer); resultTimer = null }
+  slowHide.value = false
+  showResult.value = false
+}
 
 function addDie(type: DieType) {
   if (counts.value[type] < 10) counts.value[type]++
@@ -46,12 +53,14 @@ function clear() {
   results.value = []
   rollHistory.value = []
   modifier.value = 0
+  hideInstant()
 }
 
 function roll() {
   if (totalDice.value === 0 || rolling.value) return
   rolling.value = true
   results.value = []
+  hideInstant()
   setTimeout(() => {
     const newResults: { type: DieType; value: number }[] = []
     for (const type of diceTypes) {
@@ -65,7 +74,11 @@ function roll() {
     rolling.value = false
     showResult.value = true
     if (resultTimer) clearTimeout(resultTimer)
-    resultTimer = setTimeout(() => { showResult.value = false }, 3000)
+    resultTimer = setTimeout(() => {
+      slowHide.value = true
+      showResult.value = false
+      setTimeout(() => { slowHide.value = false }, 400)
+    }, 3000)
   }, 500)
 }
 
@@ -92,7 +105,7 @@ const dieShapes: Record<DieType, string> = {
         <span class="die-count zero" v-else>×0</span>
       </div>
     </div>
-    <div class="result-strip" :class="{ visible: showResult }">{{ rollHistory[0]?.total }}</div>
+    <div class="result-strip" :class="{ visible: showResult, 'slow-hide': slowHide }">{{ rollHistory[0]?.total }}</div>
     <div class="dice-selector">
       <div v-for="type in ([10, 12, 20] as DieType[])" :key="type" class="die-wrap">
         <h3 class="die-label">d{{ type }}</h3>
@@ -166,6 +179,9 @@ const dieShapes: Record<DieType, string> = {
   );
   opacity: 0;
   pointer-events: none;
+}
+
+.result-strip.slow-hide {
   transition: opacity 0.4s;
 }
 
