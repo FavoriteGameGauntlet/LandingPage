@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import Header from "./components/Header.vue";
+import { useRoute } from 'vue-router'
+import Header from "./components/Header.vue"
+import GamesView from "./views/Games.vue"
+
+const route = useRoute()
 </script>
 
 <template>
@@ -11,6 +15,7 @@ import Header from "./components/Header.vue";
         <component :is="Component" />
       </KeepAlive>
     </router-view>
+    <GamesView v-show="route.name === 'games'" />
   </div>
 </template>
 

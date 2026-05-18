@@ -33,7 +33,7 @@ function select(id: string) {
 <style scoped>
 .card-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 10px;
   margin-bottom: 24px;
 }

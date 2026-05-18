@@ -52,4 +52,5 @@ const active = ref('')
   display: inline-block;
   color: var(--color-primary);
 }
+
 </style>

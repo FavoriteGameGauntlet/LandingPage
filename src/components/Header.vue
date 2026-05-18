@@ -31,6 +31,7 @@ router.afterEach((to) => {
         <router-link to="/app" class="button">Приложение</router-link>
         <router-link :to="lastRulesPath" class="button">Правила</router-link>
         <router-link to="/tools" class="button">Инструменты</router-link>
+        <router-link to="/games" class="button">Игры</router-link>
         <router-link to="/seasons" class="button">Сезоны</router-link>
       </div>
     </div>
