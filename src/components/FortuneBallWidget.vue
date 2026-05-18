@@ -47,13 +47,20 @@ const answers: Answer[] = [
 const result = ref<Answer | null>(null)
 const revealing = ref(false)
 const showAnswer = ref(false)
+const slowHide = ref(false)
 const history = ref<Answer[]>([])
 let revealTimer: ReturnType<typeof setTimeout> | null = null
+
+function hideInstant() {
+  if (revealTimer) { clearTimeout(revealTimer); revealTimer = null }
+  slowHide.value = false
+  showAnswer.value = false
+}
 
 function ask() {
   if (revealing.value) return
   revealing.value = true
-  showAnswer.value = false
+  hideInstant()
 
   setTimeout(() => {
     const answer = answers[Math.floor(Math.random() * answers.length)] as Answer
@@ -61,8 +68,11 @@ function ask() {
     history.value.unshift(answer)
     revealing.value = false
     showAnswer.value = true
-    if (revealTimer) clearTimeout(revealTimer)
-    revealTimer = setTimeout(() => { showAnswer.value = false }, 4000)
+    revealTimer = setTimeout(() => {
+      slowHide.value = true
+      showAnswer.value = false
+      setTimeout(() => { slowHide.value = false }, 300)
+    }, 4000)
   }, 1500)
 }
 
@@ -70,7 +80,7 @@ function clear() {
   if (revealing.value) return
   result.value = null
   history.value = []
-  showAnswer.value = false
+  hideInstant()
 }
 
 const historyItems = computed(() =>
@@ -88,7 +98,7 @@ const historyItems = computed(() =>
       >
         <div class="ball-shine" />
         <div class="ball-inner">
-          <transition name="answer">
+          <transition name="answer" :duration="{ enter: 500, leave: slowHide ? 300 : 0 }">
             <div
               v-if="showAnswer && result"
               class="answer-text"
