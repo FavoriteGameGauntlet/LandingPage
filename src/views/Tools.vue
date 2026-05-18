@@ -10,11 +10,13 @@ import DiceRollerWidget from '../components/DiceRollerWidget.vue'
 import SpinningWheelWidget from '../components/SpinningWheelWidget.vue'
 import RandomMovieWidget from '../components/RandomMovieWidget.vue'
 import FortuneBallWidget from '../components/FortuneBallWidget.vue'
+import RandomCardWidget from '../components/RandomCardWidget.vue'
 const tools = [
   { id: 'dice', label: 'Кубики' },
   { id: 'coin', label: 'Монетка' },
   { id: 'wheel', label: 'Колесо' },
-  { id: 'movie', label: 'Фильм' },
+  { id: 'movie', label: 'Фильмотека' },
+  { id: 'card', label: 'Колода' },
   { id: 'fortune', label: 'Шар' },
   { id: 'links', label: 'Материалы' },
 ]
@@ -29,6 +31,7 @@ const active = ref('')
     <div v-show="active === 'coin'"><CoinFlipWidget /></div>
     <div v-show="active === 'wheel'"><SpinningWheelWidget /></div>
     <div v-show="active === 'movie'"><RandomMovieWidget /></div>
+    <div v-show="active === 'card'"><RandomCardWidget /></div>
     <div v-show="active === 'fortune'"><FortuneBallWidget /></div>
     <div v-show="active === 'links'" class="link-wrap">
       <div class="link-entry">
