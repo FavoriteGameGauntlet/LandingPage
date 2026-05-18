@@ -13,7 +13,7 @@ const games = [
   { id: 'rose-camellia', label: 'Rose & Camellia', src: '/games/rose_and_camellia.swf' },
   { id: 'gunblood', label: 'GunBlood', src: '/games/gunblood.swf' },
   { id: 'xiaoxiao4', label: 'Xiao Xiao No. 4', src: '/games/xiaoxiao_4.swf' },
-  { id: 'zombotron', label: 'Zombotron', src: '/games/zombotronp10.swf' },
+  { id: 'zombotron', label: 'Zombotron', src: '/games/zombotron.swf' },
 ]
 
 const active = ref('')
