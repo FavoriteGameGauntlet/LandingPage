@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 
-const TMDB_TOKEN = import.meta.env.VITE_TMDB_API_KEY as string
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY as string
 const TMDB_BASE = 'https://api.themoviedb.org/3'
 const TMDB_IMG = 'https://image.tmdb.org/t/p/w200'
-
-const headers = { Authorization: `Bearer ${TMDB_TOKEN}` }
 
 interface Movie {
   title: string
   releaseDate: string
   rating: number
   posterPath: string | null
+  uid: number
 }
 
 type RawMovie = { title: string; release_date: string; vote_average: number; poster_path: string | null }
@@ -20,6 +19,7 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const history = ref<Movie[]>([])
 const buffer = ref<RawMovie[]>([])
+let uidCounter = 0
 
 function toMovie(raw: RawMovie): Movie {
   const date = new Date(raw.release_date)
@@ -28,6 +28,7 @@ function toMovie(raw: RawMovie): Movie {
     releaseDate: date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),
     rating: Math.round(raw.vote_average * 10) / 10,
     posterPath: raw.poster_path,
+    uid: uidCounter++,
   }
 }
 
@@ -38,8 +39,7 @@ async function fetchRandomMovie() {
     try {
       const randomPage = Math.floor(Math.random() * 500) + 1
       const res = await fetch(
-        `${TMDB_BASE}/discover/movie?vote_count.gte=100&sort_by=popularity.desc&page=${randomPage}`,
-        { headers }
+        `${TMDB_BASE}/discover/movie?api_key=${TMDB_API_KEY}&vote_count.gte=100&sort_by=popularity.desc&page=${randomPage}`
       )
       if (!res.ok) throw new Error('Ошибка запроса к TMDB')
       const data = await res.json()
@@ -55,7 +55,39 @@ async function fetchRandomMovie() {
 
   const idx = Math.floor(Math.random() * buffer.value.length)
   const picked = buffer.value.splice(idx, 1)[0]
-  if (picked) history.value.unshift(toMovie(picked))
+  if (picked) {
+    history.value.unshift(toMovie(picked))
+    if (history.value.length > 4) history.value.pop()
+  }
+}
+
+let clearing = false
+
+function clearHistory() {
+  clearing = true
+  history.value = []
+  nextTick(() => { clearing = false })
+}
+
+function onLeave(el: Element, done: () => void) {
+  if (clearing) { done(); return }
+  const htmlEl = el as HTMLElement
+  const rect = htmlEl.getBoundingClientRect()
+  const parentRect = htmlEl.offsetParent?.getBoundingClientRect() ?? { left: 0, top: 0 }
+
+  htmlEl.style.position = 'absolute'
+  htmlEl.style.left = `${rect.left - parentRect.left}px`
+  htmlEl.style.top = `${rect.top - parentRect.top}px`
+  htmlEl.style.width = `${rect.width}px`
+  htmlEl.style.margin = '0'
+
+  htmlEl.animate(
+    [
+      { opacity: 1, transform: 'translateX(0)' },
+      { opacity: 0, transform: `translateX(${rect.width + 12}px)` },
+    ],
+    { duration: 280, easing: 'ease-in' }
+  ).onfinish = done
 }
 </script>
 
@@ -63,17 +95,17 @@ async function fetchRandomMovie() {
   <div class="widget">
     <div class="action-row">
       <button class="btn-primary" :disabled="loading" @click="fetchRandomMovie">
-        {{ loading ? 'Загрузка...' : 'Случайный' }}
+        {{ loading ? 'Загрузка...' : 'Вытянуть' }}
       </button>
-      <button class="btn-secondary" :disabled="loading || history.length === 0" @click="history = []">
+      <button class="btn-secondary" :disabled="loading || history.length === 0" @click="clearHistory">
         Очистить
       </button>
     </div>
 
     <div v-if="error" class="error-text">{{ error }}</div>
 
-    <div class="history">
-      <div v-for="(movie, i) in history" :key="i" class="movie-card">
+    <TransitionGroup name="movie" tag="div" class="history" @leave="onLeave">
+      <div v-for="movie in history" :key="movie.uid" class="movie-card">
         <img
           v-if="movie.posterPath"
           :src="`${TMDB_IMG}${movie.posterPath}`"
@@ -88,13 +120,26 @@ async function fetchRandomMovie() {
           </div>
         </div>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
 <style scoped>
 .action-row {
   margin-bottom: 1.75rem;
+}
+
+.movie-enter-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.movie-move {
+  transition: transform 0.3s ease;
+}
+
+.movie-enter-from {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.92);
 }
 
 .error-text {
@@ -104,6 +149,7 @@ async function fetchRandomMovie() {
 }
 
 .history {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
