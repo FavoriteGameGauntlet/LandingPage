@@ -11,6 +11,7 @@ import SpinningWheelWidget from '../components/SpinningWheelWidget.vue'
 import RandomMovieWidget from '../components/RandomMovieWidget.vue'
 import FortuneBallWidget from '../components/FortuneBallWidget.vue'
 import RandomCardWidget from '../components/RandomCardWidget.vue'
+import HashImageWidget from '../components/HashImageWidget.vue'
 const tools = [
   { id: 'dice', label: 'Кубики' },
   { id: 'coin', label: 'Монетка' },
@@ -19,6 +20,7 @@ const tools = [
   { id: 'card', label: 'Колода' },
   { id: 'fortune', label: 'Шар' },
   { id: 'links', label: 'Материалы' },
+  { id: 'images', label: 'Картинки' },
 ]
 
 const active = ref('')
@@ -33,6 +35,7 @@ const active = ref('')
     <div v-show="active === 'movie'"><RandomMovieWidget /></div>
     <div v-show="active === 'card'"><RandomCardWidget /></div>
     <div v-show="active === 'fortune'"><FortuneBallWidget /></div>
+    <div v-show="active === 'images'"><HashImageWidget /></div>
     <div v-show="active === 'links'" class="link-wrap">
       <div class="link-entry">
         <a href="https://disk.yandex.ru/d/vw1yjwiCdIUsRg" target="_blank" class="item-link">Материалы за все сезоны</a>
