@@ -53,7 +53,7 @@ async function search() {
         <input
           class="hash-input"
           type="text"
-          placeholder="a1b2c3"
+          placeholder="Введите хэш картинки"
           :value="input"
           maxlength="7"
           :disabled="loading"
@@ -83,25 +83,28 @@ async function search() {
 
 .hash-input {
   flex: 1;
-  padding: 0.55em 0.85em;
-  font-size: 1rem;
+  padding: 0.4em 0.7em;
+  font-size: 0.95rem;
   font-family: inherit;
-  font-weight: 600;
-  background: var(--color-control-bg);
-  border: 2px solid var(--color-bg-secondary);
+  background: transparent;
+  border: 1px solid rgb(from var(--color-primary) r g b / 0.35);
   border-radius: 4px;
   color: var(--color-text);
   outline: none;
-  letter-spacing: 0.1em;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .hash-input:focus {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.35);
 }
 
 .hash-input:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
+}
+
+.hash-input::placeholder {
+  color: rgb(from var(--color-text) r g b / 0.35);
 }
 
 .hint-text {
