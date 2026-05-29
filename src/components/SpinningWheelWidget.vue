@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
 
 const MAX_ITEMS = 20
@@ -7,21 +8,14 @@ const R = 185
 const TEXT_R = 128
 const SPIN_MS = 4000
 
+const { showResult, slowHide, hideInstant, show } = useResultStrip()
+
 const items = ref<string[]>([])
 const newItemText = ref('')
 const spinning = ref(false)
 const result = ref<string | null>(null)
 const rotation = ref(0)
 const spinHistory = ref<string[]>([])
-const showResult = ref(false)
-const slowHide = ref(false)
-let resultTimer: ReturnType<typeof setTimeout> | null = null
-
-function hideInstant() {
-  if (resultTimer) { clearTimeout(resultTimer); resultTimer = null }
-  slowHide.value = false
-  showResult.value = false
-}
 
 const canSpin = computed(() => items.value.length >= 2 && !spinning.value)
 
@@ -79,13 +73,7 @@ function spin() {
     result.value = winner
     if (winner) spinHistory.value.unshift(winner)
     spinning.value = false
-    showResult.value = true
-    if (resultTimer) clearTimeout(resultTimer)
-    resultTimer = setTimeout(() => {
-      slowHide.value = true
-      showResult.value = false
-      setTimeout(() => { slowHide.value = false }, 400)
-    }, 3000)
+    show()
   }, SPIN_MS)
 }
 
@@ -234,7 +222,7 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
       <form class="add-form" @submit.prevent="addItem">
         <input
           v-model="newItemText"
-          class="item-input"
+          class="item-input themed-input"
           placeholder="Новый пункт..."
           :disabled="items.length >= MAX_ITEMS || spinning"
           maxlength="30"
@@ -392,28 +380,6 @@ const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h }
 .item-input {
   flex: 1;
   min-width: 0;
-  padding: 0.4em 0.7em;
-  background: transparent;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.35);
-  border-radius: 4px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: var(--color-text);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.item-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.35);
-}
-
-.item-input:disabled {
-  opacity: 0.4;
-}
-
-.item-input::placeholder {
-  color: rgb(from var(--color-text) r g b / 0.35);
 }
 
 .items-list {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useResultStrip } from '../composables/useResultStrip'
 import headsRaw from '../assets/icons/coin-flip/heads.svg?raw'
 import tailsRaw from '../assets/icons/coin-flip/tails.svg?raw'
 import HistoryChips from './HistoryChips.vue'
@@ -13,20 +14,13 @@ const tailsSvg = prepareCoinSvg(tailsRaw)
 
 type Side = 'heads' | 'tails'
 
+const { showResult, slowHide, hideInstant, show } = useResultStrip()
+
 const rotation = ref(0)
 const flipping = ref(false)
 const noTransition = ref(false)
 const result = ref<Side | null>(null)
 const history = ref<Side[]>([])
-const showResult = ref(false)
-const slowHide = ref(false)
-let resultTimer: ReturnType<typeof setTimeout> | null = null
-
-function hideInstant() {
-  if (resultTimer) { clearTimeout(resultTimer); resultTimer = null }
-  slowHide.value = false
-  showResult.value = false
-}
 
 function flip() {
   if (flipping.value) return
@@ -45,12 +39,7 @@ function flip() {
     result.value = side
     history.value.unshift(side)
     flipping.value = false
-    showResult.value = true
-    resultTimer = setTimeout(() => {
-      slowHide.value = true
-      showResult.value = false
-      setTimeout(() => { slowHide.value = false }, 400)
-    }, 3000)
+    show()
   }, 1500)
 }
 

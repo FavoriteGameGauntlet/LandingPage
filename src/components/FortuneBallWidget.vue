@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
 
 type Variant = 'primary' | 'accent' | null
@@ -44,18 +45,11 @@ const answers: Answer[] = [
   { text: 'Маловероятно', variant: 'accent' },
 ]
 
+const { showResult: showAnswer, slowHide, hideInstant, show } = useResultStrip(4000, 300)
+
 const result = ref<Answer | null>(null)
 const revealing = ref(false)
-const showAnswer = ref(false)
-const slowHide = ref(false)
 const history = ref<Answer[]>([])
-let revealTimer: ReturnType<typeof setTimeout> | null = null
-
-function hideInstant() {
-  if (revealTimer) { clearTimeout(revealTimer); revealTimer = null }
-  slowHide.value = false
-  showAnswer.value = false
-}
 
 function ask() {
   if (revealing.value) return
@@ -67,12 +61,7 @@ function ask() {
     result.value = answer
     history.value.unshift(answer)
     revealing.value = false
-    showAnswer.value = true
-    revealTimer = setTimeout(() => {
-      slowHide.value = true
-      showAnswer.value = false
-      setTimeout(() => { slowHide.value = false }, 300)
-    }, 4000)
+    show()
   }, 1500)
 }
 

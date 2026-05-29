@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, nextTick } from 'vue'
+import { useCardLeave } from '../composables/useCardLeave'
+import NumberStepper from './NumberStepper.vue'
+import CountSlider from './CountSlider.vue'
 
 const S3 = import.meta.env.VITE_S3_BASE_URL
 
@@ -35,17 +38,10 @@ const CARDS = [
   { id: 'the-world', name: 'Мир' },
 ]
 
+const { clearStart, clearEnd, onLeave } = useCardLeave()
+
 const cardCount = ref(1)
 const maxCount = 10
-const sliderPercent = computed(() => (cardCount.value - 1) / (maxCount - 1) * 100)
-
-function setCount(val: number) {
-  cardCount.value = Math.min(maxCount, Math.max(1, val || 1))
-}
-
-function onCountChange(e: Event) {
-  setCount(Number((e.target as HTMLInputElement).value))
-}
 
 let uidCounter = 0
 const buffer = ref([...CARDS])
@@ -69,87 +65,11 @@ function pickCards() {
   })
 }
 
-let clearing = false
-
 function clearHistory() {
-  clearing = true
+  clearStart()
   history.value = []
   buffer.value = [...CARDS]
-  nextTick(() => { clearing = false })
-}
-
-interface LeavingItem { el: HTMLElement; left: number; top: number; w: number; done: () => void }
-const leavingBatch: LeavingItem[] = []
-let leavingScheduled = false
-
-function onLeave(el: Element, done: () => void) {
-  if (clearing) { done(); return }
-  const htmlEl = el as HTMLElement
-  const rect = htmlEl.getBoundingClientRect()
-  const parentRect = htmlEl.offsetParent?.getBoundingClientRect() ?? { left: 0, top: 0 }
-
-  leavingBatch.push({
-    el: htmlEl,
-    left: rect.left - parentRect.left,
-    top: rect.top - parentRect.top,
-    w: rect.width,
-    done,
-  })
-
-  if (!leavingScheduled) {
-    leavingScheduled = true
-    queueMicrotask(() => {
-      leavingScheduled = false
-      animateLeaving([...leavingBatch])
-      leavingBatch.length = 0
-    })
-  }
-}
-
-async function animateLeaving(batch: LeavingItem[]) {
-  batch.forEach(({ el, left, top, w }) => {
-    el.style.position = 'absolute'
-    el.style.left = `${left}px`
-    el.style.top = `${top}px`
-    el.style.width = `${w}px`
-    el.style.margin = '0'
-  })
-
-  const target = batch.reduce((a, b) =>
-    b.top > a.top || (b.top === a.top && b.left > a.left) ? b : a
-  )
-
-  const phase1 = batch
-    .filter(it => it !== target)
-    .map(it =>
-      it.el.animate(
-        [
-          { transform: 'translate(0,0)', opacity: '1' },
-          { transform: `translate(${target.left - it.left}px, ${target.top - it.top}px)`, opacity: '0.7' },
-        ],
-        { duration: 180, easing: 'ease-in', fill: 'forwards' }
-      )
-    )
-
-  await Promise.all(phase1.map(a => a.finished))
-
-  batch.forEach(({ el }) => {
-    el.style.left = `${target.left}px`
-    el.style.top  = `${target.top}px`
-  })
-  phase1.forEach(a => a.cancel())
-
-  await Promise.all(batch.map(({ el }) =>
-    el.animate(
-      [
-        { opacity: '0.7', transform: 'translateX(0)' },
-        { opacity: '0',   transform: `translateX(${target.w + 12}px)` },
-      ],
-      { duration: 280, easing: 'ease-in' }
-    ).finished
-  ))
-
-  batch.forEach(({ done }) => done())
+  nextTick(clearEnd)
 }
 </script>
 
@@ -159,28 +79,10 @@ async function animateLeaving(batch: LeavingItem[]) {
       <div class="options">
         <div class="option-row">
           <span class="option-label">Количество</span>
-          <div class="modifier-control">
-            <button class="modifier-btn" @click="setCount(cardCount - 1)">−</button>
-            <input
-              :value="cardCount"
-              type="number"
-              :min="1"
-              :max="maxCount"
-              class="modifier-input"
-              @change="onCountChange"
-            />
-            <button class="modifier-btn" @click="setCount(cardCount + 1)">+</button>
-          </div>
+          <NumberStepper v-model="cardCount" :min="1" :max="maxCount" />
         </div>
 
-        <input
-          :value="cardCount"
-          type="range"
-          :min="1"
-          :max="maxCount"
-          class="count-slider"
-          @input="setCount(Number(($event.target as HTMLInputElement).value))"
-        />
+        <CountSlider v-model="cardCount" :min="1" :max="maxCount" />
       </div>
 
       <div class="action-row">
@@ -239,107 +141,7 @@ async function animateLeaving(batch: LeavingItem[]) {
   min-width: 90px;
 }
 
-.modifier-control {
-  display: flex;
-  align-items: stretch;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.3);
-  border-radius: 4px;
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
 
-.modifier-control:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.4);
-}
-
-.modifier-btn {
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  color: var(--color-primary);
-  padding: 0 0.6em;
-  font-size: 1rem;
-  cursor: pointer;
-  line-height: 1;
-  transition: background 0.15s;
-}
-
-.modifier-btn:hover {
-  background: rgb(from var(--color-primary) r g b / 0.1);
-}
-
-.modifier-input {
-  width: 40px;
-  padding: 0.3em 0;
-  background: transparent;
-  border: none;
-  color: var(--color-text);
-  font-size: 0.95rem;
-  font-family: inherit;
-  text-align: center;
-}
-
-.modifier-input:focus {
-  outline: none;
-}
-
-.modifier-input::-webkit-inner-spin-button,
-.modifier-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-}
-
-.modifier-input[type=number] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.count-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(
-    to right,
-    var(--color-primary) 0%,
-    var(--color-primary) calc(v-bind('sliderPercent') * 1%),
-    rgb(from var(--color-primary) r g b / 0.2) calc(v-bind('sliderPercent') * 1%),
-    rgb(from var(--color-primary) r g b / 0.2) 100%
-  );
-  outline: none;
-  cursor: pointer;
-}
-
-.count-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 6px;
-  height: 18px;
-  border-radius: 2px;
-  background: var(--color-primary);
-  box-shadow: 0 0 4px rgb(from var(--color-primary) r g b / 0.6);
-  transition: box-shadow 0.15s;
-}
-
-.count-slider:hover::-webkit-slider-thumb {
-  box-shadow: 0 0 8px var(--color-primary);
-}
-
-.count-slider::-moz-range-thumb {
-  width: 6px;
-  height: 18px;
-  border-radius: 2px;
-  border: none;
-  background: var(--color-primary);
-  box-shadow: 0 0 4px rgb(from var(--color-primary) r g b / 0.6);
-  transition: box-shadow 0.15s;
-}
-
-.count-slider:hover::-moz-range-thumb {
-  box-shadow: 0 0 8px var(--color-primary);
-}
 
 .action-row {
   margin-bottom: 1.75rem;

@@ -51,7 +51,7 @@ async function search() {
     <div class="widget">
       <form class="search-row" @submit.prevent="search">
         <input
-          class="hash-input"
+          class="hash-input themed-input"
           type="text"
           placeholder="Введите хэш картинки"
           :value="input"
@@ -83,28 +83,6 @@ async function search() {
 
 .hash-input {
   flex: 1;
-  padding: 0.4em 0.7em;
-  font-size: 0.95rem;
-  font-family: inherit;
-  background: transparent;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.35);
-  border-radius: 4px;
-  color: var(--color-text);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.hash-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.35);
-}
-
-.hash-input:disabled {
-  opacity: 0.4;
-}
-
-.hash-input::placeholder {
-  color: rgb(from var(--color-text) r g b / 0.35);
 }
 
 .hint-text {
