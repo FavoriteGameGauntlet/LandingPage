@@ -13,6 +13,7 @@ import FortuneBallWidget from '../components/FortuneBallWidget.vue'
 import RandomCardWidget from '../components/RandomCardWidget.vue'
 import HashImageWidget from '../components/HashImageWidget.vue'
 import GameCoverWidget from '../components/GameCoverWidget.vue'
+import TarotCardWidget from '../components/TarotCardWidget.vue'
 const tools = [
   { id: 'dice', label: 'Кубики' },
   { id: 'coin', label: 'Монетка' },
@@ -23,6 +24,7 @@ const tools = [
   { id: 'links', label: 'Материалы' },
   { id: 'images', label: 'Хэш-картинка' },
   { id: 'gamecover', label: 'Обложка' },
+  { id: 'tarot', label: 'Таро' },
 ]
 
 const active = ref('')
@@ -39,6 +41,7 @@ const active = ref('')
     <div v-show="active === 'fortune'"><FortuneBallWidget /></div>
     <div v-show="active === 'images'"><HashImageWidget /></div>
     <div v-show="active === 'gamecover'"><GameCoverWidget /></div>
+    <div v-show="active === 'tarot'"><TarotCardWidget /></div>
     <div v-show="active === 'links'" class="link-wrap">
       <div class="link-entry">
         <a href="https://disk.yandex.ru/d/vw1yjwiCdIUsRg" target="_blank" class="item-link">Материалы за все сезоны</a>
