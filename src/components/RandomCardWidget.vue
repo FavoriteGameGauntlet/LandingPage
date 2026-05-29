@@ -50,6 +50,7 @@ interface Card {
   svgName: string
   color: 'red' | 'black'
   uid: number
+  revealed: boolean
 }
 
 const RANKS_36 = [
@@ -137,10 +138,16 @@ function pickCards() {
     if (buffer.value.length === 0) buffer.value = buildDeck()
     const idx = Math.floor(Math.random() * buffer.value.length)
     const picked = buffer.value.splice(idx, 1)[0]
-    if (picked) drawn.push({ ...picked, uid: uidCounter++ })
+    if (picked) drawn.push({ ...picked, uid: uidCounter++, revealed: false })
   }
   history.value.unshift(...drawn)
   while (history.value.length > 20) history.value.pop()
+  drawn.forEach((card, i) => {
+    setTimeout(() => {
+      const found = history.value.find(c => c.uid === card.uid)
+      if (found) found.revealed = true
+    }, 150 + i * 100)
+  })
 }
 
 let clearing = false
@@ -281,18 +288,26 @@ async function animateLeaving(batch: LeavingItem[]) {
 
     <TransitionGroup name="card" tag="div" class="history" @leave="onLeave">
       <div v-for="card in history" :key="card.uid" class="card-item" :class="card.color">
-        <img
-          v-if="!imgErrors.has(card.svgName)"
-          :src="`/cards/${card.svgName}.svg`"
-          :alt="`${card.rank} ${card.suit}`"
-          class="card-svg"
-          @error="onImgError(card.svgName)"
-        />
-        <div v-else class="card-fallback">
-          <span class="card-rank-icon" v-html="RANK_ICONS[card.rankName]" />
-          <span class="card-suit-icon" v-html="SUIT_ICONS[card.suitName]" />
+        <div class="card-scene">
+          <div class="card-3d" :class="{ revealed: card.revealed }">
+            <div class="card-face card-back">
+              <div class="back-inner" />
+            </div>
+            <div class="card-face card-front">
+              <img
+                v-if="!imgErrors.has(card.svgName)"
+                :src="`/cards/${card.svgName}.svg`"
+                :alt="`${card.rank} ${card.suit}`"
+                class="card-svg"
+                @error="onImgError(card.svgName)"
+              />
+              <div v-else class="card-fallback">
+                <span class="card-rank-icon" v-html="RANK_ICONS[card.rankName]" />
+                <span class="card-suit-icon" v-html="SUIT_ICONS[card.suitName]" />
+              </div>
+            </div>
+          </div>
         </div>
-
       </div>
     </TransitionGroup>
   </div>
@@ -474,7 +489,6 @@ async function animateLeaving(batch: LeavingItem[]) {
 
 .card-enter-active {
   transition: opacity 0.25s ease, transform 0.25s ease;
-  transition-delay: 180ms;
 }
 
 .card-move {
@@ -503,6 +517,54 @@ async function animateLeaving(batch: LeavingItem[]) {
 .card-item.black {
   color: var(--color-accent);
   background: rgb(from var(--color-accent) r g b / 0.08);
+}
+
+.card-scene {
+  width: 100%;
+  perspective: 600px;
+}
+
+.card-3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.card-3d.revealed {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-back {
+  background: var(--color-bg-secondary);
+  justify-content: center;
+}
+
+.back-inner {
+  width: 55%;
+  aspect-ratio: 1;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.35;
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 5px currentColor;
+  outline: 2px solid currentColor;
+  outline-offset: 8px;
+}
+
+.card-front {
+  transform: rotateY(180deg);
 }
 
 .card-svg {
