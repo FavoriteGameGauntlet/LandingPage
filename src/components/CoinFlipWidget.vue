@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import headsRaw from '../assets/icons/heads.svg?raw'
-import tailsRaw from '../assets/icons/tails.svg?raw'
+import headsRaw from '../assets/icons/coin-flip/heads.svg?raw'
+import tailsRaw from '../assets/icons/coin-flip/tails.svg?raw'
 import HistoryChips from './HistoryChips.vue'
 
 function prepareCoinSvg(raw: string): string {

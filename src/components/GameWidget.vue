@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import volumeIcon from '../assets/icons/volume.svg?raw'
-import muteIcon from '../assets/icons/mute.svg?raw'
-import fullscreenIcon from '../assets/icons/fullscreen.svg?raw'
+import volumeIcon from '../assets/icons/game/volume.svg?raw'
+import muteIcon from '../assets/icons/game/mute.svg?raw'
+import fullscreenIcon from '../assets/icons/game/fullscreen.svg?raw'
 
 const props = defineProps<{ src: string; enabled: boolean }>()
 

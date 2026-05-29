@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="none"/>
+  <g transform="translate(100, 100)">
+    <!-- Рамка -->
+    <rect x="-90" y="-90" width="180" height="180" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+    <!-- Уголки HUD -->
+    <g stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.9">
+      <path d="M -85,-75 L -85,-85 L -75,-85"/>
+      <path d="M 85,-75 L 85,-85 L 75,-85"/>
+      <path d="M -85,75 L -85,85 L -75,85"/>
+      <path d="M 85,75 L 85,85 L 75,85"/>
+    </g>
+    <text x="-80" y="-65" fill="currentColor" font-family="monospace" font-size="10" opacity="0.7">// SPADES.SYS</text>
+
+    <!-- Масть, масштабированная под 200×200 и сдвинутая ниже лейбла -->
+    <g transform="translate(0, 10) scale(0.7)">
+      <path d="M 0,-90
+               C 40,-40 90,0 70,40
+               C 55,70 25,65 5,45
+               L 5,50
+               L 25,90
+               L -25,90
+               L -5,50
+               L -5,45
+               C -25,65 -55,70 -70,40
+               C -90,0 -40,-40 0,-90 Z"
+            fill="currentColor" stroke="currentColor" stroke-width="2"/>
+      <g stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.8">
+        <path d="M 0,-70
+                 C 30,-30 70,0 55,35
+                 C 45,55 25,50 10,35
+                 L 10,40
+                 L 25,75
+                 L -25,75
+                 L -10,40
+                 L -10,35
+                 C -25,50 -45,55 -55,35
+                 C -70,0 -30,-30 0,-70 Z"/>
+      </g>
+      <line x1="0" y1="-80" x2="0" y2="40" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+      <g stroke="currentColor" stroke-width="0.8" opacity="0.7">
+        <line x1="-30" y1="-30" x2="30" y2="-30"/>
+        <line x1="-50" y1="0" x2="50" y2="0"/>
+        <line x1="-40" y1="20" x2="40" y2="20"/>
+      </g>
+      <g fill="currentColor">
+        <circle cx="0" cy="-80" r="3"/>
+        <circle cx="-30" cy="-30" r="2.5"/>
+        <circle cx="30" cy="-30" r="2.5"/>
+        <circle cx="-50" cy="0" r="2.5"/>
+        <circle cx="50" cy="0" r="2.5"/>
+        <circle cx="0" cy="0" r="4" stroke="#ffffff" stroke-width="0.5"/>
+      </g>
+      <rect x="-60" y="10" width="120" height="2" fill="#ffffff" opacity="0.6"/>
+      <rect x="-40" y="11" width="15" height="1" fill="currentColor"/>
+    </g>
+  </g>
+</svg>

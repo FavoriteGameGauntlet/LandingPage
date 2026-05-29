@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import HistoryChips from './HistoryChips.vue'
-import d4Raw  from '../assets/icons/d4.svg?raw'
-import d6Raw  from '../assets/icons/d6.svg?raw'
-import d8Raw  from '../assets/icons/d8.svg?raw'
-import d10Raw from '../assets/icons/d10.svg?raw'
-import d12Raw from '../assets/icons/d12.svg?raw'
-import d20Raw from '../assets/icons/d20.svg?raw'
+import d4Raw  from '../assets/icons/dice-roller/d4.svg?raw'
+import d6Raw  from '../assets/icons/dice-roller/d6.svg?raw'
+import d8Raw  from '../assets/icons/dice-roller/d8.svg?raw'
+import d10Raw from '../assets/icons/dice-roller/d10.svg?raw'
+import d12Raw from '../assets/icons/dice-roller/d12.svg?raw'
+import d20Raw from '../assets/icons/dice-roller/d20.svg?raw'
 
 function extractPathD(raw: string): string {
   return raw.match(/\bd="([^"]+)"/)?.[1] ?? ''
