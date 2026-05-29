@@ -292,7 +292,7 @@ async function animateLeaving(batch: LeavingItem[]) {
           <span class="card-rank-icon" v-html="RANK_ICONS[card.rankName]" />
           <span class="card-suit-icon" v-html="SUIT_ICONS[card.suitName]" />
         </div>
-        <div class="card-label">{{ card.rank }} {{ card.suitSymbol }}</div>
+
       </div>
     </TransitionGroup>
   </div>
@@ -533,12 +533,5 @@ async function animateLeaving(batch: LeavingItem[]) {
 .card-suit-icon :deep(svg) {
   width: 100%;
   height: 100%;
-}
-
-.card-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.35rem 0.5rem;
-  opacity: 0.75;
 }
 </style>
