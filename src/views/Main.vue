@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import rulesIcon from '../assets/icons/rules.svg?raw'
 import toolsIcon from '../assets/icons/tools.svg?raw'
 import gamesIcon from '../assets/icons/games.svg?raw'
@@ -23,11 +23,30 @@ const iconGradients = Array.from({ length: 4 }, () => randomGradient(ICON_COLORS
 
 const introVisible = ref(true)
 const introExiting = ref(false)
+const glitchActive = ref(false)
 
+let glitchTimer: ReturnType<typeof setTimeout> | null = null
+
+function scheduleGlitch() {
+  const delay = 2000 + Math.random() * 3000
+  glitchTimer = setTimeout(() => {
+    if (!introVisible.value) return
+    glitchActive.value = true
+    setTimeout(() => {
+      glitchActive.value = false
+      scheduleGlitch()
+    }, 4000)
+  }, delay)
+}
+
+onMounted(() => scheduleGlitch())
+onUnmounted(() => { if (glitchTimer) clearTimeout(glitchTimer) })
 
 function enterSite() {
   if (introExiting.value) return
   introExiting.value = true
+  glitchActive.value = false
+  if (glitchTimer) clearTimeout(glitchTimer)
   setTimeout(() => { introVisible.value = false }, 700)
 }
 </script>
@@ -35,13 +54,13 @@ function enterSite() {
 <template>
   <Transition name="intro">
     <div v-if="introVisible" class="intro" :class="{ exiting: introExiting }">
-      <div class="intro-glitch" :class="{ active: !introExiting }">
+      <div class="intro-glitch" :class="{ active: glitchActive && !introExiting }">
         <div class="intro-glitch__layer intro-glitch__layer--1"></div>
         <div class="intro-glitch__layer intro-glitch__layer--2"></div>
         <div class="intro-glitch__layer intro-glitch__layer--3"></div>
         <div class="intro-glitch__flash"></div>
       </div>
-      <div class="intro-logo-wrap" :class="{ active: !introExiting }" @click="enterSite">
+      <div class="intro-logo-wrap" :class="{ active: glitchActive && !introExiting }" @click="enterSite">
         <img :src="`${s3}/logos/fggw3.webp`" alt="FGG Logo" class="intro-logo" />
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--1" />
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--2" />
@@ -101,7 +120,6 @@ function enterSite() {
 
 .intro {
   --anim-duration: 4s;
-  --anim-delay: 2s;
 
   position: fixed;
   inset: 0;
@@ -186,9 +204,8 @@ function enterSite() {
 .intro-glitch.active .intro-glitch__layer,
 .intro-glitch.active .intro-glitch__flash {
   animation-duration: var(--anim-duration);
-  animation-delay: var(--anim-delay);
   animation-timing-function: linear;
-  animation-iteration-count: infinite;
+  animation-iteration-count: 1;
 }
 
 .intro-logo-wrap.active .intro-logo__layer--1 { animation-name: glitch-anim-1; }
