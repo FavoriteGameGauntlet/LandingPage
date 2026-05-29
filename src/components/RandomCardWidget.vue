@@ -90,9 +90,9 @@ const SUITS: { suit: string; symbol: string; name: string; color: 'red' | 'black
 
 const deckSize = ref<36 | 52>(36)
 
-function buildDeck(): Omit<Card, 'uid'>[] {
+function buildDeck(): Omit<Card, 'uid' | 'revealed'>[] {
   const ranks = deckSize.value === 36 ? RANKS_36 : RANKS_52
-  const deck: Omit<Card, 'uid'>[] = []
+  const deck: Omit<Card, 'uid' | 'revealed'>[] = []
   for (const s of SUITS) {
     for (const r of ranks) {
       deck.push({
@@ -129,7 +129,7 @@ function onCountChange(e: Event) {
 }
 
 let uidCounter = 0
-const buffer = ref<Omit<Card, 'uid'>[]>(buildDeck())
+const buffer = ref<Omit<Card, 'uid' | 'revealed'>[]>(buildDeck())
 const history = ref<Card[]>([])
 
 function pickCards() {
