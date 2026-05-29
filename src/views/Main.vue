@@ -4,6 +4,8 @@ import rulesIcon from '../assets/icons/rules.svg?raw'
 import toolsIcon from '../assets/icons/tools.svg?raw'
 import seasonsIcon from '../assets/icons/seasons.svg?raw'
 
+const s3 = import.meta.env.VITE_S3_BASE_URL
+
 const style = getComputedStyle(document.documentElement)
 const COLORS = ['--color-grad-1', '--color-grad-2', '--color-grad-3', '--color-grad-4', '--color-grad-5', '--color-grad-6', '--color-grad-7']
   .map(v => style.getPropertyValue(v).trim())
@@ -21,9 +23,9 @@ const iconGradients = Array.from({ length: 4 }, () => randomGradient(ICON_COLORS
 
 <template>
   <div class="main">
-    <section class="hero">
+    <section class="hero" :style="{ backgroundImage: `url(${s3}/posters/fggw3.webp)` }">
       <h1 class="hero-title">Favorite Game Gauntlet</h1>
-      <img src="../assets/logo-fggw3.webp" alt="FGG Logo" class="hero-logo" />
+      <img :src="`${s3}/logos/fggw3.webp`" alt="FGG Logo" class="hero-logo" />
       <section class="cards">
         <div class="card-wrap" :style="{ background: cardGradients[0] }">
           <router-link to="/app" class="card">
@@ -83,7 +85,6 @@ const iconGradients = Array.from({ length: 4 }, () => randomGradient(ICON_COLORS
   justify-content: flex-end;
   padding: 2.5rem 1rem 2rem;
 
-  background-image: url('../assets/poster-fggw3.webp');
   background-size: cover;
   background-position: center;
 
