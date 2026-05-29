@@ -1,10 +1,52 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
+import heartsIcon from '../assets/icons/random-card/hearts.svg?raw'
+import diamondsIcon from '../assets/icons/random-card/diamonds.svg?raw'
+import clubsIcon from '../assets/icons/random-card/clubs.svg?raw'
+import spadesIcon from '../assets/icons/random-card/spades.svg?raw'
+import aceIcon from '../assets/icons/random-card/ace.svg?raw'
+import n2Icon from '../assets/icons/random-card/2.svg?raw'
+import n3Icon from '../assets/icons/random-card/3.svg?raw'
+import n4Icon from '../assets/icons/random-card/4.svg?raw'
+import n5Icon from '../assets/icons/random-card/5.svg?raw'
+import n6Icon from '../assets/icons/random-card/6.svg?raw'
+import n7Icon from '../assets/icons/random-card/7.svg?raw'
+import n8Icon from '../assets/icons/random-card/8.svg?raw'
+import n9Icon from '../assets/icons/random-card/9.svg?raw'
+import n10Icon from '../assets/icons/random-card/10.svg?raw'
+import jackIcon from '../assets/icons/random-card/jack.svg?raw'
+import queenIcon from '../assets/icons/random-card/queen.svg?raw'
+import kingIcon from '../assets/icons/random-card/king.svg?raw'
+
+const SUIT_ICONS: Record<string, string> = {
+  hearts: heartsIcon,
+  diamonds: diamondsIcon,
+  clubs: clubsIcon,
+  spades: spadesIcon,
+}
+
+const RANK_ICONS: Record<string, string> = {
+  ace: aceIcon,
+  '2': n2Icon,
+  '3': n3Icon,
+  '4': n4Icon,
+  '5': n5Icon,
+  '6': n6Icon,
+  '7': n7Icon,
+  '8': n8Icon,
+  '9': n9Icon,
+  '10': n10Icon,
+  jack: jackIcon,
+  queen: queenIcon,
+  king: kingIcon,
+}
 
 interface Card {
   rank: string
+  rankName: string
   suit: string
   suitSymbol: string
+  suitName: string
   svgName: string
   color: 'red' | 'black'
   uid: number
@@ -54,8 +96,10 @@ function buildDeck(): Omit<Card, 'uid'>[] {
     for (const r of ranks) {
       deck.push({
         rank: r.rank,
+        rankName: r.name,
         suit: s.suit,
         suitSymbol: s.symbol,
+        suitName: s.name,
         svgName: `${r.name}_${s.name}`,
         color: s.color,
       })
@@ -245,8 +289,8 @@ async function animateLeaving(batch: LeavingItem[]) {
           @error="onImgError(card.svgName)"
         />
         <div v-else class="card-fallback">
-          <span class="card-rank">{{ card.rank }}</span>
-          <span class="card-symbol">{{ card.suitSymbol }}</span>
+          <span class="card-rank-icon" v-html="RANK_ICONS[card.rankName]" />
+          <span class="card-suit-icon" v-html="SUIT_ICONS[card.suitName]" />
         </div>
         <div class="card-label">{{ card.rank }} {{ card.suitSymbol }}</div>
       </div>
@@ -295,8 +339,8 @@ async function animateLeaving(batch: LeavingItem[]) {
   background: transparent;
   border: none;
   color: var(--color-primary);
-  padding: 0.3rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.3em 0.8em;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   opacity: 0.5;
@@ -317,7 +361,7 @@ async function animateLeaving(batch: LeavingItem[]) {
 
 .modifier-control {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   border: 1px solid rgb(from var(--color-primary) r g b / 0.3);
   border-radius: 4px;
   overflow: hidden;
@@ -330,10 +374,12 @@ async function animateLeaving(batch: LeavingItem[]) {
 }
 
 .modifier-btn {
+  display: flex;
+  align-items: center;
   background: transparent;
   border: none;
   color: var(--color-primary);
-  padding: 0.3em 0.6em;
+  padding: 0 0.6em;
   font-size: 1rem;
   cursor: pointer;
   line-height: 1;
@@ -476,15 +522,17 @@ async function animateLeaving(batch: LeavingItem[]) {
   gap: 0.25rem;
 }
 
-.card-rank {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
+.card-rank-icon,
+.card-suit-icon {
+  display: flex;
+  width: 52px;
+  height: 52px;
 }
 
-.card-symbol {
-  font-size: 1.75rem;
-  line-height: 1;
+.card-rank-icon :deep(svg),
+.card-suit-icon :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 .card-label {
