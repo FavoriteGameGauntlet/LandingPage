@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
+import NumberStepper from './NumberStepper.vue'
 import d4Raw  from '../assets/icons/dice-roller/d4.svg?raw'
 import d6Raw  from '../assets/icons/dice-roller/d6.svg?raw'
 import d8Raw  from '../assets/icons/dice-roller/d8.svg?raw'
@@ -15,20 +17,13 @@ function extractPathD(raw: string): string {
 const diceTypes = [4, 6, 8, 10, 12, 20] as const
 type DieType = typeof diceTypes[number]
 
+const { showResult, slowHide, hideInstant, show } = useResultStrip()
+
 const counts = ref<Record<DieType, number>>({ 4: 0, 6: 0, 8: 0, 10: 0, 12: 0, 20: 0 })
 const results = ref<{ type: DieType; value: number }[]>([])
 const rolling = ref(false)
 interface RollRecord { total: number; breakdown: { type: DieType; value: number }[]; modifier: number }
 const rollHistory = ref<RollRecord[]>([])
-const showResult = ref(false)
-const slowHide = ref(false)
-let resultTimer: ReturnType<typeof setTimeout> | null = null
-
-function hideInstant() {
-  if (resultTimer) { clearTimeout(resultTimer); resultTimer = null }
-  slowHide.value = false
-  showResult.value = false
-}
 
 function addDie(type: DieType) {
   if (counts.value[type] < 10) counts.value[type]++
@@ -72,13 +67,7 @@ function roll() {
     const rollTotal = newResults.reduce((s, r) => s + r.value, 0) + modifier.value
     rollHistory.value.unshift({ total: rollTotal, breakdown: newResults, modifier: modifier.value })
     rolling.value = false
-    showResult.value = true
-    if (resultTimer) clearTimeout(resultTimer)
-    resultTimer = setTimeout(() => {
-      slowHide.value = true
-      showResult.value = false
-      setTimeout(() => { slowHide.value = false }, 400)
-    }, 3000)
+    show()
   }, 500)
 }
 
@@ -120,18 +109,7 @@ const dieShapes: Record<DieType, string> = {
 
   <div class="modifier-row">
     <label class="modifier-label">Модификатор</label>
-    <div class="modifier-control">
-      <button class="modifier-btn" @click="modifier = Math.max(-1000, modifier - 1)">−</button>
-      <input
-        v-model.lazy.number="modifier"
-        type="number"
-        min="-1000"
-        max="1000"
-        class="modifier-input"
-        @change="modifier = Math.min(1000, Math.max(-1000, modifier || 0))"
-      />
-      <button class="modifier-btn" @click="modifier = Math.min(1000, modifier + 1)">+</button>
-    </div>
+    <NumberStepper v-model="modifier" :min="-1000" :max="1000" input-width="52px" />
   </div>
 
   <div class="action-row">
@@ -286,64 +264,6 @@ const dieShapes: Record<DieType, string> = {
   opacity: 0.75;
 }
 
-.modifier-control {
-  display: flex;
-  align-items: center;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.3);
-  border-radius: 4px;
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.modifier-control:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.4);
-}
-
-.modifier-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-primary);
-  font-size: 1.1rem;
-  padding: 0.25em 0.6em;
-  cursor: pointer;
-  font-family: inherit;
-  line-height: 1;
-  transition: color 0.2s, background 0.2s;
-}
-
-.modifier-btn:hover {
-  color: var(--color-primary);
-  background: var(--color-control-bg-hover);
-}
-
-
-.modifier-input {
-  width: 52px;
-  padding: 0.3em 0;
-  color: var(--color-text);
-  background: transparent;
-  border: none;
-  border-left: 1px solid rgb(from var(--color-primary) r g b / 0.3);
-  border-right: 1px solid rgb(from var(--color-primary) r g b / 0.3);
-  font-size: 1rem;
-  font-family: inherit;
-  text-align: center;
-}
-
-.modifier-input:focus {
-  outline: none;
-}
-
-.modifier-input::-webkit-inner-spin-button,
-.modifier-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-}
-
-.modifier-input[type=number] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
 
 .action-row {
   margin-bottom: 1.75rem;

@@ -50,7 +50,7 @@ async function generate() {
       <form class="search-row" @submit.prevent="generate">
         <input
           v-model="input"
-          class="game-input"
+          class="game-input themed-input"
           type="text"
           placeholder="Название игры"
           :disabled="loading"
@@ -80,28 +80,6 @@ async function generate() {
 .game-input {
   flex: 1;
   min-width: 0;
-  padding: 0.4em 0.7em;
-  font-size: 0.95rem;
-  font-family: inherit;
-  background: transparent;
-  border: 1px solid rgb(from var(--color-primary) r g b / 0.35);
-  border-radius: 4px;
-  color: var(--color-text);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.game-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0.5em rgb(from var(--color-primary) r g b / 0.35);
-}
-
-.game-input:disabled {
-  opacity: 0.4;
-}
-
-.game-input::placeholder {
-  color: rgb(from var(--color-text) r g b / 0.35);
 }
 
 .hint-text {
