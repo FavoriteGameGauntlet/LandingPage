@@ -93,13 +93,13 @@ const historyItems = computed(() =>
 <style scoped>
 .coin-scene {
   perspective: 600px;
-  display: flex;
-  justify-content: center;
+  position: relative;
   margin-bottom: 2rem;
 }
 
 .coin {
   position: relative;
+  margin: 0 auto;
   width: 10em;
   height: 10em;
   transform-style: preserve-3d;
@@ -116,8 +116,8 @@ const historyItems = computed(() =>
 
 .face {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  box-sizing: border-box;
   border-radius: 50%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -150,10 +150,6 @@ const historyItems = computed(() =>
   width: 100%;
   height: 100%;
   fill: currentColor;
-}
-
-.coin-scene {
-  position: relative;
 }
 
 .result-strip {
