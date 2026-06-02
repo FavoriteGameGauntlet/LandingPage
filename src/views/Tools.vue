@@ -15,6 +15,7 @@ import HashImageWidget from '../components/HashImageWidget.vue'
 import GameCoverWidget from '../components/GameCoverWidget.vue'
 import TarotCardWidget from '../components/TarotCardWidget.vue'
 import LuckyTicketWidget from '../components/LuckyTicketWidget.vue'
+import RpsLsWidget from '../components/RpsLsWidget.vue'
 const tools = [
   { id: 'dice', label: 'Кубики' },
   { id: 'coin', label: 'Монетка' },
@@ -27,6 +28,7 @@ const tools = [
   { id: 'gamecover', label: 'Обложка' },
   { id: 'tarot', label: 'Таро' },
   { id: 'ticket', label: 'Билет' },
+  { id: 'rpsls',  label: 'КНБЯК' },
 ]
 
 const active = ref('')
@@ -45,6 +47,7 @@ const active = ref('')
     <div v-show="active === 'gamecover'"><GameCoverWidget /></div>
     <div v-show="active === 'tarot'"><TarotCardWidget /></div>
     <div v-show="active === 'ticket'"><LuckyTicketWidget /></div>
+    <div v-show="active === 'rpsls'"><RpsLsWidget /></div>
     <div v-show="active === 'links'" class="link-wrap">
       <div class="link-entry">
         <a href="https://disk.yandex.ru/d/vw1yjwiCdIUsRg" target="_blank" class="item-link">Материалы за все сезоны</a>
