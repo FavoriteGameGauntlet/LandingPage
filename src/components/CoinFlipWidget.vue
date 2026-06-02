@@ -72,7 +72,7 @@ const historyItems = computed(() =>
         <span v-if="history.length > 0 || flipping" class="coin-icon" v-html="tailsSvg"/>
       </div>
     </div>
-    <div class="result-strip" :class="{ visible: showResult, 'slow-hide': slowHide }">
+    <div class="result-strip" :class="{ visible: showResult, 'slow-hide': slowHide, tails: result === 'tails' }">
       {{ result === 'heads' ? 'Орел' : 'Решка' }}
     </div>
   </div>
@@ -181,6 +181,10 @@ const historyItems = computed(() =>
 .result-strip.visible {
   opacity: 1;
   transition: opacity 0.1s;
+}
+
+.result-strip.tails {
+  color: var(--color-accent);
 }
 
 .action-row {
