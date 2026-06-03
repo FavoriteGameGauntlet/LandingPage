@@ -24,8 +24,10 @@ const iconGradients = Array.from({ length: 4 }, () => randomGradient(ICON_COLORS
 const introVisible = ref(true)
 const introExiting = ref(false)
 const glitchActive = ref(false)
+const fastReveal = ref(false)
 
 let glitchTimer: ReturnType<typeof setTimeout> | null = null
+let exitTimer: ReturnType<typeof setTimeout> | null = null
 
 function scheduleGlitch() {
   const delay = 2000 + Math.random() * 3000
@@ -39,7 +41,13 @@ function scheduleGlitch() {
   }, delay)
 }
 
-onMounted(() => scheduleGlitch())
+onMounted(() => {
+  glitchActive.value = true
+  setTimeout(() => {
+    glitchActive.value = false
+    scheduleGlitch()
+  }, 4000)
+})
 onUnmounted(() => { if (glitchTimer) clearTimeout(glitchTimer) })
 
 function enterSite() {
@@ -47,20 +55,32 @@ function enterSite() {
   introExiting.value = true
   glitchActive.value = false
   if (glitchTimer) clearTimeout(glitchTimer)
-  setTimeout(() => { introVisible.value = false }, 700)
+  exitTimer = setTimeout(() => { introVisible.value = false }, 700)
+}
+
+function enterSiteFast() {
+  fastReveal.value = true
+  if (!introExiting.value) {
+    enterSite()
+    if (exitTimer) clearTimeout(exitTimer)
+    exitTimer = setTimeout(() => { introVisible.value = false }, 233)
+  } else if (exitTimer) {
+    clearTimeout(exitTimer)
+    exitTimer = setTimeout(() => { introVisible.value = false }, 233)
+  }
 }
 </script>
 
 <template>
   <Transition name="intro">
-    <div v-if="introVisible" class="intro" :class="{ exiting: introExiting }">
+    <div v-if="introVisible" class="intro" :class="{ exiting: introExiting, fast: fastReveal }">
       <div class="intro-glitch" :class="{ active: glitchActive && !introExiting }">
         <div class="intro-glitch__layer intro-glitch__layer--1"></div>
         <div class="intro-glitch__layer intro-glitch__layer--2"></div>
         <div class="intro-glitch__layer intro-glitch__layer--3"></div>
         <div class="intro-glitch__flash"></div>
       </div>
-      <div class="intro-logo-wrap" :class="{ active: glitchActive && !introExiting }" @click="enterSite">
+      <div class="intro-logo-wrap" :class="{ active: glitchActive && !introExiting }" @click="enterSite" @dblclick="enterSiteFast">
         <img :src="`${s3}/logos/fggw3.webp`" alt="FGG Logo" class="intro-logo" />
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--1" />
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--2" />
@@ -70,7 +90,7 @@ function enterSite() {
   </Transition>
 
   <div class="main">
-    <section class="hero" :class="{ revealed: !introVisible }">
+    <section class="hero" :class="{ revealed: !introVisible, fast: fastReveal }">
       <div class="hero-bg" :style="{ backgroundImage: `url(${s3}/posters/fggw3.webp)` }"></div>
       <h1 class="hero-title">Favorite Game Gauntlet</h1>
       <section class="cards">
@@ -132,6 +152,10 @@ function enterSite() {
 
 .intro.exiting {
   animation: intro-exit 0.7s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+.intro.exiting.fast {
+  animation-duration: 0.23s;
 }
 
 @keyframes intro-exit {
@@ -378,6 +402,20 @@ function enterSite() {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── HERO FAST REVEAL (3x speed on double-click) ─────────────── */
+
+.hero.fast.revealed .hero-bg {
+  animation-duration: 0.83s;
+}
+.hero.fast.revealed .hero-title {
+  animation-duration: 0.18s;
+  animation-delay: 0.08s;
+}
+.hero.fast.revealed .card-wrap:nth-child(1) { animation-duration: 0.17s; animation-delay: 0.13s; }
+.hero.fast.revealed .card-wrap:nth-child(2) { animation-duration: 0.17s; animation-delay: 0.17s; }
+.hero.fast.revealed .card-wrap:nth-child(3) { animation-duration: 0.17s; animation-delay: 0.21s; }
+.hero.fast.revealed .card-wrap:nth-child(4) { animation-duration: 0.17s; animation-delay: 0.25s; }
 
 /* ── HERO ELEMENTS ────────────────────────────────────────────── */
 
