@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
-import HistoryChips from './HistoryChips.vue'
+import rockSvg     from '../assets/icons/rpsls/rock.svg?raw'
+import paperSvg    from '../assets/icons/rpsls/paper.svg?raw'
+import scissorsSvg from '../assets/icons/rpsls/scissors.svg?raw'
+import lizardSvg   from '../assets/icons/rpsls/lizard.svg?raw'
+import spockSvg    from '../assets/icons/rpsls/spock.svg?raw'
 
 type Choice = 'rock' | 'paper' | 'scissors' | 'lizard' | 'spock'
 type Outcome = 'win' | 'lose' | 'draw'
@@ -9,25 +13,29 @@ type Outcome = 'win' | 'lose' | 'draw'
 interface ChoiceInfo {
   id: Choice
   label: string
-  emoji: string
   info: string
 }
 
-interface RoundResult {
+interface HistoryEntry {
+  player: Choice
+  computer: Choice
   outcome: Outcome
 }
 
-interface HistoryEntry extends RoundResult {
-  player: Choice
-  computer: Choice
+const svgMap: Record<Choice, string> = {
+  rock:     rockSvg,
+  paper:    paperSvg,
+  scissors: scissorsSvg,
+  lizard:   lizardSvg,
+  spock:    spockSvg,
 }
 
 const choiceList: ChoiceInfo[] = [
-  { id: 'rock',     label: 'Камень',  emoji: '✊', info: 'Побеждает:\n• Ящерица\n• Ножницы\n\nПроигрывает:\n• Бумага\n• Спок' },
-  { id: 'paper',    label: 'Бумага',  emoji: '✋', info: 'Побеждает:\n• Камень\n• Спок\n\nПроигрывает:\n• Ножницы\n• Ящерица' },
-  { id: 'scissors', label: 'Ножницы', emoji: '✌️', info: 'Побеждает:\n• Бумага\n• Ящерица\n\nПроигрывает:\n• Камень\n• Спок' },
-  { id: 'lizard',   label: 'Ящерица', emoji: '🦎', info: 'Побеждает:\n• Бумага\n• Спок\n\nПроигрывает:\n• Камень\n• Ножницы' },
-  { id: 'spock',    label: 'Спок',    emoji: '🖖', info: 'Побеждает:\n• Ножницы\n• Камень\n\nПроигрывает:\n• Бумага\n• Ящерица' },
+  { id: 'rock',     label: 'Камень',  info: 'Побеждает:\n• Ящерица\n• Ножницы\n\nПроигрывает:\n• Бумага\n• Спок' },
+  { id: 'paper',    label: 'Бумага',  info: 'Побеждает:\n• Камень\n• Спок\n\nПроигрывает:\n• Ножницы\n• Ящерица' },
+  { id: 'scissors', label: 'Ножницы', info: 'Побеждает:\n• Бумага\n• Ящерица\n\nПроигрывает:\n• Камень\n• Спок' },
+  { id: 'lizard',   label: 'Ящерица', info: 'Побеждает:\n• Бумага\n• Спок\n\nПроигрывает:\n• Камень\n• Ножницы' },
+  { id: 'spock',    label: 'Спок',    info: 'Побеждает:\n• Ножницы\n• Камень\n\nПроигрывает:\n• Бумага\n• Ящерица' },
 ]
 
 const beats: Record<Choice, [Choice, Choice]> = {
@@ -46,21 +54,16 @@ const outcomeLabels: Record<Outcome, string> = {
 
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
-const playerChoice = ref<Choice | null>(null)
+const playerChoice  = ref<Choice | null>(null)
 const computerChoice = ref<Choice | null>(null)
-const thinking = ref(false)
-const roundResult = ref<RoundResult | null>(null)
+const thinking  = ref(false)
+const roundResult = ref<Outcome | null>(null)
 const history = ref<HistoryEntry[]>([])
 const score = ref({ player: 0, computer: 0, draw: 0 })
 
-function getInfo(id: Choice): ChoiceInfo {
-  return choiceList.find(c => c.id === id)!
-}
-
-function resolve(player: Choice, computer: Choice): RoundResult {
-  if (player === computer) return { outcome: 'draw' }
-  if (beats[player].includes(computer)) return { outcome: 'win' }
-  return { outcome: 'lose' }
+function resolve(player: Choice, computer: Choice): Outcome {
+  if (player === computer) return 'draw'
+  return beats[player].includes(computer) ? 'win' : 'lose'
 }
 
 function beatenBy(choice: Choice): Choice[] {
@@ -93,14 +96,14 @@ function play() {
 
   setTimeout(() => {
     const cpu = getCpuChoice()
-    const result = resolve(choice, cpu)
+    const outcome = resolve(choice, cpu)
     computerChoice.value = cpu
-    roundResult.value = result
+    roundResult.value = outcome
     thinking.value = false
-    history.value.unshift({ player: choice, computer: cpu, ...result })
+    history.value.unshift({ player: choice, computer: cpu, outcome })
     if (history.value.length > 20) history.value.pop()
-    if (result.outcome === 'win') score.value.player++
-    else if (result.outcome === 'lose') score.value.computer++
+    if (outcome === 'win') score.value.player++
+    else if (outcome === 'lose') score.value.computer++
     else score.value.draw++
     show()
   }, 700)
@@ -115,44 +118,31 @@ function clear() {
   history.value = []
   score.value = { player: 0, computer: 0, draw: 0 }
 }
-
-const historyItems = computed(() =>
-  history.value.map(h => ({
-    label: `${getInfo(h.player).emoji} ${getInfo(h.computer).emoji}`,
-    variant: h.outcome === 'win' ? 'accent' as const : h.outcome === 'lose' ? 'primary' as const : undefined,
-  }))
-)
 </script>
 
 <template>
   <div class="widget">
     <div class="score-line">
-        <div class="score-cell">
-          <h3 class="score-label">Победы</h3>
-        </div>
-        <div class="score-cell">
-          <h3 class="score-label">Ничьи</h3>
-        </div>
-        <div class="score-cell">
-          <h3 class="score-label">Поражения</h3>
-        </div>
-        <div class="score-divider"></div>
-        <div class="score-cell">
-          <span class="score-num">{{ score.player }}</span>
-        </div>
-        <div class="score-cell">
-          <span class="score-num">{{ score.draw }}</span>
-        </div>
-        <div class="score-cell">
-          <span class="score-num">{{ score.computer }}</span>
-        </div>
+      <div class="score-cell">
+        <h3 class="score-label">Победы</h3>
+      </div>
+      <div class="score-cell">
+        <h3 class="score-label">Ничьи</h3>
+      </div>
+      <div class="score-cell">
+        <h3 class="score-label">Поражения</h3>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-cell"><span class="score-num">{{ score.player }}</span></div>
+      <div class="score-cell"><span class="score-num">{{ score.draw }}</span></div>
+      <div class="score-cell"><span class="score-num">{{ score.computer }}</span></div>
     </div>
 
     <div class="battle-wrap">
       <div class="battle-area">
         <div class="side player-side">
           <div class="choice-display" :class="{ active: playerChoice !== null }">
-            <span v-if="playerChoice" class="choice-emoji">{{ getInfo(playerChoice).emoji }}</span>
+            <span v-if="playerChoice" class="choice-icon" v-html="svgMap[playerChoice]"></span>
             <span v-else class="choice-placeholder">?</span>
           </div>
           <div class="side-label">Ты</div>
@@ -164,7 +154,7 @@ const historyItems = computed(() =>
 
         <div class="side computer-side">
           <div class="choice-display" :class="{ active: computerChoice !== null, thinking }">
-            <span v-if="computerChoice" class="choice-emoji">{{ getInfo(computerChoice).emoji }}</span>
+            <span v-if="computerChoice" class="choice-icon" v-html="svgMap[computerChoice]"></span>
             <span v-else class="choice-placeholder">?</span>
           </div>
           <div class="side-label">Компьютер</div>
@@ -173,8 +163,8 @@ const historyItems = computed(() =>
 
       <div
         class="result-strip"
-        :class="{ visible: showResult, 'slow-hide': slowHide, win: roundResult?.outcome === 'win', lose: roundResult?.outcome === 'lose' }"
-      >{{ roundResult ? outcomeLabels[roundResult.outcome] : '' }}</div>
+        :class="{ visible: showResult, 'slow-hide': slowHide, win: roundResult === 'win', lose: roundResult === 'lose' }"
+      >{{ roundResult ? outcomeLabels[roundResult] : '' }}</div>
     </div>
 
     <div class="choices-row">
@@ -186,7 +176,7 @@ const historyItems = computed(() =>
         :disabled="thinking"
         @click="select(c.id)"
       >
-        <span class="btn-emoji">{{ c.emoji }}</span>
+        <span class="btn-icon" v-html="svgMap[c.id]"></span>
         <span class="btn-label">{{ c.label }}</span>
         <span class="info-wrap">
           <span class="info-icon">i</span>
@@ -204,7 +194,18 @@ const historyItems = computed(() =>
       </button>
     </div>
 
-    <HistoryChips :items="historyItems" />
+    <div v-if="history.length > 0" class="history-chips">
+      <span
+        v-for="(h, i) in history"
+        :key="i"
+        class="history-chip"
+        :class="h.outcome"
+        :title="outcomeLabels[h.outcome]"
+      >
+        <span class="chip-icon" v-html="svgMap[h.player]"></span>
+        <span class="chip-icon" v-html="svgMap[h.computer]"></span>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -266,9 +267,22 @@ const historyItems = computed(() =>
   50%       { box-shadow: 0 0 18px rgb(from var(--color-primary) r g b / 0.5); }
 }
 
-.choice-emoji {
-  font-size: 3rem;
-  line-height: 1;
+.choice-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-side .choice-icon   { color: var(--color-accent); }
+.computer-side .choice-icon { color: var(--color-primary); }
+
+.choice-icon :deep(svg),
+.btn-icon :deep(svg),
+.chip-icon :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 .choice-placeholder {
@@ -282,6 +296,20 @@ const historyItems = computed(() =>
   text-transform: uppercase;
   letter-spacing: 0.08em;
   opacity: 0.45;
+}
+
+.middle {
+  display: flex;
+  align-items: center;
+  min-width: 110px;
+  justify-content: center;
+}
+
+.vs-label {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  opacity: 0.3;
 }
 
 .score-line {
@@ -313,21 +341,6 @@ const historyItems = computed(() =>
   font-weight: 700;
 }
 
-.middle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 110px;
-}
-
-.vs-label {
-  font-size: 2.5rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  opacity: 0.3;
-}
-
 .result-strip {
   position: absolute;
   left: 0;
@@ -352,22 +365,9 @@ const historyItems = computed(() =>
   pointer-events: none;
 }
 
-.result-strip.slow-hide {
-  transition: opacity 0.4s;
-}
-
-.result-strip.visible {
-  opacity: 1;
-  transition: opacity 0.1s;
-}
-
-.result-strip.win {
-  color: var(--color-accent);
-}
-
-.result-strip.lose {
-  color: var(--color-primary);
-}
+.result-strip.slow-hide { transition: opacity 0.4s; }
+.result-strip.visible   { opacity: 1; transition: opacity 0.1s; }
+.result-strip.win       { color: var(--color-accent); }
 
 .choices-row {
   display: flex;
@@ -387,7 +387,7 @@ const historyItems = computed(() =>
   border: 2px solid transparent;
   border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.2s, transform 0.12s, background 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, transform 0.12s;
   color: inherit;
   font-family: inherit;
 }
@@ -407,6 +407,21 @@ const historyItems = computed(() =>
   cursor: default;
   opacity: 0.65;
   transform: none;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
 }
 
 .info-wrap {
@@ -432,9 +447,8 @@ const historyItems = computed(() =>
   line-height: 1;
 }
 
-.info-wrap:hover .info-icon {
-  opacity: 0.75;
-}
+.info-wrap:hover .info-icon    { opacity: 0.75; }
+.info-wrap:hover .info-tooltip { opacity: 1; }
 
 .info-tooltip {
   position: absolute;
@@ -455,27 +469,43 @@ const historyItems = computed(() =>
   z-index: 1;
 }
 
-.info-wrap:hover .info-tooltip {
-  opacity: 1;
-}
-
-.btn-emoji {
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.btn-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.85;
-}
-
 .action-row {
   margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
 }
 
+.history-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 
+.history-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0.25em 0.5em;
+  border-radius: 4px;
+  border: 1px solid rgb(from var(--color-primary) r g b / 0.5);
+  background: rgb(from var(--color-primary) r g b / 0.07);
+  color: var(--color-primary);
+}
+
+.history-chip.win {
+  border-color: rgb(from var(--color-accent) r g b / 0.5);
+  background: rgb(from var(--color-accent) r g b / 0.07);
+  color: var(--color-accent);
+}
+
+.history-chip.draw {
+  opacity: 0.5;
+}
+
+.chip-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
 </style>
