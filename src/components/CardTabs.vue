@@ -42,7 +42,7 @@ function select(id: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px 12px;
+  padding: 22px;
   background: var(--color-control-bg);
   border: 1px solid var(--color-bg-secondary);
   color: var(--color-primary);
@@ -64,7 +64,7 @@ function select(id: string) {
   border-color: var(--color-bg-secondary);
   border-left-color: var(--color-accent);
   border-left-width: 3px;
-  padding-left: calc(12px - 2px);
+  padding-left: calc(16px - 2px);
   color: var(--color-accent);
   background: rgb(from var(--color-accent) r g b / 0.08);
 }

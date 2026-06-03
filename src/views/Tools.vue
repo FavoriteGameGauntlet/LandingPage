@@ -17,18 +17,18 @@ import TarotCardWidget from '../components/TarotCardWidget.vue'
 import LuckyTicketWidget from '../components/LuckyTicketWidget.vue'
 import RpsLsWidget from '../components/RpsLsWidget.vue'
 const tools = [
-  { id: 'dice', label: 'Кубики' },
-  { id: 'coin', label: 'Монетка' },
-  { id: 'wheel', label: 'Колесо' },
-  { id: 'movie', label: 'Фильмотека' },
-  { id: 'card', label: 'Колода' },
-  { id: 'fortune', label: 'Шар' },
-  { id: 'links', label: 'Материалы' },
-  { id: 'images', label: 'Хэш-картинка' },
-  { id: 'gamecover', label: 'Обложка' },
-  { id: 'tarot', label: 'Таро' },
-  { id: 'ticket', label: 'Билет' },
+  { id: 'fortune', label: 'Волшебный шар' },
+  { id: 'card', label: 'Игральные карты' },
+  { id: 'images', label: 'Картинка по хэшу' },
+  { id: 'tarot', label: 'Карты Таро' },
   { id: 'rpsls',  label: 'КНБЯК' },
+  { id: 'wheel', label: 'Колесо фортуны' },
+  { id: 'dice', label: 'Кубики' },
+  { id: 'links', label: 'Материалы' },
+  { id: 'coin', label: 'Монетка' },
+  { id: 'gamecover', label: 'Обложка игры' },
+  { id: 'movie', label: 'Случайный фильм' },
+  { id: 'ticket', label: 'Счастливый билет' },
 ]
 
 const active = ref('')
