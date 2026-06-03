@@ -142,7 +142,7 @@ function clear() {
       <div class="battle-area">
         <div class="side player-side">
           <div class="choice-display" :class="{ active: playerChoice !== null }">
-            <span v-if="playerChoice" class="choice-emoji" v-html="svgMap[playerChoice]"></span>
+            <span v-if="playerChoice" class="choice-icon" v-html="svgMap[playerChoice]"></span>
             <span v-else class="choice-placeholder">?</span>
           </div>
           <div class="side-label">Ты</div>
@@ -154,7 +154,7 @@ function clear() {
 
         <div class="side computer-side">
           <div class="choice-display" :class="{ active: computerChoice !== null, thinking }">
-            <span v-if="computerChoice" class="choice-emoji" v-html="svgMap[computerChoice]"></span>
+            <span v-if="computerChoice" class="choice-icon" v-html="svgMap[computerChoice]"></span>
             <span v-else class="choice-placeholder">?</span>
           </div>
           <div class="side-label">Компьютер</div>
@@ -176,7 +176,7 @@ function clear() {
         :disabled="thinking"
         @click="select(c.id)"
       >
-        <span class="btn-emoji" v-html="svgMap[c.id]"></span>
+        <span class="btn-icon" v-html="svgMap[c.id]"></span>
         <span class="btn-label">{{ c.label }}</span>
         <span class="info-wrap">
           <span class="info-icon">i</span>
@@ -267,17 +267,19 @@ function clear() {
   50%       { box-shadow: 0 0 18px rgb(from var(--color-primary) r g b / 0.5); }
 }
 
-.choice-emoji {
+.choice-icon {
   width: 52px;
   height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
 }
 
-.choice-emoji :deep(svg),
-.btn-emoji :deep(svg),
+.player-side .choice-icon   { color: var(--color-accent); }
+.computer-side .choice-icon { color: var(--color-primary); }
+
+.choice-icon :deep(svg),
+.btn-icon :deep(svg),
 .chip-icon :deep(svg) {
   width: 100%;
   height: 100%;
@@ -407,7 +409,7 @@ function clear() {
   transform: none;
 }
 
-.btn-emoji {
+.btn-icon {
   width: 36px;
   height: 36px;
   display: flex;
