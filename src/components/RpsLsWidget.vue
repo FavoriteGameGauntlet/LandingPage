@@ -73,9 +73,9 @@ function beatenBy(choice: Choice): Choice[] {
 function getCpuChoice(): Choice {
   const last = history.value[0]
   if (!last || last.outcome === 'draw')
-    return choiceList[Math.floor(Math.random() * choiceList.length)].id
+    return choiceList[Math.floor(Math.random() * choiceList.length)]?.id ?? 'rock'
   const counters = beatenBy(last.player)
-  return counters[Math.floor(Math.random() * counters.length)]
+  return counters[Math.floor(Math.random() * counters.length)] ?? 'rock'
 }
 
 function select(choice: Choice) {
