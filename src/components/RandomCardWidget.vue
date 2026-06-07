@@ -268,6 +268,11 @@ function onImgError(svgName: string) {
   border-right: 1px solid rgb(from var(--color-primary) r g b / 0.3);
 }
 
+.deck-btn:focus-visible {
+  opacity: 1;
+  outline-offset: -2px;
+}
+
 .deck-btn.active {
   background: rgb(from var(--color-primary) r g b / 0.15);
   border-color: var(--color-primary);

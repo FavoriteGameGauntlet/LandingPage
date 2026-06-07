@@ -89,10 +89,6 @@ router.afterEach((to) => {
   color: var(--color-accent);
 }
 
-button:focus {
-  outline: none;
-}
-
 .hamburger {
   display: none;
   flex-direction: column;

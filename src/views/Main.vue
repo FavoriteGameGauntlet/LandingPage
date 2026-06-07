@@ -335,7 +335,7 @@ function enterSiteFast() {
 .hero {
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: calc(100vh - 73px);
+  height: calc(100dvh - 73px);
   box-sizing: border-box;
 
   display: flex;
@@ -539,6 +539,32 @@ function enterSiteFast() {
 @media (max-width: 620px) {
   .cards {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── REDUCED MOTION ───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-logo-wrap.active .intro-logo__layer,
+  .intro-glitch.active .intro-glitch__layer,
+  .intro-glitch.active .intro-glitch__flash {
+    animation: none;
+  }
+
+  .hero.revealed .hero-bg,
+  .hero.revealed .hero-title,
+  .hero.revealed .card-wrap {
+    animation: none;
+  }
+
+  .hero.revealed .hero-bg {
+    transform: scale(1);
+  }
+
+  .hero.revealed .hero-title,
+  .hero.revealed .card-wrap {
+    opacity: 1;
+    transform: none;
   }
 }
 </style>

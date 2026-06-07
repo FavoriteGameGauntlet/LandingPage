@@ -351,7 +351,7 @@ function clear() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--color-primary);
   background: linear-gradient(
