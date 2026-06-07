@@ -242,7 +242,7 @@ const dieShapes: Record<DieType, string> = {
 
 
 .die-count {
-  font-size: 20px;
+  font-size: 1.1rem;
   color: var(--color-accent);
   font-weight: 600;
   min-height: 1.2em;

@@ -45,6 +45,16 @@ function onInput(e: Event) {
   cursor: pointer;
 }
 
+.count-slider:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.count-slider:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .count-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

@@ -71,6 +71,10 @@ function onChange(e: Event) {
   background: rgb(from var(--color-primary) r g b / 0.1);
 }
 
+.stepper-btn:focus-visible {
+  outline-offset: -2px;
+}
+
 .stepper-input {
   padding: 0.3em 0;
   background: transparent;
@@ -83,7 +87,7 @@ function onChange(e: Event) {
   text-align: center;
 }
 
-.stepper-input:focus {
+.stepper-input:focus-visible {
   outline: none;
 }
 
