@@ -32,6 +32,6 @@ npm run build
 
 | Variable | Description |
 |---|---|
-| `VITE_S3_BASE_URL` | Base URL for S3-hosted assets (posters, logos, images) |
+| `VITE_S3_BASE_URL` | Base URL for S3-hosted assets (posters, logos, images, game rules Markdown) |
 | `VITE_HF_TOKEN` | Hugging Face API token for the game cover image generator (FLUX.1-schnell) |
 | `VITE_TMDB_API_KEY` | TMDB API key for the random movie picker |
