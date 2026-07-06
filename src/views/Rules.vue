@@ -3,34 +3,13 @@ export default { name: 'Rules' }
 </script>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
+import { ruleManifest } from '../rules/manifest'
 
-interface RuleMeta {
-  slug: string
-  title: string
-  path: string
-}
-
-const frontmatters = import.meta.glob<{ title?: string; published?: boolean }>(
-  '../rules/*.md',
-  { eager: true, query: '?frontmatter', import: 'default' }
-)
-
-const rules = ref<RuleMeta[]>(
-  Object.entries(frontmatters)
-    .flatMap(([path, fm]) => {
-      const match = path.match(/\/([^/]+)\.md$/)
-      if (!match || fm?.published === false) return []
-      const slug = match[1] as string
-      return [{
-        slug,
-        title: fm?.title ?? slug.replace(/-/g, ' '),
-        path: `/rules/${slug}`,
-      } satisfies RuleMeta]
-    })
-    .sort((a, b) => a.title.localeCompare(b.title, 'ru'))
-)
+const rules = ruleManifest
+  .filter(rule => rule.published !== false)
+  .map(rule => ({ slug: rule.slug, title: rule.title, path: `/rules/${rule.slug}` }))
 
 const route = useRoute()
 const isIndividualRule = computed(() => route.path !== '/rules')
@@ -50,7 +29,9 @@ const currentSlug = computed(() => route.path.split('/').pop() ?? '')
       </nav>
     </aside>
     <div class="rules-content">
-<RouterView />
+      <RouterView v-slot="{ Component }">
+        <component :is="Component" :key="route.params.slug" />
+      </RouterView>
     </div>
   </div>
 </template>

@@ -1,13 +1,5 @@
 import {createRouter, createWebHistory, type RouteRecordRaw} from 'vue-router'
 
-const mdFiles = import.meta.glob('./rules/*.md')
-
-const ruleChildren: RouteRecordRaw[] = Object.entries(mdFiles).flatMap(([path, loader]) => {
-    const name = path.match(/\/([^/]+)\.md$/)?.[1]
-    if (!name) return []
-    return [{ path: name, component: loader } as RouteRecordRaw]
-})
-
 const routes: RouteRecordRaw[] = [
     {path: '/', name: 'main', component: () => import('./views/Main.vue')},
     {path: '/app', name: 'app', component: () => import('./views/Application.vue')},
@@ -16,7 +8,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('./views/Rules.vue'),
         children: [
             {path: '', redirect: '/rules/Introduction'},
-            ...ruleChildren,
+            {path: ':slug', name: 'rule', component: () => import('./views/RuleDoc.vue'), props: true},
         ],
     },
     {path: '/tools', name: 'tools', component: () => import('./views/Tools.vue')},
