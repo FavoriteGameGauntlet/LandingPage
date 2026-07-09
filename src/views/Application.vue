@@ -144,6 +144,7 @@ onUnmounted(() => {
   align-items: flex-start;
   gap: 0.4rem;
   font-size: 0.9rem;
+  text-align: left;
 }
 
 .version {
@@ -292,16 +293,51 @@ onUnmounted(() => {
   cursor: not-allowed;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 860px) {
   .app-download {
+    --mobile-col-width: 240px;
     flex-direction: column;
     align-items: center;
+    gap: 2rem;
+    margin: 1.5rem auto;
   }
 
   .side,
   .main {
     align-items: center;
     text-align: center;
+  }
+
+  .side {
+    width: var(--mobile-col-width);
+  }
+
+  .main {
+    padding-top: 0;
+  }
+
+  .main h1 {
+    font-size: 1.6rem;
+  }
+
+  .download-group {
+    display: flex;
+    width: var(--mobile-col-width);
+  }
+
+  .download-btn {
+    flex: 1;
+    padding: 0.55em 1em;
+  }
+
+  .os-dropdown {
+    flex: 1;
+  }
+
+  .os-select-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 0.55em 2.25em 0.55em 1em;
   }
 }
 </style>
