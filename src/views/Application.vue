@@ -8,19 +8,21 @@ const version = ref('')
 const releaseUrl = ref('')
 const releaseDate = ref('')
 
-const assets: Record<string, string | null> = {
+type OsKey = 'windows' | 'macos' | 'linux'
+
+const assets: Record<OsKey, string | null> = {
   windows: 'FavoriteGameGauntlet_x64-setup.exe',
   macos: null,
   linux: null,
 }
 
-const OS_LABELS: Record<string, string> = {
+const OS_LABELS: Record<OsKey, string> = {
   windows: 'Windows',
   macos: 'macOS',
   linux: 'Linux',
 }
 
-const selectedOs = ref<keyof typeof assets>('windows')
+const selectedOs = ref<OsKey>('windows')
 
 const downloadUrl = computed(() => {
   const file = assets[selectedOs.value]
@@ -32,7 +34,7 @@ const downloadUrl = computed(() => {
 const osMenuOpen = ref(false)
 const osDropdown = ref<HTMLElement | null>(null)
 
-function selectOs(os: keyof typeof assets) {
+function selectOs(os: OsKey) {
   if (!assets[os]) return
   selectedOs.value = os
   osMenuOpen.value = false
@@ -233,7 +235,6 @@ onUnmounted(() => {
 .os-select-btn:hover {
   background: rgb(from var(--color-primary) r g b / 0.12);
   color: var(--color-accent);
-  text-shadow: 0 0 0.5em currentColor;
 }
 
 .os-select-btn:focus-visible {
@@ -287,7 +288,7 @@ onUnmounted(() => {
 }
 
 .os-option.disabled {
-  color: graytext;
+  color: rgb(from var(--color-primary) r g b / 0.35);
   cursor: not-allowed;
 }
 
