@@ -15,7 +15,6 @@ export const ruleManifest: RuleMeta[] = [
   { slug: 'Items', title: 'Предметы' },
   { slug: 'Perks', title: 'Перк' },
   { slug: 'Quests', title: 'Квесты' },
-  { slug: 'Sandstorm', title: 'Буря' },
   { slug: 'Characteristics', title: 'Характеристики' },
   { slug: 'Bosses', title: 'Боссы' },
   { slug: 'Districts', title: 'Районы' },
