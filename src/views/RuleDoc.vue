@@ -89,6 +89,7 @@ const wirePostContent = async () => {
 }
 
 let controller: AbortController | null = null
+const htmlCache = new Map<string, string>()
 
 const load = async () => {
   controller?.abort()
@@ -101,14 +102,23 @@ const load = async () => {
     return
   }
 
+  const cached = htmlCache.get(props.slug)
+  if (cached) {
+    html.value = cached
+    loading.value = false
+    await wirePostContent()
+    return
+  }
+
   loading.value = true
   controller = new AbortController()
 
   try {
-    const res = await fetch(`${s3}/rules/${props.slug}.md`, { signal: controller.signal })
+    const res = await fetch(`${s3}/rules/${props.slug}.md`, { signal: controller.signal, cache: 'no-cache' })
     if (!res.ok) throw new Error(`Ошибка ${res.status}`)
     const raw = await res.text()
     html.value = md.render(stripBom(raw))
+    htmlCache.set(props.slug, html.value)
     loading.value = false
     await wirePostContent()
   } catch (e) {
