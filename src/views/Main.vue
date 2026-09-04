@@ -4,6 +4,9 @@ import rulesIcon from '../assets/icons/rules.svg?raw'
 import toolsIcon from '../assets/icons/tools.svg?raw'
 import gamesIcon from '../assets/icons/games.svg?raw'
 import seasonsIcon from '../assets/icons/seasons.svg?raw'
+import volumeIcon from '../assets/icons/game/volume.svg?raw'
+import muteIcon from '../assets/icons/game/mute.svg?raw'
+import glitchSound from '../assets/sounds/glitch.ogg'
 
 const s3 = import.meta.env.VITE_S3_BASE_URL
 
@@ -21,6 +24,26 @@ function randomGradient(palette = COLORS): string {
 const cardGradients = Array.from({ length: 4 }, () => randomGradient())
 const iconGradients = Array.from({ length: 4 }, () => randomGradient(ICON_COLORS))
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const glitchAudio = new Audio(glitchSound)
+glitchAudio.volume = 0.35
+
+const soundEnabled = ref(localStorage.getItem('fgg-sound') !== 'off')
+
+function toggleSound() {
+  soundEnabled.value = !soundEnabled.value
+  localStorage.setItem('fgg-sound', soundEnabled.value ? 'on' : 'off')
+  if (!soundEnabled.value) glitchAudio.pause()
+}
+
+function playGlitchSound() {
+  if (reducedMotion || !soundEnabled.value) return
+  glitchAudio.currentTime = 0
+  // Blocked by the autoplay policy until the first user gesture on the page.
+  glitchAudio.play().catch(() => {})
+}
+
 const introVisible = ref(true)
 const introExiting = ref(false)
 const glitchActive = ref(false)
@@ -34,21 +57,26 @@ function scheduleGlitch() {
   glitchTimer = setTimeout(() => {
     if (!introVisible.value) return
     glitchActive.value = true
+    playGlitchSound()
     setTimeout(() => {
       glitchActive.value = false
       scheduleGlitch()
-    }, 4000)
+    }, 2686)
   }, delay)
 }
 
 onMounted(() => {
   glitchActive.value = true
+  playGlitchSound()
   setTimeout(() => {
     glitchActive.value = false
     scheduleGlitch()
-  }, 4000)
+  }, 2686)
 })
-onUnmounted(() => { if (glitchTimer) clearTimeout(glitchTimer) })
+onUnmounted(() => {
+  if (glitchTimer) clearTimeout(glitchTimer)
+  glitchAudio.pause()
+})
 
 function enterSite() {
   if (introExiting.value) return
@@ -86,6 +114,7 @@ function enterSiteFast() {
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--2" />
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--3" />
       </div>
+      <button class="intro-sound" :aria-label="soundEnabled ? 'Выключить звук' : 'Включить звук'" v-html="soundEnabled ? volumeIcon : muteIcon" @click="toggleSound"></button>
     </div>
   </Transition>
 
@@ -139,7 +168,8 @@ function enterSiteFast() {
 /* ── INTRO ────────────────────────────────────────────────────── */
 
 .intro {
-  --anim-duration: 4s;
+  /* 22% of this is the visible glitch — matched to the 0.591s glitch.ogg */
+  --anim-duration: 2.686s;
 
   position: fixed;
   inset: 0;
@@ -182,10 +212,30 @@ function enterSiteFast() {
   transform: scale(1.06);
 }
 
-.intro-logo-wrap:hover .intro-logo__layer,
-.intro:has(.intro-logo-wrap:hover) .intro-glitch__layer,
-.intro:has(.intro-logo-wrap:hover) .intro-glitch__flash {
-  opacity: 0 !important;
+.intro-sound {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 3;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.intro-sound:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.intro-sound :deep(svg) {
+  width: 4rem;
+  height: 4rem;
+  display: block;
+  fill: var(--color-primary);
 }
 
 /* ── GLITCH LAYERS ────────────────────────────────────────────── */
