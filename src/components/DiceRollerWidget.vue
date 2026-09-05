@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
 import NumberStepper from './NumberStepper.vue'
+import shakeSound from '../assets/sounds/dice-roller/dice-shaking.ogg'
+import dropSound from '../assets/sounds/dice-roller/dice-drop.ogg'
 import d4Raw  from '../assets/icons/dice-roller/d4.svg?raw'
 import d6Raw  from '../assets/icons/dice-roller/d6.svg?raw'
 import d8Raw  from '../assets/icons/dice-roller/d8.svg?raw'
@@ -19,18 +21,70 @@ type DieType = typeof diceTypes[number]
 
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
+const VOLUME = 0.3
+
+// A roll lasts exactly as long as dice-shaking.ogg sounds:
+// three die-shake iterations of 0.529s
+const ROLL_MS = 1587
+// The impact is heard slightly before the result lands
+const DROP_LEAD_MS = 50
+
+const shakeAudio = new Audio(shakeSound)
+shakeAudio.volume = VOLUME
+
+const dropAudio = new Audio(dropSound)
+dropAudio.volume = VOLUME
+
+const audios = [shakeAudio, dropAudio]
+
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
+for (const audio of audios) audio.preload = 'none'
+
+const root = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let warmed = false
+
+let dropTimer: ReturnType<typeof setTimeout> | null = null
+
+function warm() {
+  if (warmed) return
+  warmed = true
+  for (const audio of audios) {
+    audio.preload = 'auto'
+    audio.load()
+  }
+}
+
+function play(audio: HTMLAudioElement) {
+  audio.currentTime = 0
+  audio.play().catch(() => {})
+}
+
+// Silence the sound only: the timer that carries the roll through to its result has to run,
+// otherwise the dice would be left hanging mid-roll
+function silence() {
+  if (dropTimer) { clearTimeout(dropTimer); dropTimer = null }
+  shakeAudio.pause()
+  dropAudio.pause()
+}
+
 const counts = ref<Record<DieType, number>>({ 4: 0, 6: 0, 8: 0, 10: 0, 12: 0, 20: 0 })
 const results = ref<{ type: DieType; value: number }[]>([])
 const rolling = ref(false)
 interface RollRecord { total: number; breakdown: { type: DieType; value: number }[]; modifier: number }
 const rollHistory = ref<RollRecord[]>([])
 
+// The set cannot change while the dice shake: the result is computed from counts at the end
+// of the roll, and a die added halfway keeps animating past the number it rolled
 function addDie(type: DieType) {
+  if (rolling.value) return
   if (counts.value[type] < 10) counts.value[type]++
 }
 
 function removeDie(event: MouseEvent, type: DieType) {
   event.preventDefault()
+  if (rolling.value) return
   if (counts.value[type] > 0) counts.value[type]--
 }
 
@@ -44,6 +98,7 @@ const historyItems = computed(() => rollHistory.value.map(r => {
 }))
 
 function clear() {
+  if (rolling.value) return
   diceTypes.forEach(t => counts.value[t] = 0)
   results.value = []
   rollHistory.value = []
@@ -56,6 +111,10 @@ function roll() {
   rolling.value = true
   results.value = []
   hideInstant()
+
+  play(shakeAudio)
+  dropTimer = setTimeout(() => play(dropAudio), ROLL_MS - DROP_LEAD_MS)
+
   setTimeout(() => {
     const newResults: { type: DieType; value: number }[] = []
     for (const type of diceTypes) {
@@ -68,8 +127,21 @@ function roll() {
     rollHistory.value.unshift({ total: rollTotal, breakdown: newResults, modifier: modifier.value })
     rolling.value = false
     show()
-  }, 500)
+  }, ROLL_MS)
 }
+
+onMounted(() => {
+  observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) warm()
+    else silence()
+  }, { rootMargin: '200px' })
+  observer.observe(root.value!)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  silence()
+})
 
 const dieShapes: Record<DieType, string> = {
   4:  extractPathD(d4Raw),
@@ -82,12 +154,12 @@ const dieShapes: Record<DieType, string> = {
 </script>
 
 <template>
-  <div class="widget">
+  <div class="widget" ref="root">
   <div class="dice-area">
     <div class="dice-selector">
       <div v-for="type in ([4, 6, 8] as DieType[])" :key="type" class="die-wrap">
         <h3 class="die-label">d{{ type }}</h3>
-        <button class="die-btn" :class="{ active: counts[type] > 0, rolling }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
+        <button class="die-btn" :class="{ active: counts[type] > 0, rolling: rolling && counts[type] > 0 }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
           <svg viewBox="18 18 64 64" class="die-svg"><path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd"/></svg>
         </button>
         <span class="die-count" v-if="counts[type] > 0">×{{ counts[type] }}</span>
@@ -98,7 +170,7 @@ const dieShapes: Record<DieType, string> = {
     <div class="dice-selector">
       <div v-for="type in ([10, 12, 20] as DieType[])" :key="type" class="die-wrap">
         <h3 class="die-label">d{{ type }}</h3>
-        <button class="die-btn" :class="{ active: counts[type] > 0, rolling }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
+        <button class="die-btn" :class="{ active: counts[type] > 0, rolling: rolling && counts[type] > 0 }" @click="addDie(type)" @contextmenu="removeDie($event, type)">
           <svg viewBox="18 18 64 64" class="die-svg"><path :d="dieShapes[type]" fill-rule="evenodd" clip-rule="evenodd"/></svg>
         </button>
         <span class="die-count" v-if="counts[type] > 0">×{{ counts[type] }}</span>
@@ -116,7 +188,7 @@ const dieShapes: Record<DieType, string> = {
     <button class="btn-primary" :disabled="totalDice === 0 || rolling" @click="roll">
       {{ rolling ? 'Бросаем...' : 'Бросить' }}
     </button>
-    <button class="btn-secondary" :disabled="totalDice === 0 && results.length === 0 && modifier === 0" @click="clear">
+    <button class="btn-secondary" :disabled="rolling || (totalDice === 0 && results.length === 0 && modifier === 0)" @click="clear">
       Очистить
     </button>
   </div>
@@ -219,7 +291,7 @@ const dieShapes: Record<DieType, string> = {
 }
 
 .die-btn.rolling {
-  animation: die-shake 0.5s ease-in-out;
+  animation: die-shake 0.529s ease-in-out 3;
 }
 
 .die-svg {
@@ -293,9 +365,9 @@ const dieShapes: Record<DieType, string> = {
 @keyframes die-shake {
   0%   { transform: rotate(0deg)   scale(1); }
   20%  { transform: rotate(-12deg) scale(1.08); }
-  40%  { transform: rotate(12deg)  scale(0.95); }
-  60%  { transform: rotate(-8deg)  scale(1.04); }
-  80%  { transform: rotate(6deg)   scale(0.98); }
+  40%  { transform: rotate(12deg)  scale(1.08); }
+  60%  { transform: rotate(-7deg)  scale(1.03); }
+  80%  { transform: rotate(7deg)   scale(1.03); }
   100% { transform: rotate(0deg)   scale(1); }
 }
 </style>

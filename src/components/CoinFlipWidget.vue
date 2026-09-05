@@ -22,29 +22,29 @@ const { showResult, slowHide, hideInstant, show } = useResultStrip()
 const tossAudio = new Audio(tossSound)
 tossAudio.volume = 0.3
 
-// Подброс успевает отзвучать целиком, и только потом монета начинает крутиться
+// The toss is heard in full before the coin starts spinning
 const TOSS_MS = 260
 
 const spinAudio = new Audio(spinSound)
 spinAudio.volume = 0.3
 
-// Длительность файла вращения: под неё подгоняется каждый оборот монеты
+// Length of the spin file: every revolution of the coin is fitted to it
 const SPIN_SECONDS = 0.83
 const spinTimers: ReturnType<typeof setTimeout>[] = []
 
 const dropAudio = new Audio(dropSound)
 dropAudio.volume = 0.3
 
-// Длительность полёта монеты — та же, что у transition в .coin
+// How long the coin stays in the air — the same as the transition in .coin
 const FLIP_MS = 1500
-// Удар слышен чуть раньше, чем монета встаёт
+// The impact is heard slightly before the coin settles
 const DROP_LEAD_MS = 50
 let dropTimer: ReturnType<typeof setTimeout> | null = null
 
 const audios = [tossAudio, spinAudio, dropAudio]
 
-// Виджет монтируется вместе со всей страницей инструментов, поэтому ничего не тянем заранее:
-// файлы подгружаются, когда вкладку открыли, и глушатся, когда с неё ушли
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
 for (const audio of audios) audio.preload = 'none'
 
 const root = ref<HTMLElement | null>(null)
@@ -60,8 +60,8 @@ function warm() {
   }
 }
 
-// Гасим только звук: таймеры, которые доводят поворот и результат, должны отработать,
-// иначе монета останется в старом положении, а в историю уже попадёт выпавшая сторона
+// Silence the sound only: the timers that carry the rotation and the result through have to run,
+// otherwise the coin would stay at its old angle while the side it rolled is already in the history
 function silence() {
   stopSpin()
   if (dropTimer) { clearTimeout(dropTimer); dropTimer = null }
@@ -69,8 +69,8 @@ function silence() {
   dropAudio.pause()
 }
 
-// Монета летит по transition: transform 1.5s cubic-bezier(0.15, 0, 0.25, 1) — она тормозит,
-// поэтому обороты неравные и момент каждого приходится считать по этой же кривой
+// The coin flies under transition: transform 1.5s cubic-bezier(0.15, 0, 0.25, 1) — it decelerates,
+// so its revolutions are unequal and each one has to be timed from that same curve
 const EASE = { x1: 0.15, y1: 0, x2: 0.25, y2: 1 }
 
 function bezier(c1: number, c2: number, u: number) {
@@ -83,7 +83,7 @@ function bezierSlope(c1: number, c2: number, u: number) {
   return 3 * v * v * c1 + 6 * v * u * (c2 - c1) + 3 * u * u * (1 - c2)
 }
 
-// В какой момент полёта монета проходит заданную долю всего поворота
+// At what point of the flight the coin passes a given fraction of the whole rotation
 function timeAtRotation(part: number) {
   let u = part
   for (let i = 0; i < 8; i++) {
@@ -94,7 +94,7 @@ function timeAtRotation(part: number) {
   return bezier(EASE.x1, EASE.x2, Math.min(1, Math.max(0, u))) * FLIP_MS
 }
 
-// На каждый оборот — один проход файла, сжатый или растянутый под длительность этого оборота
+// One playthrough of the file per revolution, squeezed or stretched to that revolution's length
 function scheduleSpin(turn: number) {
   const bounds = [0]
   for (let angle = 360; angle < turn; angle += 360) bounds.push(timeAtRotation(angle / turn))
