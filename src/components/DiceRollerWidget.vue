@@ -75,12 +75,16 @@ const rolling = ref(false)
 interface RollRecord { total: number; breakdown: { type: DieType; value: number }[]; modifier: number }
 const rollHistory = ref<RollRecord[]>([])
 
+// Пока кубики трясутся, набор менять нельзя: результат считается по counts в конце броска,
+// а у кубика, добавленного на середине, анимация доиграет уже после выпавшего числа
 function addDie(type: DieType) {
+  if (rolling.value) return
   if (counts.value[type] < 10) counts.value[type]++
 }
 
 function removeDie(event: MouseEvent, type: DieType) {
   event.preventDefault()
+  if (rolling.value) return
   if (counts.value[type] > 0) counts.value[type]--
 }
 
@@ -94,6 +98,7 @@ const historyItems = computed(() => rollHistory.value.map(r => {
 }))
 
 function clear() {
+  if (rolling.value) return
   diceTypes.forEach(t => counts.value[t] = 0)
   results.value = []
   rollHistory.value = []
@@ -183,7 +188,7 @@ const dieShapes: Record<DieType, string> = {
     <button class="btn-primary" :disabled="totalDice === 0 || rolling" @click="roll">
       {{ rolling ? 'Бросаем...' : 'Бросить' }}
     </button>
-    <button class="btn-secondary" :disabled="totalDice === 0 && results.length === 0 && modifier === 0" @click="clear">
+    <button class="btn-secondary" :disabled="rolling || (totalDice === 0 && results.length === 0 && modifier === 0)" @click="clear">
       Очистить
     </button>
   </div>
