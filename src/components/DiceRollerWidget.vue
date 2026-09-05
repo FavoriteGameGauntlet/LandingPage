@@ -23,10 +23,10 @@ const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
 const VOLUME = 0.3
 
-// Бросок длится ровно столько, сколько звучит dice-shaking.ogg:
-// 3 итерации анимации die-shake по 0.529с
+// A roll lasts exactly as long as dice-shaking.ogg sounds:
+// three die-shake iterations of 0.529s
 const ROLL_MS = 1587
-// Удар слышен чуть раньше, чем выпадает результат
+// The impact is heard slightly before the result lands
 const DROP_LEAD_MS = 50
 
 const shakeAudio = new Audio(shakeSound)
@@ -37,8 +37,8 @@ dropAudio.volume = VOLUME
 
 const audios = [shakeAudio, dropAudio]
 
-// Виджет монтируется вместе со всей страницей инструментов, поэтому ничего не тянем заранее:
-// файлы подгружаются, когда вкладку открыли, и глушатся, когда с неё ушли
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
 for (const audio of audios) audio.preload = 'none'
 
 const root = ref<HTMLElement | null>(null)
@@ -61,8 +61,8 @@ function play(audio: HTMLAudioElement) {
   audio.play().catch(() => {})
 }
 
-// Гасим только звук: таймер, который доводит бросок до результата, должен отработать,
-// иначе кубики останутся в подвешенном состоянии
+// Silence the sound only: the timer that carries the roll through to its result has to run,
+// otherwise the dice would be left hanging mid-roll
 function silence() {
   if (dropTimer) { clearTimeout(dropTimer); dropTimer = null }
   shakeAudio.pause()
@@ -75,8 +75,8 @@ const rolling = ref(false)
 interface RollRecord { total: number; breakdown: { type: DieType; value: number }[]; modifier: number }
 const rollHistory = ref<RollRecord[]>([])
 
-// Пока кубики трясутся, набор менять нельзя: результат считается по counts в конце броска,
-// а у кубика, добавленного на середине, анимация доиграет уже после выпавшего числа
+// The set cannot change while the dice shake: the result is computed from counts at the end
+// of the roll, and a die added halfway keeps animating past the number it rolled
 function addDie(type: DieType) {
   if (rolling.value) return
   if (counts.value[type] < 10) counts.value[type]++
