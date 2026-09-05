@@ -7,6 +7,8 @@ import seasonsIcon from '../assets/icons/seasons.svg?raw'
 import volumeIcon from '../assets/icons/game/volume.svg?raw'
 import muteIcon from '../assets/icons/game/mute.svg?raw'
 import glitchSound from '../assets/sounds/glitch.ogg'
+import whooshSound from '../assets/sounds/whoosh.ogg'
+import swipeSound from '../assets/sounds/swipe.ogg'
 
 const s3 = import.meta.env.VITE_S3_BASE_URL
 
@@ -29,19 +31,57 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const glitchAudio = new Audio(glitchSound)
 glitchAudio.volume = 0.35
 
-const soundEnabled = ref(localStorage.getItem('fgg-sound') !== 'off')
+const whooshAudio = new Audio(whooshSound)
+whooshAudio.volume = 0.35
 
-function toggleSound() {
-  soundEnabled.value = !soundEnabled.value
-  localStorage.setItem('fgg-sound', soundEnabled.value ? 'on' : 'off')
-  if (!soundEnabled.value) glitchAudio.pause()
+const swipeAudio = new Audio(swipeSound)
+swipeAudio.volume = 0.15
+
+// Nothing is fetched up front; each sound is warmed shortly before it is needed
+for (const audio of [glitchAudio, whooshAudio, swipeAudio]) audio.preload = 'none'
+
+function warm(audio: HTMLAudioElement) {
+  audio.preload = 'auto'
+  audio.load()
+}
+
+// Only the glitch needs asking: it runs before any click, and the autoplay policy keeps the page
+// silent until one happens. Everything from the reveal on is unlocked by the click on the logo.
+const glitchSoundEnabled = ref(false)
+
+function toggleGlitchSound() {
+  glitchSoundEnabled.value = !glitchSoundEnabled.value
+  if (glitchSoundEnabled.value) warm(glitchAudio)
+  else glitchAudio.pause()
+}
+
+function play(audio: HTMLAudioElement, rate: number) {
+  audio.currentTime = 0
+  audio.playbackRate = rate
+  audio.play().catch(() => {})
+}
+
+// The four card ticks overlap, so each needs its own element
+function playTick(rate: number) {
+  const tick = swipeAudio.cloneNode() as HTMLAudioElement
+  tick.volume = swipeAudio.volume
+  play(tick, rate)
+}
+
+function playReveal() {
+  if (reducedMotion) return
+  // Double click runs the reveal 3x faster; speeding the cues up keeps them in sync
+  const rate = fastReveal.value ? 3 : 1
+  play(whooshAudio, rate)
+  // Offsets are the card-rise delays from the CSS below
+  for (const delay of [400, 520, 640, 760]) {
+    cueTimers.push(setTimeout(() => playTick(rate), delay / rate))
+  }
 }
 
 function playGlitchSound() {
-  if (reducedMotion || !soundEnabled.value) return
-  glitchAudio.currentTime = 0
-  // Blocked by the autoplay policy until the first user gesture on the page.
-  glitchAudio.play().catch(() => {})
+  if (reducedMotion || !glitchSoundEnabled.value) return
+  play(glitchAudio, 1)
 }
 
 const introVisible = ref(true)
@@ -51,6 +91,7 @@ const fastReveal = ref(false)
 
 let glitchTimer: ReturnType<typeof setTimeout> | null = null
 let exitTimer: ReturnType<typeof setTimeout> | null = null
+const cueTimers: ReturnType<typeof setTimeout>[] = []
 
 function scheduleGlitch() {
   const delay = 2000 + Math.random() * 3000
@@ -75,15 +116,25 @@ onMounted(() => {
 })
 onUnmounted(() => {
   if (glitchTimer) clearTimeout(glitchTimer)
+  for (const t of cueTimers) clearTimeout(t)
   glitchAudio.pause()
+  whooshAudio.pause()
 })
+
+function revealHero() {
+  introVisible.value = false
+  playReveal()
+}
 
 function enterSite() {
   if (introExiting.value) return
   introExiting.value = true
   glitchActive.value = false
   if (glitchTimer) clearTimeout(glitchTimer)
-  exitTimer = setTimeout(() => { introVisible.value = false }, 700)
+  // This click is also the gesture that unlocks audio, so pull the reveal cues in now
+  warm(whooshAudio)
+  warm(swipeAudio)
+  exitTimer = setTimeout(() => { revealHero() }, 700)
 }
 
 function enterSiteFast() {
@@ -91,10 +142,10 @@ function enterSiteFast() {
   if (!introExiting.value) {
     enterSite()
     if (exitTimer) clearTimeout(exitTimer)
-    exitTimer = setTimeout(() => { introVisible.value = false }, 233)
+    exitTimer = setTimeout(() => { revealHero() }, 233)
   } else if (exitTimer) {
     clearTimeout(exitTimer)
-    exitTimer = setTimeout(() => { introVisible.value = false }, 233)
+    exitTimer = setTimeout(() => { revealHero() }, 233)
   }
 }
 </script>
@@ -114,7 +165,10 @@ function enterSiteFast() {
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--2" />
         <img :src="`${s3}/logos/fggw3.webp`" aria-hidden="true" class="intro-logo__layer intro-logo__layer--3" />
       </div>
-      <button class="intro-sound" :aria-label="soundEnabled ? 'Выключить звук' : 'Включить звук'" v-html="soundEnabled ? volumeIcon : muteIcon" @click="toggleSound"></button>
+      <div class="intro-sound-wrap">
+        <span v-if="!glitchSoundEnabled" class="intro-sound-hint">звук глитча</span>
+        <button class="intro-sound" :aria-label="glitchSoundEnabled ? 'Выключить звук глитча' : 'Включить звук глитча'" v-html="glitchSoundEnabled ? volumeIcon : muteIcon" @click="toggleGlitchSound"></button>
+      </div>
     </div>
   </Transition>
 
@@ -212,11 +266,25 @@ function enterSiteFast() {
   transform: scale(1.06);
 }
 
-.intro-sound {
+.intro-sound-wrap {
   position: absolute;
   top: 2rem;
   right: 2rem;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.intro-sound-hint {
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  opacity: 0.7;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.intro-sound {
   background: none;
   border: none;
   padding: 0;
@@ -483,6 +551,8 @@ function enterSiteFast() {
   font-weight: 400;
   text-align: center;
   color: var(--color-card-fg);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* ── CARDS ────────────────────────────────────────────────────── */
