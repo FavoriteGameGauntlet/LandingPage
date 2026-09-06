@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { useCardLeave } from '../composables/useCardLeave'
+import { useCardLeave, GATHER_MS, SWEEP_MS } from '../composables/useCardLeave'
+import { useCardSounds } from '../composables/useCardSounds'
 import NumberStepper from './NumberStepper.vue'
 import CountSlider from './CountSlider.vue'
 
@@ -39,15 +40,23 @@ const CARDS = [
 ]
 
 const { clearStart, clearEnd, onLeave } = useCardLeave()
+const { playFlip, playLeave } = useCardSounds()
+
+// A card turns over once it has landed: the entrance itself runs 250ms
+const REVEAL_MS = 320
 
 const cardCount = ref(1)
 const maxCount = 10
 
 let uidCounter = 0
+let dealTimer: ReturnType<typeof setTimeout> | null = null
 const buffer = ref([...CARDS])
 const history = ref<TarotCard[]>([])
 
 function pickCards() {
+  // Clicking again during the pause would cancel the pending deal, and the cards it had
+  // already taken out of the deck would never reach the history
+  if (dealTimer) return
   const drawn: TarotCard[] = []
   for (let i = 0; i < cardCount.value; i++) {
     if (buffer.value.length === 0) buffer.value = [...CARDS]
@@ -55,17 +64,34 @@ function pickCards() {
     const picked = buffer.value.splice(idx, 1)[0]!
     drawn.push({ ...picked, uid: uidCounter++, revealed: false })
   }
+  const overflow = history.value.length + drawn.length - 10
+  if (overflow > 0) {
+    history.value.splice(history.value.length - overflow, overflow)
+    playLeave(overflow)
+    // The deal waits out the cards leaving rather than landing on the same frame, and a
+    // lone card skips the gather it has no one to gather with
+    dealTimer = setTimeout(() => deal(drawn), overflow > 1 ? GATHER_MS + SWEEP_MS : SWEEP_MS)
+  } else {
+    deal(drawn)
+  }
+}
+
+function deal(drawn: TarotCard[]) {
+  dealTimer = null
   history.value.unshift(...drawn)
-  while (history.value.length > 10) history.value.pop()
   drawn.forEach((card, i) => {
     setTimeout(() => {
       const found = history.value.find(c => c.uid === card.uid)
-      if (found) found.revealed = true
-    }, 150 + i * 100)
+      if (found) {
+        found.revealed = true
+        playFlip()
+      }
+    }, REVEAL_MS + i * 100)
   })
 }
 
 function clearHistory() {
+  if (dealTimer) { clearTimeout(dealTimer); dealTimer = null }
   clearStart()
   history.value = []
   buffer.value = [...CARDS]
@@ -74,7 +100,7 @@ function clearHistory() {
 </script>
 
 <template>
-  <div class="widget">
+  <div class="widget" ref="root">
     <div class="controls">
       <div class="options">
         <div class="option-row">

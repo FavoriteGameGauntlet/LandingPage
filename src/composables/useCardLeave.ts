@@ -1,3 +1,7 @@
+// The cards first gather into a pile, then the pile sweeps off the grid
+export const GATHER_MS = 180
+export const SWEEP_MS = 280
+
 interface LeavingItem { el: HTMLElement; left: number; top: number; w: number; done: () => void }
 
 export function useCardLeave() {
@@ -53,7 +57,7 @@ export function useCardLeave() {
             { transform: 'translate(0,0)', opacity: '1' },
             { transform: `translate(${target.left - it.left}px, ${target.top - it.top}px)`, opacity: '0.7' },
           ],
-          { duration: 180, easing: 'ease-in', fill: 'forwards' }
+          { duration: GATHER_MS, easing: 'ease-in', fill: 'forwards' }
         )
       )
 
@@ -71,7 +75,7 @@ export function useCardLeave() {
           { opacity: '0.7', transform: 'translateX(0)' },
           { opacity: '0',   transform: `translateX(${target.w + 12}px)` },
         ],
-        { duration: 280, easing: 'ease-in' }
+        { duration: SWEEP_MS, easing: 'ease-in' }
       ).finished
     ))
 
