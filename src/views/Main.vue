@@ -29,10 +29,10 @@ const iconGradients = Array.from({ length: 4 }, () => randomGradient(ICON_COLORS
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const glitchAudio = new Audio(glitchSound)
-glitchAudio.volume = 0.35
+glitchAudio.volume = 0.175
 
 const whooshAudio = new Audio(whooshSound)
-whooshAudio.volume = 0.35
+whooshAudio.volume = 0.175
 
 const swipeAudio = new Audio(swipeSound)
 swipeAudio.volume = 0.15

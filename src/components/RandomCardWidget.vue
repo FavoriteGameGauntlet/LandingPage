@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
-import { useCardLeave } from '../composables/useCardLeave'
+import { useCardLeave, GATHER_MS, SWEEP_MS } from '../composables/useCardLeave'
+import { useCardSounds } from '../composables/useCardSounds'
 import NumberStepper from './NumberStepper.vue'
 import CountSlider from './CountSlider.vue'
 import heartsIcon from '../assets/icons/random-card/hearts.svg?raw'
@@ -123,12 +124,20 @@ const cardCount = ref(1)
 const maxCount = computed(() => Math.min(20, deckSize.value))
 
 const { clearStart, clearEnd, onLeave } = useCardLeave()
+const { playFlip, playLeave } = useCardSounds()
+
+// A card turns over once it has landed: the entrance itself runs 250ms
+const REVEAL_MS = 320
 
 let uidCounter = 0
+let dealTimer: ReturnType<typeof setTimeout> | null = null
 const buffer = ref<Omit<Card, 'uid' | 'revealed'>[]>(buildDeck())
 const history = ref<Card[]>([])
 
 function pickCards() {
+  // Clicking again during the pause would cancel the pending deal, and the cards it had
+  // already taken out of the deck would never reach the history
+  if (dealTimer) return
   const drawn: Card[] = []
   for (let i = 0; i < cardCount.value; i++) {
     if (buffer.value.length === 0) buffer.value = buildDeck()
@@ -136,17 +145,34 @@ function pickCards() {
     const picked = buffer.value.splice(idx, 1)[0]
     if (picked) drawn.push({ ...picked, uid: uidCounter++, revealed: false })
   }
+  const overflow = history.value.length + drawn.length - 20
+  if (overflow > 0) {
+    history.value.splice(history.value.length - overflow, overflow)
+    playLeave(overflow)
+    // The deal waits out the cards leaving rather than landing on the same frame, and a
+    // lone card skips the gather it has no one to gather with
+    dealTimer = setTimeout(() => deal(drawn), overflow > 1 ? GATHER_MS + SWEEP_MS : SWEEP_MS)
+  } else {
+    deal(drawn)
+  }
+}
+
+function deal(drawn: Card[]) {
+  dealTimer = null
   history.value.unshift(...drawn)
-  while (history.value.length > 20) history.value.pop()
   drawn.forEach((card, i) => {
     setTimeout(() => {
       const found = history.value.find(c => c.uid === card.uid)
-      if (found) found.revealed = true
-    }, 150 + i * 100)
+      if (found) {
+        found.revealed = true
+        playFlip()
+      }
+    }, REVEAL_MS + i * 100)
   })
 }
 
 function clearHistory() {
+  if (dealTimer) { clearTimeout(dealTimer); dealTimer = null }
   clearStart()
   history.value = []
   buffer.value = buildDeck()
@@ -161,7 +187,7 @@ function onImgError(svgName: string) {
 </script>
 
 <template>
-  <div class="widget">
+  <div class="widget" ref="root">
     <div class="controls">
       <div class="options">
       <div class="option-row">
@@ -308,27 +334,22 @@ function onImgError(svgName: string) {
 }
 
 .card-item {
-  border-radius: 8px;
-  border: 1px solid currentColor;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
 }
 
 .card-item.red {
   color: var(--color-primary);
-  background: rgb(from var(--color-primary) r g b / 0.08);
 }
 
 .card-item.black {
   color: var(--color-accent);
-  background: rgb(from var(--color-accent) r g b / 0.08);
 }
 
 .card-scene {
   width: 100%;
-  perspective: 600px;
+  perspective: 320px;
 }
 
 .card-3d {
@@ -346,6 +367,9 @@ function onImgError(svgName: string) {
 .card-face {
   position: absolute;
   inset: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid currentColor;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
@@ -372,6 +396,15 @@ function onImgError(svgName: string) {
 
 .card-front {
   transform: rotateY(180deg);
+}
+
+/* The tint the frame used to carry rides on the face itself, so it turns with the card */
+.card-item.red .card-front {
+  background: rgb(from var(--color-primary) r g b / 0.08);
+}
+
+.card-item.black .card-front {
+  background: rgb(from var(--color-accent) r g b / 0.08);
 }
 
 .card-svg {
