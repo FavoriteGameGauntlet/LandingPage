@@ -49,7 +49,9 @@ const answers: Answer[] = [
 
 const { showResult: showAnswer, slowHide, hideInstant, show } = useResultStrip(4000, 300)
 
-const VOLUME = 0.3
+const RISER_VOLUME = 0.3
+// The chime is brighter than the riser, so it needs less to sit level with it
+const REVEAL_VOLUME = 0.2
 
 // The ball thinks for exactly as long as magic-riser.ogg sounds
 const THINK_MS = 1500
@@ -57,10 +59,10 @@ const THINK_MS = 1500
 const REVEAL_LEAD_MS = 50
 
 const riserAudio = new Audio(riserSound)
-riserAudio.volume = VOLUME
+riserAudio.volume = RISER_VOLUME
 
 const revealAudio = new Audio(revealSound)
-revealAudio.volume = VOLUME
+revealAudio.volume = REVEAL_VOLUME
 
 const audios = [riserAudio, revealAudio]
 
