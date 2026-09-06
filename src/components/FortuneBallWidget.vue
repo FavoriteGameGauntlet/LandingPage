@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
+import riserSound from '../assets/sounds/magic-ball/magic-riser.ogg'
+import revealSound from '../assets/sounds/magic-ball/magic-reveal.ogg'
 
 type Variant = 'primary' | 'accent' | null
 
@@ -47,6 +49,53 @@ const answers: Answer[] = [
 
 const { showResult: showAnswer, slowHide, hideInstant, show } = useResultStrip(4000, 300)
 
+const VOLUME = 0.3
+
+// The ball thinks for exactly as long as magic-riser.ogg sounds
+const THINK_MS = 1500
+// The chime is heard slightly before the answer lands
+const REVEAL_LEAD_MS = 50
+
+const riserAudio = new Audio(riserSound)
+riserAudio.volume = VOLUME
+
+const revealAudio = new Audio(revealSound)
+revealAudio.volume = VOLUME
+
+const audios = [riserAudio, revealAudio]
+
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
+for (const audio of audios) audio.preload = 'none'
+
+const root = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let warmed = false
+
+let revealTimer: ReturnType<typeof setTimeout> | null = null
+
+function warm() {
+  if (warmed) return
+  warmed = true
+  for (const audio of audios) {
+    audio.preload = 'auto'
+    audio.load()
+  }
+}
+
+function play(audio: HTMLAudioElement) {
+  audio.currentTime = 0
+  audio.play().catch(() => {})
+}
+
+// Silence the sound only: the timer that carries the question through to its answer has to run,
+// otherwise the ball would be left thinking forever
+function silence() {
+  if (revealTimer) { clearTimeout(revealTimer); revealTimer = null }
+  riserAudio.pause()
+  revealAudio.pause()
+}
+
 const result = ref<Answer | null>(null)
 const revealing = ref(false)
 const history = ref<Answer[]>([])
@@ -56,13 +105,16 @@ function ask() {
   revealing.value = true
   hideInstant()
 
+  play(riserAudio)
+  revealTimer = setTimeout(() => play(revealAudio), THINK_MS - REVEAL_LEAD_MS)
+
   setTimeout(() => {
     const answer = answers[Math.floor(Math.random() * answers.length)] as Answer
     result.value = answer
     history.value.unshift(answer)
     revealing.value = false
     show()
-  }, 1500)
+  }, THINK_MS)
 }
 
 function clear() {
@@ -75,10 +127,23 @@ function clear() {
 const historyItems = computed(() =>
   history.value.map(a => ({ label: a.text }))
 )
+
+onMounted(() => {
+  observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) warm()
+    else silence()
+  }, { rootMargin: '200px' })
+  observer.observe(root.value!)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  silence()
+})
 </script>
 
 <template>
-  <div class="widget">
+  <div class="widget" ref="root">
     <div class="ball-scene">
       <div
         class="ball"
