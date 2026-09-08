@@ -2,8 +2,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
-import riserSound from '../assets/sounds/magic-ball/magic-riser.ogg'
-import revealSound from '../assets/sounds/magic-ball/magic-reveal.ogg'
+import riserSound from '../assets/sounds/magic-ball/riser.ogg'
+import revealSound from '../assets/sounds/magic-ball/reveal.ogg'
 
 type Variant = 'primary' | 'accent' | null
 
@@ -53,7 +53,7 @@ const RISER_VOLUME = 0.3
 // The chime is brighter than the riser, so it needs less to sit level with it
 const REVEAL_VOLUME = 0.2
 
-// The ball thinks for exactly as long as magic-riser.ogg sounds
+// The ball thinks for exactly as long as riser.ogg sounds
 const THINK_MS = 1500
 // The chime is heard slightly before the answer lands
 const REVEAL_LEAD_MS = 50

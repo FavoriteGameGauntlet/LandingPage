@@ -6,15 +6,15 @@ import paperSvg    from '../assets/icons/rpsls/paper.svg?raw'
 import scissorsSvg from '../assets/icons/rpsls/scissors.svg?raw'
 import lizardSvg   from '../assets/icons/rpsls/lizard.svg?raw'
 import spockSvg    from '../assets/icons/rpsls/spock.svg?raw'
-import rockSound     from '../assets/sounds/rpsls/stones-hit.ogg'
-import paperSound    from '../assets/sounds/rpsls/rustling-paper.ogg'
-import scissorsSound from '../assets/sounds/rpsls/scissors-cut.ogg'
-import lizardSound   from '../assets/sounds/rpsls/monster-hissing.ogg'
-import spockSound    from '../assets/sounds/rpsls/scifi-blips.ogg'
-import thinkSound    from '../assets/sounds/rpsls/data-processing.ogg'
-import winSound      from '../assets/sounds/rpsls/level-up.ogg'
-import loseSound     from '../assets/sounds/rpsls/lose-sound.ogg'
-import drawSound     from '../assets/sounds/rpsls/hollow-hit.ogg'
+import rockSound     from '../assets/sounds/rpsls/rock.ogg'
+import paperSound    from '../assets/sounds/rpsls/paper.ogg'
+import scissorsSound from '../assets/sounds/rpsls/scissors.ogg'
+import lizardSound   from '../assets/sounds/rpsls/lizard.ogg'
+import spockSound    from '../assets/sounds/rpsls/spock.ogg'
+import thinkSound    from '../assets/sounds/rpsls/think.ogg'
+import winSound      from '../assets/sounds/rpsls/win.ogg'
+import loseSound     from '../assets/sounds/rpsls/lose.ogg'
+import drawSound     from '../assets/sounds/rpsls/draw.ogg'
 
 type Choice = 'rock' | 'paper' | 'scissors' | 'lizard' | 'spock'
 type Outcome = 'win' | 'lose' | 'draw'
@@ -61,7 +61,7 @@ const outcomeLabels: Record<Outcome, string> = {
   draw: 'Ничья',
 }
 
-// How long the computer takes to answer. data-processing.ogg runs 1.65s and is left to finish:
+// How long the computer takes to answer. think.ogg runs 1.65s and is left to finish:
 // cut short it reads as one noise with the answer, and the beat of silence left over carries
 // the pause the pulse is drawing
 const THINK_MS = 1800
