@@ -9,9 +9,11 @@ const MAX_ITEMS = 20
 const R = 185
 const TEXT_R = 128
 const SPIN_MS = 5500
-// The curve the wheel slows down on. Both the length and the curve mirror the .wheel-group
-// transition and have to be changed with it
+// The curve the wheel slows down on
 const SPIN_EASE = [0.2, 0.8, 0.2, 1] as const
+// The clicks are placed off the same length and curve the wheel turns on, so .wheel-group is
+// handed them rather than repeating them
+const spinTransition = `transform ${SPIN_MS}ms cubic-bezier(${SPIN_EASE.join(', ')})`
 // The pointer never comes to rest closer than this to a boundary. Two degrees is some six
 // units of arc on the rim: close enough to be in doubt, far enough that the tip still reads
 // as standing on one side of the line rather than on it
@@ -36,13 +38,21 @@ const DING_LEAD_MS = 50
 // Closer together than this they stop reading as separate clicks anyway, and the file runs 140ms
 const MIN_TICK_GAP_MS = 55
 
-// Never played itself: the clicks overlap, so each one plays a clone of its own
-const tickAudio = new Audio(tickSound)
+// The clicks overlap, so they take turns across a few elements rather than cutting each other
+// off. At the tightest spacing a click is still sounding while the two after it start, so four
+// is one more than a run can ever have going at once
+const TICK_VOICES = 4
+
+const tickAudios = Array.from({ length: TICK_VOICES }, () => {
+  const audio = new Audio(tickSound)
+  audio.volume = TICK_VOLUME
+  return audio
+})
 
 const dingAudio = new Audio(dingSound)
 dingAudio.volume = DING_VOLUME
 
-const audios = [tickAudio, dingAudio]
+const audios = [...tickAudios, dingAudio]
 
 // The widget mounts along with the whole tools page, so nothing is fetched up front:
 // the files load once the tab is opened and are silenced once it is left
@@ -52,7 +62,7 @@ const root = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 let warmed = false
 
-const ticks: HTMLAudioElement[] = []
+let voice = 0
 const tickTimers: ReturnType<typeof setTimeout>[] = []
 let dingTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -103,17 +113,11 @@ function tickTimes(from: number, to: number, sectorAngle: number) {
   return times
 }
 
-// The file runs 140ms while the clicks come as close as 55ms apart, so a shared element would
-// cut the previous one off. The detune keeps a fast run from reading as one machine gun
+// The detune keeps a fast run of clicks from reading as one machine gun
 function playTick() {
-  const tick = tickAudio.cloneNode() as HTMLAudioElement
-  tick.volume = TICK_VOLUME
+  const tick = tickAudios[voice]!
+  voice = (voice + 1) % TICK_VOICES
   tick.playbackRate = 0.94 + Math.random() * 0.12
-  tick.addEventListener('ended', () => {
-    const i = ticks.indexOf(tick)
-    if (i !== -1) ticks.splice(i, 1)
-  })
-  ticks.push(tick)
   play(tick)
 }
 
@@ -123,9 +127,7 @@ function silence() {
   for (const timer of tickTimers) clearTimeout(timer)
   tickTimers.length = 0
   if (dingTimer) { clearTimeout(dingTimer); dingTimer = null }
-  dingAudio.pause()
-  for (const tick of ticks) tick.pause()
-  ticks.length = 0
+  for (const audio of audios) audio.pause()
 }
 
 const items = ref<string[]>([])
@@ -424,7 +426,7 @@ onUnmounted(() => {
 }
 
 .wheel-group {
-  transition: transform 5.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: v-bind(spinTransition);
 }
 
 .empty-label {
