@@ -2,8 +2,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
-import tickSound from '../assets/sounds/fortune-wheel/wheel-tick.ogg'
-import dingSound from '../assets/sounds/fortune-wheel/small-bell-ding.ogg'
+import tickSound from '../assets/sounds/fortune-wheel/tick.ogg'
+import dingSound from '../assets/sounds/fortune-wheel/ding.ogg'
 
 const MAX_ITEMS = 20
 const R = 185

@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import rockSvg     from '../assets/icons/rpsls/rock.svg?raw'
 import paperSvg    from '../assets/icons/rpsls/paper.svg?raw'
 import scissorsSvg from '../assets/icons/rpsls/scissors.svg?raw'
 import lizardSvg   from '../assets/icons/rpsls/lizard.svg?raw'
 import spockSvg    from '../assets/icons/rpsls/spock.svg?raw'
+import rockSound     from '../assets/sounds/rpsls/rock.ogg'
+import paperSound    from '../assets/sounds/rpsls/paper.ogg'
+import scissorsSound from '../assets/sounds/rpsls/scissors.ogg'
+import lizardSound   from '../assets/sounds/rpsls/lizard.ogg'
+import spockSound    from '../assets/sounds/rpsls/spock.ogg'
+import thinkSound    from '../assets/sounds/rpsls/think.ogg'
+import winSound      from '../assets/sounds/rpsls/win.ogg'
+import loseSound     from '../assets/sounds/rpsls/lose.ogg'
+import drawSound     from '../assets/sounds/rpsls/draw.ogg'
 
 type Choice = 'rock' | 'paper' | 'scissors' | 'lizard' | 'spock'
 type Outcome = 'win' | 'lose' | 'draw'
@@ -52,6 +61,69 @@ const outcomeLabels: Record<Outcome, string> = {
   draw: 'Ничья',
 }
 
+// How long the computer takes to answer. think.ogg runs 1.65s and is left to finish:
+// cut short it reads as one noise with the answer, and the beat of silence left over carries
+// the pause the pulse is drawing
+const THINK_MS = 1800
+
+const PICK_VOLUME = 0.3
+const THINK_VOLUME = 0.25
+const LOSE_VOLUME = 0.25
+const DRAW_VOLUME = 0.25
+// Brighter than the rest, so it needs the least to sit level with them
+const WIN_VOLUME = 0.2
+
+const gestureAudios: Record<Choice, HTMLAudioElement> = {
+  rock:     new Audio(rockSound),
+  paper:    new Audio(paperSound),
+  scissors: new Audio(scissorsSound),
+  lizard:   new Audio(lizardSound),
+  spock:    new Audio(spockSound),
+}
+for (const audio of Object.values(gestureAudios)) audio.volume = PICK_VOLUME
+
+const thinkAudio = new Audio(thinkSound)
+thinkAudio.volume = THINK_VOLUME
+
+const outcomeAudios: Record<Outcome, HTMLAudioElement> = {
+  win:  new Audio(winSound),
+  lose: new Audio(loseSound),
+  draw: new Audio(drawSound),
+}
+outcomeAudios.win.volume  = WIN_VOLUME
+outcomeAudios.lose.volume = LOSE_VOLUME
+outcomeAudios.draw.volume = DRAW_VOLUME
+
+const audios = [...Object.values(gestureAudios), thinkAudio, ...Object.values(outcomeAudios)]
+
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
+for (const audio of audios) audio.preload = 'none'
+
+const root = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let warmed = false
+
+function warm() {
+  if (warmed) return
+  warmed = true
+  for (const audio of audios) {
+    audio.preload = 'auto'
+    audio.load()
+  }
+}
+
+function playSound(audio: HTMLAudioElement) {
+  audio.currentTime = 0
+  audio.play().catch(() => {})
+}
+
+// Silence the sound only: the timer that carries the round through to its result has to run,
+// otherwise the computer would be left thinking over a round that is already scored
+function silence() {
+  for (const audio of audios) audio.pause()
+}
+
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
 const playerChoice  = ref<Choice | null>(null)
@@ -80,6 +152,7 @@ function getCpuChoice(): Choice {
 
 function select(choice: Choice) {
   if (thinking.value) return
+  playSound(gestureAudios[choice])
   playerChoice.value = choice
   computerChoice.value = null
   roundResult.value = null
@@ -93,6 +166,7 @@ function play() {
   roundResult.value = null
   hideInstant()
   thinking.value = true
+  playSound(thinkAudio)
 
   setTimeout(() => {
     const cpu = getCpuChoice()
@@ -100,13 +174,16 @@ function play() {
     computerChoice.value = cpu
     roundResult.value = outcome
     thinking.value = false
+    // The file has run out on its own by now; this only catches a playback that started late
+    thinkAudio.pause()
+    playSound(outcomeAudios[outcome])
     history.value.unshift({ player: choice, computer: cpu, outcome })
     if (history.value.length > 20) history.value.pop()
     if (outcome === 'win') score.value.player++
     else if (outcome === 'lose') score.value.computer++
     else score.value.draw++
     show()
-  }, 700)
+  }, THINK_MS)
 }
 
 function clear() {
@@ -118,10 +195,23 @@ function clear() {
   history.value = []
   score.value = { player: 0, computer: 0, draw: 0 }
 }
+
+onMounted(() => {
+  observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) warm()
+    else silence()
+  }, { rootMargin: '200px' })
+  observer.observe(root.value!)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  silence()
+})
 </script>
 
 <template>
-  <div class="widget">
+  <div ref="root" class="widget">
     <div class="score-line">
       <div class="score-cell">
         <h3 class="score-label">Победы</h3>

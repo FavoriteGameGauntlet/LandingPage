@@ -1,8 +1,8 @@
 import { useTemplateRef, onMounted, onUnmounted } from 'vue'
 import { GATHER_MS } from './useCardLeave'
-import slideSound from '../assets/sounds/cards/card-slide.ogg'
-import whooshSound from '../assets/sounds/cards/card-whoosh.ogg'
-import flipSound from '../assets/sounds/cards/card-flip.ogg'
+import slideSound from '../assets/sounds/cards/slide.ogg'
+import whooshSound from '../assets/sounds/cards/whoosh.ogg'
+import flipSound from '../assets/sounds/cards/flip.ogg'
 
 const VOLUME = 0.3
 // Three flips sound at once at the widest spread, so a single one carries less than it would alone

@@ -3,9 +3,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import headsRaw from '../assets/icons/coin-flip/heads.svg?raw'
 import tailsRaw from '../assets/icons/coin-flip/tails.svg?raw'
-import tossSound from '../assets/sounds/coin-flip/coin-toss.ogg'
-import spinSound from '../assets/sounds/coin-flip/coin-flipping.ogg'
-import dropSound from '../assets/sounds/coin-flip/coin-drop.ogg'
+import tossSound from '../assets/sounds/coin-flip/toss.ogg'
+import spinSound from '../assets/sounds/coin-flip/spin.ogg'
+import dropSound from '../assets/sounds/coin-flip/drop.ogg'
 import HistoryChips from './HistoryChips.vue'
 
 function prepareCoinSvg(raw: string): string {

@@ -3,8 +3,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
 import NumberStepper from './NumberStepper.vue'
-import shakeSound from '../assets/sounds/dice-roller/dice-shaking.ogg'
-import dropSound from '../assets/sounds/dice-roller/dice-drop.ogg'
+import shakeSound from '../assets/sounds/dice-roller/shake.ogg'
+import dropSound from '../assets/sounds/dice-roller/drop.ogg'
 import d4Raw  from '../assets/icons/dice-roller/d4.svg?raw'
 import d6Raw  from '../assets/icons/dice-roller/d6.svg?raw'
 import d8Raw  from '../assets/icons/dice-roller/d8.svg?raw'
@@ -23,7 +23,7 @@ const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
 const VOLUME = 0.3
 
-// A roll lasts exactly as long as dice-shaking.ogg sounds:
+// A roll lasts exactly as long as shake.ogg sounds:
 // three die-shake iterations of 0.529s
 const ROLL_MS = 1587
 // The impact is heard slightly before the result lands

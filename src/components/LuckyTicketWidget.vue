@@ -2,10 +2,10 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
-import tearSound from '../assets/sounds/lucky-ticket/paper-tearing.ogg'
-import reelsSound from '../assets/sounds/lucky-ticket/slot-machine-reels.ogg'
-import stampSound from '../assets/sounds/lucky-ticket/rubber-stamp.ogg'
-import chimeSound from '../assets/sounds/lucky-ticket/win-chime.ogg'
+import tearSound from '../assets/sounds/lucky-ticket/tear.ogg'
+import reelsSound from '../assets/sounds/lucky-ticket/reels.ogg'
+import stampSound from '../assets/sounds/lucky-ticket/stamp.ogg'
+import chimeSound from '../assets/sounds/lucky-ticket/chime.ogg'
 
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
@@ -121,7 +121,7 @@ function generate() {
     ticks++
     if (ticks >= TICKS) {
       clearInterval(interval)
-      // slot-machine-reels.ogg runs on well past the roll and has no ending of its own, so it
+      // reels.ogg runs on well past the roll and has no ending of its own, so it
       // is cut where the digits stop - under the stamp, which covers the cut
       reelsAudio.pause()
       displayDigits.value = finalDigits
