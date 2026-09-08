@@ -1,14 +1,123 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
+import tickSound from '../assets/sounds/fortune-wheel/wheel-tick.ogg'
+import dingSound from '../assets/sounds/fortune-wheel/small-bell-ding.ogg'
 
 const MAX_ITEMS = 20
 const R = 185
 const TEXT_R = 128
 const SPIN_MS = 4000
+// The curve the wheel slows down on, mirroring the .wheel-group transition
+const SPIN_EASE = [0.05, 0.5, 0.1, 1] as const
 
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
+
+// A spin opens with twenty clicks a second, so one of them carries far less than a sound
+// that plays on its own
+const TICK_VOLUME = 0.15
+
+const DING_VOLUME = 0.2
+
+// The ding is heard slightly before the result lands
+const DING_LEAD_MS = 50
+
+// The pointer crosses hundreds of boundaries a second in the first moments of a spin. Closer
+// together than this they stop reading as separate clicks anyway, and the file runs 140ms
+const MIN_TICK_GAP_MS = 55
+
+// Never played itself: the clicks overlap, so each one plays a clone of its own
+const tickAudio = new Audio(tickSound)
+
+const dingAudio = new Audio(dingSound)
+dingAudio.volume = DING_VOLUME
+
+const audios = [tickAudio, dingAudio]
+
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
+for (const audio of audios) audio.preload = 'none'
+
+const root = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let warmed = false
+
+const ticks: HTMLAudioElement[] = []
+const tickTimers: ReturnType<typeof setTimeout>[] = []
+let dingTimer: ReturnType<typeof setTimeout> | null = null
+
+function warm() {
+  if (warmed) return
+  warmed = true
+  for (const audio of audios) {
+    audio.preload = 'auto'
+    audio.load()
+  }
+}
+
+function play(audio: HTMLAudioElement) {
+  audio.currentTime = 0
+  audio.play().catch(() => {})
+}
+
+function bezier(a: number, b: number, u: number) {
+  const v = 1 - u
+  return 3 * v * v * u * a + 3 * v * u * u * b + u * u * u
+}
+
+// A click has to fall where the wheel actually is, and it turns on a CSS easing curve: for a
+// fraction of the turn, find the point on the curve that reaches it and read off the time.
+// The curve is monotone, so bisecting it is enough
+function easedTime(progress: number) {
+  let lo = 0
+  let hi = 1
+  for (let i = 0; i < 30; i++) {
+    const mid = (lo + hi) / 2
+    if (bezier(SPIN_EASE[1], SPIN_EASE[3], mid) < progress) lo = mid
+    else hi = mid
+  }
+  return bezier(SPIN_EASE[0], SPIN_EASE[2], (lo + hi) / 2) * SPIN_MS
+}
+
+// A boundary passes the pointer on every multiple of a sector angle the wheel turns through,
+// so the clicks thin out along with the wheel by themselves
+function tickTimes(from: number, to: number, sectorAngle: number) {
+  const times: number[] = []
+  let last = -MIN_TICK_GAP_MS
+  for (let edge = Math.floor(from / sectorAngle) + 1; edge <= Math.floor(to / sectorAngle); edge++) {
+    const time = easedTime((edge * sectorAngle - from) / (to - from))
+    if (time - last < MIN_TICK_GAP_MS) continue
+    times.push(time)
+    last = time
+  }
+  return times
+}
+
+// The file runs 140ms while the clicks come as close as 55ms apart, so a shared element would
+// cut the previous one off. The detune keeps a fast run from reading as one machine gun
+function playTick() {
+  const tick = tickAudio.cloneNode() as HTMLAudioElement
+  tick.volume = TICK_VOLUME
+  tick.playbackRate = 0.94 + Math.random() * 0.12
+  tick.addEventListener('ended', () => {
+    const i = ticks.indexOf(tick)
+    if (i !== -1) ticks.splice(i, 1)
+  })
+  ticks.push(tick)
+  play(tick)
+}
+
+// Silence the sound only: the timer that carries the spin through to its result has to run,
+// otherwise the wheel would be left without a winner
+function silence() {
+  for (const timer of tickTimers) clearTimeout(timer)
+  tickTimers.length = 0
+  if (dingTimer) { clearTimeout(dingTimer); dingTimer = null }
+  dingAudio.pause()
+  for (const tick of ticks) tick.pause()
+  ticks.length = 0
+}
 
 const items = ref<string[]>([])
 const newItemText = ref('')
@@ -60,8 +169,16 @@ function spin() {
   let delta = (targetMod - currentMod + 360) % 360
   if (delta < 5) delta += sectorAngle
   const extraSpins = 5 + Math.floor(Math.random() * 4)
-  const finalRotation = rotation.value + extraSpins * 360 + delta
+  const from = rotation.value
+  const finalRotation = from + extraSpins * 360 + delta
   rotation.value = finalRotation
+
+  // The previous spin's timers have all fired by now: a spin cannot start over another one
+  tickTimers.length = 0
+  for (const time of tickTimes(from, finalRotation, sectorAngle)) {
+    tickTimers.push(setTimeout(playTick, time))
+  }
+  dingTimer = setTimeout(() => play(dingAudio), SPIN_MS - DING_LEAD_MS)
 
   // Determine which sector is actually at the top after animation
   const finalMod = ((finalRotation % 360) + 360) % 360
@@ -131,10 +248,23 @@ const sectorColors = computed(() => {
 })
 
 const spinHistoryItems = computed(() => spinHistory.value.map(h => ({ label: h })))
+
+onMounted(() => {
+  observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) warm()
+    else silence()
+  }, { rootMargin: '200px' })
+  observer.observe(root.value!)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  silence()
+})
 </script>
 
 <template>
-  <div class="wheel-tool">
+  <div class="wheel-tool" ref="root">
     <!-- Left: wheel -->
     <div class="wheel-area">
       <div class="wheel-container">
