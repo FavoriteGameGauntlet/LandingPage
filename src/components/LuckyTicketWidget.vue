@@ -1,9 +1,79 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useResultStrip } from '../composables/useResultStrip'
 import HistoryChips from './HistoryChips.vue'
+import tearSound from '../assets/sounds/lucky-ticket/paper-tearing.ogg'
+import reelsSound from '../assets/sounds/lucky-ticket/slot-machine-reels.ogg'
+import stampSound from '../assets/sounds/lucky-ticket/rubber-stamp.ogg'
+import chimeSound from '../assets/sounds/lucky-ticket/win-chime.ogg'
 
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
+
+const TEAR_VOLUME = 0.25
+// The reels run under everything else, so they sit below the sounds that land on top of them
+const REELS_VOLUME = 0.2
+const STAMP_VOLUME = 0.3
+// The chime is the brightest of the four, so it needs the least to sit level with them
+const CHIME_VOLUME = 0.2
+
+// The digits are scrambled on every tick. The tear that opens the roll runs 0.31s, so the roll
+// is given enough ticks for the reels to be heard spinning on their own once it has died away
+const TICK_MS = 60
+const TICKS = 20
+const ROLL_MS = TICK_MS * TICKS
+
+// The stamp is heard slightly before the digits land
+const STAMP_LEAD_MS = 50
+
+// The stamp comes down on the ticket first, and a win is answered a beat later
+const CHIME_DELAY_MS = 250
+
+const tearAudio = new Audio(tearSound)
+tearAudio.volume = TEAR_VOLUME
+
+const reelsAudio = new Audio(reelsSound)
+reelsAudio.volume = REELS_VOLUME
+
+const stampAudio = new Audio(stampSound)
+stampAudio.volume = STAMP_VOLUME
+
+const chimeAudio = new Audio(chimeSound)
+chimeAudio.volume = CHIME_VOLUME
+
+const audios = [tearAudio, reelsAudio, stampAudio, chimeAudio]
+
+// The widget mounts along with the whole tools page, so nothing is fetched up front:
+// the files load once the tab is opened and are silenced once it is left
+for (const audio of audios) audio.preload = 'none'
+
+const root = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+let warmed = false
+
+let stampTimer: ReturnType<typeof setTimeout> | null = null
+let chimeTimer: ReturnType<typeof setTimeout> | null = null
+
+function warm() {
+  if (warmed) return
+  warmed = true
+  for (const audio of audios) {
+    audio.preload = 'auto'
+    audio.load()
+  }
+}
+
+function play(audio: HTMLAudioElement) {
+  audio.currentTime = 0
+  audio.play().catch(() => {})
+}
+
+// Silence the sound only: the interval that carries the roll through to its digits has to run,
+// otherwise the ticket would be left scrambling
+function silence() {
+  if (stampTimer) { clearTimeout(stampTimer); stampTimer = null }
+  if (chimeTimer) { clearTimeout(chimeTimer); chimeTimer = null }
+  for (const audio of audios) audio.pause()
+}
 
 const rolling = ref(false)
 const digits = ref<number[]>([])
@@ -31,19 +101,31 @@ function generate() {
 
   const finalDigits = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10))
 
+  play(tearAudio)
+  play(reelsAudio)
+  stampTimer = setTimeout(() => play(stampAudio), ROLL_MS - STAMP_LEAD_MS)
+  // The digits are settled before they are shown, so the win is known from the outset and its
+  // chime can be handed to silence() along with the rest of the roll
+  if (isLucky(finalDigits)) {
+    chimeTimer = setTimeout(() => play(chimeAudio), ROLL_MS + CHIME_DELAY_MS)
+  }
+
   let ticks = 0
   const interval = setInterval(() => {
     displayDigits.value = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10))
     ticks++
-    if (ticks >= 15) {
+    if (ticks >= TICKS) {
       clearInterval(interval)
+      // slot-machine-reels.ogg runs on well past the roll and has no ending of its own, so it
+      // is cut where the digits stop - under the stamp, which covers the cut
+      reelsAudio.pause()
       displayDigits.value = finalDigits
       digits.value = finalDigits
       history.value.unshift({ digits: finalDigits, lucky: isLucky(finalDigits) })
       rolling.value = false
       show()
     }
-  }, 60)
+  }, TICK_MS)
 }
 
 function clear() {
@@ -68,10 +150,23 @@ const historyItems = computed(() =>
     title: l ? `Счастливый! ${sum(d, 0, 3)} = ${sum(d, 3, 6)}` : `${sum(d, 0, 3)} ≠ ${sum(d, 3, 6)}`,
   }))
 )
+
+onMounted(() => {
+  observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) warm()
+    else silence()
+  }, { rootMargin: '200px' })
+  observer.observe(root.value!)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+  silence()
+})
 </script>
 
 <template>
-  <div class="widget">
+  <div class="widget" ref="root">
     <div class="ticket-scene">
       <div class="ticket" :class="{ lucky: lucky === true, normal: lucky === false }">
         <div class="ticket-half">
