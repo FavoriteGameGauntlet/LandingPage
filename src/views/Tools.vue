@@ -21,7 +21,7 @@ const tools = [
   { id: 'card', label: 'Игральные карты' },
   { id: 'images', label: 'Картинка по хэшу' },
   { id: 'tarot', label: 'Карты Таро' },
-  { id: 'rpsls',  label: 'КНБЯК' },
+  { id: 'rpsls',  label: 'КНБЯС' },
   { id: 'wheel', label: 'Колесо фортуны' },
   { id: 'dice', label: 'Кубики' },
   { id: 'links', label: 'Материалы' },
