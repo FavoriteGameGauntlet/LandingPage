@@ -84,7 +84,11 @@ interface TicketRecord {
   lucky: boolean
 }
 
+// Chips past this many are dropped off the end of the strip; the tally keeps counting
+const MAX_HISTORY = 20
+
 const history = ref<TicketRecord[]>([])
+const score = ref({ lucky: 0, normal: 0 })
 
 function sum(d: number[], from: number, to: number): number {
   return d.slice(from, to).reduce((a, b) => a + b, 0)
@@ -100,13 +104,14 @@ function generate() {
   hideInstant()
 
   const finalDigits = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10))
+  const won = isLucky(finalDigits)
 
   play(tearAudio)
   play(reelsAudio)
   stampTimer = setTimeout(() => play(stampAudio), ROLL_MS - STAMP_LEAD_MS)
   // The digits are settled before they are shown, so the win is known from the outset and its
   // chime can be handed to silence() along with the rest of the roll
-  if (isLucky(finalDigits)) {
+  if (won) {
     chimeTimer = setTimeout(() => play(chimeAudio), ROLL_MS + CHIME_DELAY_MS)
   }
 
@@ -121,7 +126,10 @@ function generate() {
       reelsAudio.pause()
       displayDigits.value = finalDigits
       digits.value = finalDigits
-      history.value.unshift({ digits: finalDigits, lucky: isLucky(finalDigits) })
+      history.value.unshift({ digits: finalDigits, lucky: won })
+      if (history.value.length > MAX_HISTORY) history.value.pop()
+      if (won) score.value.lucky++
+      else score.value.normal++
       rolling.value = false
       show()
     }
@@ -133,6 +141,7 @@ function clear() {
   digits.value = []
   displayDigits.value = [0, 0, 0, 0, 0, 0]
   history.value = []
+  score.value = { lucky: 0, normal: 0 }
   hideInstant()
 }
 
@@ -147,7 +156,7 @@ const historyItems = computed(() =>
   history.value.map(({ digits: d, lucky: l }) => ({
     label: `${d.slice(0, 3).join('')}-${d.slice(3).join('')}`,
     variant: (l ? 'accent' : 'primary') as 'primary' | 'accent',
-    title: l ? `Счастливый! ${sum(d, 0, 3)} = ${sum(d, 3, 6)}` : `${sum(d, 0, 3)} ≠ ${sum(d, 3, 6)}`,
+    title: `${sum(d, 0, 3)} ${l ? '=' : '≠'} ${sum(d, 3, 6)}`,
   }))
 )
 
@@ -167,6 +176,18 @@ onUnmounted(() => {
 
 <template>
   <div class="widget" ref="root">
+    <div class="score-line">
+      <div class="score-cell">
+        <h3 class="score-label">Счастливые</h3>
+      </div>
+      <div class="score-cell">
+        <h3 class="score-label">Несчастливые</h3>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-cell"><span class="score-num">{{ score.lucky }}</span></div>
+      <div class="score-cell"><span class="score-num">{{ score.normal }}</span></div>
+    </div>
+
     <div class="ticket-scene">
       <div class="ticket" :class="{ lucky: lucky === true, normal: lucky === false }">
         <div class="ticket-half">
@@ -188,8 +209,10 @@ onUnmounted(() => {
         </div>
       </div>
       <div class="result-strip" :class="{ visible: showResult, 'slow-hide': slowHide, lucky: lucky === true }">
-        <template v-if="lucky">СЧАСТЛИВЫЙ! {{ sum1 }} = {{ sum2 }}</template>
-        <template v-else>{{ sum1 }} ≠ {{ sum2 }}</template>
+        <template v-if="lucky !== null">
+          <span class="verdict">{{ lucky ? 'СЧАСТЛИВЫЙ' : 'НЕСЧАСТЛИВЫЙ' }}</span>
+          <span class="sums">{{ sum1 }} {{ lucky ? '=' : '≠' }} {{ sum2 }}</span>
+        </template>
       </div>
     </div>
 
@@ -207,6 +230,36 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.score-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1.5rem;
+}
+
+.score-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-divider {
+  grid-column: 1 / -1;
+  border-top: 1px solid rgb(from var(--color-primary) r g b / 0.3);
+  margin: 0.25rem 0;
+}
+
+.score-label {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.score-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 .ticket-scene {
   margin-bottom: 2rem;
   text-align: center;
@@ -270,13 +323,29 @@ onUnmounted(() => {
 }
 
 .result-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
   margin-top: 1.25rem;
-  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-primary);
-  min-height: 1.75rem;
+  min-height: 3.25rem;
   opacity: 0;
   pointer-events: none;
+}
+
+.verdict {
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
+}
+
+/* The sums are what the verdict is read off, so they sit under it rather than beside it */
+.sums {
+  font-size: 1rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
 }
 
 .result-strip.slow-hide {
