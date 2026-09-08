@@ -8,9 +8,18 @@ import dingSound from '../assets/sounds/fortune-wheel/small-bell-ding.ogg'
 const MAX_ITEMS = 20
 const R = 185
 const TEXT_R = 128
-const SPIN_MS = 4000
-// The curve the wheel slows down on, mirroring the .wheel-group transition
-const SPIN_EASE = [0.05, 0.5, 0.1, 1] as const
+const SPIN_MS = 5500
+// The curve the wheel slows down on. Both the length and the curve mirror the .wheel-group
+// transition and have to be changed with it
+const SPIN_EASE = [0.2, 0.8, 0.2, 1] as const
+// The pointer never comes to rest closer than this to a boundary. Two degrees is some six
+// units of arc on the rim: close enough to be in doubt, far enough that the tip still reads
+// as standing on one side of the line rather than on it
+const MIN_EDGE_DEG = 2
+// How often the wheel is landed against a boundary instead of across a sector, and how far
+// from the boundary it may come to rest when it is
+const NEAR_MISS_CHANCE = 0.35
+const NEAR_MISS_BAND_DEG = 4
 
 const { showResult, slowHide, hideInstant, show } = useResultStrip()
 
@@ -23,8 +32,8 @@ const DING_VOLUME = 0.2
 // The ding is heard slightly before the result lands
 const DING_LEAD_MS = 50
 
-// The pointer crosses hundreds of boundaries a second in the first moments of a spin. Closer
-// together than this they stop reading as separate clicks anyway, and the file runs 140ms
+// The pointer crosses over a hundred boundaries a second in the first moments of a spin.
+// Closer together than this they stop reading as separate clicks anyway, and the file runs 140ms
 const MIN_TICK_GAP_MS = 55
 
 // Never played itself: the clicks overlap, so each one plays a clone of its own
@@ -163,8 +172,15 @@ function spin() {
   const n = items.value.length
   const winIndex = Math.floor(Math.random() * n)
   const sectorAngle = 360 / n
-  const winMid = winIndex * sectorAngle + sectorAngle / 2
-  const targetMod = (360 - winMid + 360) % 360
+  // A wheel that settles well inside its sector has given the answer away while it is still
+  // turning. Some spins are landed hard against a boundary instead - just over it, or just
+  // short of clicking past it - and which side it ends on stays open until it stops
+  const edge = MIN_EDGE_DEG + Math.random() * NEAR_MISS_BAND_DEG
+  const within = Math.random() < NEAR_MISS_CHANCE
+    ? (Math.random() < 0.5 ? edge : sectorAngle - edge)
+    : MIN_EDGE_DEG + Math.random() * (sectorAngle - 2 * MIN_EDGE_DEG)
+  const winPoint = winIndex * sectorAngle + within
+  const targetMod = (360 - winPoint + 360) % 360
   const currentMod = ((rotation.value % 360) + 360) % 360
   let delta = (targetMod - currentMod + 360) % 360
   if (delta < 5) delta += sectorAngle
@@ -408,7 +424,7 @@ onUnmounted(() => {
 }
 
 .wheel-group {
-  transition: transform 4s cubic-bezier(0.05, 0.5, 0.1, 1);
+  transition: transform 5.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .empty-label {
