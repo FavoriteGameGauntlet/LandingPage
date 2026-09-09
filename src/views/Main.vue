@@ -175,7 +175,7 @@ function enterSiteFast() {
   <div class="main">
     <section class="hero" :class="{ revealed: !introVisible, fast: fastReveal }">
       <div class="hero-bg" :style="{ backgroundImage: `url(${s3}/posters/fggw3.webp)` }"></div>
-      <h1 class="hero-title">Favorite Game Gauntlet</h1>
+      <h1 class="hero-title"><span>Favorite Game</span> <span>Gauntlet</span></h1>
       <section class="cards">
         <div class="card-wrap" :style="{ background: cardGradients[0] }">
           <router-link to="/rules" class="card">
@@ -649,16 +649,53 @@ function enterSiteFast() {
 
 @media (max-width: 1180px) {
   .cards {
-    grid-template-columns: repeat(2, minmax(270px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 860px) {
 }
 
+/* Two by two, shrunk so the whole set fits under the hero on a short phone screen */
 @media (max-width: 620px) {
+  /* One line of this reaches edge to edge on a phone, so break it after "Game" */
+  .hero-title span {
+    display: block;
+  }
+
+  .hero-title {
+    font-size: clamp(1.5rem, calc(100vw / 9), 6rem);
+  }
+
   .cards {
-    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0;
+  }
+
+  .card {
+    padding: 0.75rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .card-icon {
+    order: -1;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-right: 0;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  /* Without the descriptions all four cards carry the same content, so all four are the same size */
+  .card-desc {
+    display: none;
   }
 }
 
