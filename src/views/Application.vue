@@ -13,7 +13,7 @@ type OsKey = 'windows' | 'macos' | 'linux'
 const assets: Record<OsKey, string | null> = {
   windows: 'FavoriteGameGauntlet_x64-setup.exe',
   macos: null,
-  linux: null,
+  linux: 'FavoriteGameGauntlet_amd64.AppImage',
 }
 
 const OS_LABELS: Record<OsKey, string> = {

@@ -476,21 +476,6 @@ function enterSiteFast() {
   transform-origin: center 25%;
 }
 
-.hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgb(0 0 0 / 0.45) 0%,
-    transparent 30%,
-    transparent 55%,
-    rgb(0 0 0 / 0.75) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
 /* ── HERO REVEAL ANIMATIONS ───────────────────────────────────── */
 
 .hero.revealed .hero-bg {
