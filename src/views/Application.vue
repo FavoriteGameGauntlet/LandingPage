@@ -3,40 +3,27 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import externalLinkIcon from '../assets/icons/external-link.svg?raw'
 
 const s3 = import.meta.env.VITE_S3_BASE_URL
+const latestDownload = 'https://github.com/FavoriteGameGauntlet/Application/releases/latest/download'
 
 const version = ref('')
 const releaseUrl = ref('')
 const releaseDate = ref('')
 
-type OsKey = 'windows' | 'macos' | 'linux'
-
-const assets: Record<OsKey, string | null> = {
-  windows: 'FavoriteGameGauntlet_x64-setup.exe',
-  macos: null,
-  linux: 'FavoriteGameGauntlet_amd64.AppImage',
+const downloads = {
+  windows: { label: 'Windows', url: `${latestDownload}/FavoriteGameGauntlet_x64-setup.exe` },
+  appImage: { label: 'Linux (.AppImage)', url: `${latestDownload}/FavoriteGameGauntlet_amd64.AppImage` },
+  deb: { label: 'Linux (.deb)', url: `${latestDownload}/FavoriteGameGauntlet_amd64.deb` },
+  rpm: { label: 'Linux (.rpm)', url: `${latestDownload}/FavoriteGameGauntlet_x86_64.rpm` },
 }
 
-const OS_LABELS: Record<OsKey, string> = {
-  windows: 'Windows',
-  macos: 'macOS',
-  linux: 'Linux',
-}
-
-const selectedOs = ref<OsKey>('windows')
-
-const downloadUrl = computed(() => {
-  const file = assets[selectedOs.value]
-  return file
-    ? `https://github.com/FavoriteGameGauntlet/Application/releases/latest/download/${file}`
-    : undefined
-})
-
+type DownloadFormat = keyof typeof downloads
+const selectedFormat = ref<DownloadFormat>('windows')
+const selectedDownload = computed(() => downloads[selectedFormat.value])
 const osMenuOpen = ref(false)
 const osDropdown = ref<HTMLElement | null>(null)
 
-function selectOs(os: OsKey) {
-  if (!assets[os]) return
-  selectedOs.value = os
+function selectFormat(format: DownloadFormat) {
+  selectedFormat.value = format
   osMenuOpen.value = false
 }
 
@@ -83,7 +70,7 @@ onUnmounted(() => {
     <div class="main">
       <h1>Приложение FGG</h1>
       <div class="download-group">
-        <a class="download-btn" :href="downloadUrl">Скачать</a>
+        <a class="download-btn" :href="selectedDownload.url">Скачать</a>
         <div class="os-dropdown" ref="osDropdown">
           <button
             type="button"
@@ -93,20 +80,19 @@ onUnmounted(() => {
             @click="osMenuOpen = !osMenuOpen"
             @keydown.escape="osMenuOpen = false"
           >
-            <span class="os-label">{{ OS_LABELS[selectedOs] }}</span>
+            <span class="os-label">{{ selectedDownload.label }}</span>
             <span class="chevron" :class="{ open: osMenuOpen }">▾</span>
           </button>
           <ul v-if="osMenuOpen" class="os-menu" role="listbox">
             <li
-              v-for="os in (['windows', 'macos', 'linux'] as const)"
-              :key="os"
+              v-for="(download, format) in downloads"
+              :key="format"
               role="option"
               class="os-option"
-              :class="{ active: selectedOs === os, disabled: !assets[os] }"
-              :aria-selected="selectedOs === os"
-              :aria-disabled="!assets[os]"
-              @click="selectOs(os)"
-            >{{ OS_LABELS[os] }}</li>
+              :class="{ active: selectedFormat === format }"
+              :aria-selected="selectedFormat === format"
+              @click="selectFormat(format)"
+            >{{ download.label }}</li>
           </ul>
         </div>
       </div>
@@ -257,7 +243,8 @@ onUnmounted(() => {
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  width: 100%;
+  min-width: 100%;
+  width: max-content;
   box-sizing: border-box;
   margin: 0;
   padding: 0.35rem;
@@ -278,7 +265,7 @@ onUnmounted(() => {
   transition: background 0.2s, color 0.2s;
 }
 
-.os-option:hover:not(.disabled) {
+.os-option:hover {
   background: rgb(from var(--color-primary) r g b / 0.12);
   color: var(--color-accent);
   text-shadow: 0 0 0.5em currentColor;
@@ -286,11 +273,6 @@ onUnmounted(() => {
 
 .os-option.active {
   color: var(--color-primary);
-}
-
-.os-option.disabled {
-  color: rgb(from var(--color-primary) r g b / 0.35);
-  cursor: not-allowed;
 }
 
 @media (max-width: 860px) {
@@ -313,6 +295,7 @@ onUnmounted(() => {
   }
 
   .main {
+    width: 100%;
     padding-top: 0;
   }
 
@@ -322,7 +305,8 @@ onUnmounted(() => {
 
   .download-group {
     display: flex;
-    width: var(--mobile-col-width);
+    box-sizing: border-box;
+    width: min(300px, 100%);
   }
 
   .download-btn {
@@ -332,12 +316,13 @@ onUnmounted(() => {
 
   .os-dropdown {
     flex: 1;
+    min-width: 0;
   }
 
   .os-select-btn {
     width: 100%;
     min-width: 0;
-    padding: 0.55em 2.25em 0.55em 1em;
+    padding: 0.55em 1.75em 0.55em 0.75em;
   }
 }
 </style>
