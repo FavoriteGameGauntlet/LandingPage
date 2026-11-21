@@ -257,6 +257,19 @@ const seasons: Season[] = [
   {
     name: 'FGGW 3',
     link: '',
+    roster: [
+      {player: 'Лиза', character: 'Туя'},
+      {player: 'Матвей', character: 'Такаши Говночух'},
+      {player: 'Вика', character: 'Винара Алерт'},
+      {player: 'Митяй', character: 'Казуя Арараги'},
+      {player: 'Дима', character: 'Пик'},
+      {player: 'Даня', character: 'Кабан'},
+      {player: 'Терентий', character: 'Вуди'},
+      {player: 'Паша', character: 'Ле\'Нтакле Няшмяш'},
+      {player: 'Стас', character: 'Билли'},
+      {player: 'Толя', character: 'Нейроборг'},
+      {player: 'Никита', character: 'Барнубас'},
+    ],
     content: [
       {
         type: 'text',
@@ -293,7 +306,7 @@ function posterUrl(videoUrl: string): string {
       <div class="roster-chips">
         <Chip
           v-for="member in selectedSeason.roster"
-          :key="member.player"
+          :key="member.character"
           :player="member.player"
           :character="member.character"
           :clan="member.clan"
